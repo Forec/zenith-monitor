@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "main/_macros.html" as macros %}
+
+{% block title %}名字好难其{% endblock %}
+
+{% block page_content %}
+<section id="top" class="two">
+    <div class="container">
+        <header>
+            <div>
+                <form name="SEARCH" method="POST" action="return onclick()">
+                    <input type="text" placeholder="输入关键字检索设备">
+                </form>
+            </div>
+
+            {% if current_user.is_authenticated  %}
+                {% for device in devices %}
+                <div class="device-block">
+                    设备名称：{{ device.name }}
+                    设备类型：{{ device.type }}
+                    设备状态：{{ device.getStatus() }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if pagination %}
+                <div class="pagination">
+                    {{ macros.pagination_widget(pagination, '.index') }}
+                </div>
+            {% endif %}
+        </header>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/devices/index.js', _external=True) }}"></script>
+{% endblock %}

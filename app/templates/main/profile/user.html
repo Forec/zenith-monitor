@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "main/_macros.html" as macros %}
+{% block title %}顶点云 - {{ user.nickname }}{% endblock %}
+
+{% block page_content %}
+<section id="top" class="two">
+    <div class="container">
+        <header>
+            <img class="img-rounded user-profile-thumbnail" src="{{ user.gravatar(size=224) }}">
+            <div>
+                <span><b>昵称：</b>{{ user.nickname }}</span>
+                {% if user == current_user %}
+                    <br/>
+                    <span>
+                        <b>我的 token：{{ user.token_hash }}</b>
+                    </span>
+                {% endif %}
+                <br/>
+                {% if  current_user == user %}
+                    <span><b>注册邮箱：</b><a href="mailto:{{ user.email }}">{{ user.email }}</a></span>
+                {% endif %}
+
+                <div style="width:500px;margin-left: auto;margin-right:auto">
+                    {% if user.about_me %}
+                        <span style="width:500px;text-align:left"><b>关于我：</b>{{ user.about_me }}</span>
+                    {% else %}
+                        <span><b>关于我：</b>这个人很懒，什么都没有留下</span>
+                    {% endif %}
+                </div>
+                <span><b>注册日期：</b>{{ moment(user.member_since).format('L') }} &nbsp;&nbsp;&nbsp;
+                    <b>上次登录：</b>{{ moment(user.last_seen).fromNow() }}.</span>
+                <br/>
+
+                {% if user == current_user %}
+                    <a class="btn btn-default" href="{{ url_for('.edit_profile', _external=True) }}">
+                        编辑资料
+                    </a>
+                    &nbsp;&nbsp;
+                    <a class="btn btn-danger" href="{{ url_for('main.reset_token',
+                        token =current_user.generate_resetToken_token() ,_external=True) }}">
+                        重置 token
+                    </a>
+                {% endif %}
+            </div>
+        </header>
+    </div>
+</section>
+{% endblock %}
