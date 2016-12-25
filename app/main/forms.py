@@ -3,14 +3,15 @@
 # 邮箱：forec@bupt.edu.cn
 # 关于此文件：包含了 main 蓝本中使用到的全部 wtf 表单
 
-from ..models import User, Device
-from ..devices import deviceTable
+from ..models import User
+from ..devices import deviceNumbers
 from flask import current_app
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, SubmitField, \
-    TextAreaField, SelectField, PasswordField
+    TextAreaField, SelectField, PasswordField, \
+    IntegerField
 from wtforms.validators import Required, Length, \
     ValidationError
 
@@ -46,12 +47,11 @@ class DeviceEditForm(FlaskForm):
         validators=[Required(),
                     Length(1, 64, message='设备名称不能超过 64 个字符')])
     about = TextAreaField("设备描述")
-    type = SelectField('类型', coerce=str)
+    type = SelectField('类型', coerce=int)
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(DeviceEditForm, self).__init__(*args, **kwargs)
-        self.type.choices = [device.type for device in deviceTable.values()]
-        self.user = user
+        self.type.choices = deviceNumbers.items()
 
     submit = SubmitField('确定')
 
@@ -81,15 +81,17 @@ class NewDeviceForm(FlaskForm):
         validators=[Required(),
                     Length(0, 64, message='设备名长度不能超过 64 个 ASCII 字符')])
     type = SelectField('设备类型', coerce=int)
+    interval = IntegerField('检查周期', default=5)
     about = TextAreaField("设备描述")
     submit = SubmitField('创建')
 
-    def __init__(self, user, *args, **kwargs):
-        super(DeviceEditForm, self).__init__(*args, **kwargs)
-        devices = Device.deviceTables()
-        self.type.choices = [device.type for device in deviceTable]
-        self.user = user
+    def __init__(self, *args, **kwargs):
+        super(NewDeviceForm, self).__init__(*args, **kwargs)
+        self.type.choices = deviceNumbers.items()
 
     def validate_about(self, field):     # 限制设备描述在 200 字符内
         if len(field.data) > 200:
             raise ValidationError('设备描述过长，请限制在100字内')
+    def validate_interval(self, field):     # 限制设备描述在 200 字符内
+        if field.data < 1:
+            raise ValidationError('检查周期至少为 1 s！')

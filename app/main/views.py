@@ -12,11 +12,10 @@ from flask        import render_template, redirect, url_for, \
 from flask_login  import login_required, current_user
 from .forms       import EditProfileForm, DeviceEditForm, \
                         DeviceDeleteForm, NewDeviceForm
-from sqlalchemy import text
 from .            import main
 from ..           import db
 from ..models     import User ,Pagination, Device, Record
-from ..devices    import deviceTable
+from ..devices    import deviceTable, deviceNumbers
 
 # ----------------------------------------------------------------
 # home 函数提供了介绍界面的入口
@@ -67,7 +66,7 @@ def edit_profile():
             while True:
                 # 创建随机目录
                 randomBasePath = current_app.\
-                    config['ZENITH_TEMPFILE_STORE_PATH'] + \
+                    config['TEMP_PATH'] + \
                     ''.join(random.sample(
                             current_app.\
                                 config['ZENITH_RANDOM_PATH_ELEMENTS'],
@@ -214,10 +213,19 @@ def edit_device(id):
 def newdevice():
     form = NewDeviceForm()
     if form.validate_on_submit():
-        d = deviceTable[form.type.data]()
-        d.name = form.name.data
-        d.about = form.about.data
-        db.session.add(d)
+        D = deviceTable.get(deviceNumbers.get(form.type.data))
+        if D is not None:
+            d = D(name = form.name.data,
+                  owner = current_user,
+                  interval = form.interval.data,
+                  about = form.about.data)
+            db.session.add(d)
+            db.session.commit()
+            d.code = d.randomCode()
+            db.session.add(d)
+        else:
+            abort(403)
+        return redirect(url_for('main.index'))
     return render_template('main/devices/new_device.html',
                            form = form)
 
@@ -229,7 +237,7 @@ def update_status():
     token = request.form.get('token')
     type = request.form.get('type')
     status = request.form.get('status')
-    # print(code, token, type, status)
+    print(code, token, type)#, status)
     if code is None or token is None or \
         type is None or status is None:
         return 'fail'
@@ -240,8 +248,6 @@ def update_status():
     if device is None:
         return 'fail'
     if device.owner.verify_token(token):
-        r = Record(device=device,
-                   status=status)
         device.updateStatus(status)
         return 'ok'
 
@@ -266,15 +272,13 @@ def show_status():
         return 'fail'
     if code is None:
         # 请求所有设备的状态
-        returnList = []
+        returnDict = {}
         devices = user.devices.all()
         for device in devices:
-            returnList.append({
-                'code': device.code,
-                'status': device.getStatus()
-            })
+            returnDict[device.code] = device.getStatus()
+        # print(returnDict)
         return jsonify({
-            'list': returnList
+            'list': returnDict
         })
     else:
         device = Device.query.filter_by(code=code)
@@ -285,3 +289,32 @@ def show_status():
             'status': device.getStatus()
          })
     return 'fail'
+
+@main.route('/set_device/', methods=['POST'])
+def set_device():
+    token = request.form.get('request[token]')
+    email = request.form.get('request[email]')
+    code = request.form.get('request[code]')
+    if token is None or email is None or code is None:
+        return 'fail'
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token):
+        return 'fail'
+    device = Device.query.filter_by(code=code)
+    if device.owner != user:
+        return 'fail'
+    setRequest = request.form.get('request[set]')
+    print('set Request:', setRequest)
+    if setRequest is None:
+        return 'succ'
+    try:
+        setRequest = json.loads(setRequest)
+    except:
+        return 'fail'
+    if setRequest.get('shutdown') is not None:
+        device.shutdown()
+    elif setRequest.get('setup') is not None:
+        device.setup()
+    else:
+        device.setStatus(setRequest)
+    return 'succ'

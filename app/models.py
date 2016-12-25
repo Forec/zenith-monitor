@@ -45,10 +45,6 @@ class RequestThread(threading.Thread):
             self.sock.sendall(struct.pack("L", len(self.data)) + self.data)
         except:
             return
-        if self.data.get('setup'):
-            self.device.work = True
-        elif self.data.get('shutdown'):
-            self.device.work = False
 
 # -------------------------------------------------------------------------
 # 设备模型
@@ -64,14 +60,13 @@ class Device(db.Model):
     # 设备名称
     name = db.Column(db.String(64), default='设备名称未指定')
     # 识别码，默认为随机数 + 创建时刻的 md5 值
-    code = db.Column(db.String(32), default=
-        hashlib.md5((str(randint(1, 9999999999))+
-                         str(datetime.utcnow())).encode('utf-8')).\
-                         hexdigest().upper())
+    code = db.Column(db.String(12), unique = True)
     # 监控间隔
     interval = db.Column(db.Integer, default = 60)
     # 设备介绍
     about = db.Column(db.String(256), default='')
+    # 设备温度
+    temperature = db.Column(db.String(32), default='正在获取')
     # 历史记录
     records = db.relationship('Record',
                               backref='device',
@@ -79,11 +74,10 @@ class Device(db.Model):
     # 创建时间
     created = db.Column(db.DateTime, default=datetime.utcnow)
 
-    @staticmethod
-    def randomCode():
-        return hashlib.md5((str(randint(1, 9999999999))+
+    def randomCode(self):
+        return hashlib.md5((str(self.uid)+
                          str(datetime.utcnow())).encode('utf-8')).\
-                         hexdigest().upper()
+                         hexdigest().upper()[:12]
 
     # 与子类映射关系
     __mapper_args__ = {
@@ -92,64 +86,98 @@ class Device(db.Model):
     }
 
     # 是否开启
-    work = False
+    work = db.Column(db.Boolean, default=False)
     # 是否报警
-    warning = False
+    warning = db.Column(db.Boolean, default=False)
+    volume = db.Column(db.Integer, default=-1)    # 电压
+    current = db.Column(db.Integer, default = -1) # 电流
+    power = db.Column(db.Integer, default=-1)     # 功率
 
     def __repr__(self):
         return '<Device %r>' % self.name
 
     # 启动设备
-    def login(self):
+    def setup(self):
         request = RequestThread(json.dumps({
             'code': self.code,
+            'token': self.owner.token_hash,
             'setup': 1
         }), self)
         request.start()
 
     # 关闭设备
-    def logout(self):
+    def shutdown(self):
         request = RequestThread(json.dumps({
             'code': self.code,
+            'token': self.owner.token_hash,
             'shutdown': 1
         }), self)
         request.start()
 
     # 获取 JSON 格式状态
     def getStatus(self):
-        statusJSON = json.dumps({
+        statusJSON = {
             'code': self.code,
             'type': self.type,
             'work': self.work,
+            'name': self.name,
+            'volume': self.volume,
+            'current': self.current,
+            'power': self.power,
             'warning': self.warning,
-            'interval': self.interval
-        })
-        print(statusJSON)
+            'interval': self.interval,
+            'temperature': self.temperature
+        }
         return statusJSON
 
     # 更新设备状态
     def updateStatus(self, status):
-        status = json.loads(status)
         work = status.get('work')
+        warning = status.get('warning')
+        volume = status.get('volume')
+        current = status.get('current')
+        power = status.get('power')
         internal = status.get('internal')
-        if work is not None:
-            self.work = work
-        if internal is not None:
-            self.interval = internal
-            db.session.add(self)
+        temperature = status.get('temperature')
+        try:
+            if work is not None:
+                work = bool(work)
+                self.work = work
+            if warning is not None:
+                warning = bool(warning)
+                self.warning = warning
+            if internal is not None:
+                internal = int(internal)
+                if internal < 1:
+                    internal = 1
+                self.interval = internal
+            if temperature is not None:
+                int(temperature)
+                self.temperature = temperature
+            if volume is not None:
+                int(volume)
+                self.volume = volume
+            if current is not None:
+                int(current)
+                self.current = current
+            if power is not None:
+                int(power)
+                self.power = power
+        except:
+            return
 
     # 设置远程设备状态
-    def setStatus(self,
-                  interval = None):
-        def set(interval = interval or self.interval):
+    def setStatus(self, jsondata):
+        def set(interval = jsondata.get('interval') or self.interval):
             request = RequestThread(json.dumps({
                 'code': self.code,
+                'token': self.owner.token_hash,
                 'set':{
                     'interval': interval
                 }
             }), self)
             request.start()
-        return set(interval)
+        return set()
 
 # 用户模型
 class User(UserMixin, db.Model):
@@ -160,7 +188,7 @@ class User(UserMixin, db.Model):
     # 用户密码的加盐哈希值
     password_hash = db.Column(db.String(32))
     # 用户设备 token 值
-    token_hash = db.Column(db.String(32), default =
+    token_hash = db.Column(db.String(32), unique=True, default =
                          hashlib.md5((str(randint(1, 9999999999)) +
                          str(datetime.utcnow())).encode('utf-8')).\
                          hexdigest().upper())

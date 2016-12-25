@@ -4,7 +4,7 @@
 # 关于此文件：此文件为服务器的管理入口，注册了数据库初始化、shell控
 #    制、测试等函数。
 
-import os
+import os, time
 COV = None
 if os.environ.get('ZENITH_COVERAGE'):
     import coverage
@@ -14,7 +14,7 @@ if os.environ.get('ZENITH_COVERAGE'):
 
 from app           import create_app, db
 from app.models    import User, Device
-from app.devices   import deviceTable, Bulb
+from app.devices   import deviceTable, Bulb, TV
 from flask_script  import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -85,12 +85,31 @@ def init():
              about_me='this is a test user')
     db.session.add(u1)
     db.session.add(u2)
-    d = Bulb(name = '默认设备',
+
+    d1 = Bulb(name = '默认设备',
+              code='E1A9013A447E',
              owner = u2,
              interval = 5,
              about = '这是一个默认设备'
              )
-    db.session.add(d)
+
+    d2 = Bulb(name = '灯泡',
+             owner = u2,
+              code='BA8120601307',
+             interval = 3,
+             about = '这是灯泡'
+             )
+
+    d3 = TV(name = '电视',
+             owner = u2,
+            code='CE683231033B',
+             interval = 5,
+             about = '这是电视'
+             )
+
+    db.session.add(d1)
+    db.session.add(d2)
+    db.session.add(d3)
     db.session.commit()
 
 # 清空数据库并初始化测试用户

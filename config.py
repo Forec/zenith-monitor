@@ -9,6 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     DEBUG = True
+    TEMP_PATH = 'temp/'
     CLIENT_ADDRESS = '127.0.0.1'
     CLIENT_PORT = 50002
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
@@ -18,24 +19,10 @@ class Config:
                  'd881dd92e629dbfdc2f1fbf6'         # 用于为安全操作生成 token 的密钥，不可泄露
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True            # 数据库在服务器终止时 commit 变动
     SQLALCHEMY_TRACK_MODIFICATIONS = True           # 数据库追踪改动
-    ZENITH_MAIL_SUBJECT_PREFIX = '[顶点云]'         # 服务器发送验证邮件的主题前缀
+    ZENITH_MAIL_SUBJECT_PREFIX = '不知起啥名'         # 服务器发送验证邮件的主题前缀
     ZENITH_MAIL_SENDER = os.environ.get('ZENITH_MAIL_SENDER') or \
                          'cloud-storage@forec.cn'   # 服务器向用户发送验证邮件的邮箱
     ZENITH_DEVICES_PER_PAGE = 10              # Index 页面每页显示的文件数量
-    ZENITH_FOLLOWERS_PER_PAGE = 10          # 每页显示的关注者数量
-    ZENITH_COMMENTS_PER_PAGE = 10           # 每页显示的评论数量
-    PROFILE_ZENITH_FILES_PER_PAGE = 6       # 用户资料页每页显示的文件数量
-    ZENITH_MESSAGES_PER_PAGE = 10           # Message 页面每页显示的消息数量
-    ZENITH_TEMPFOLDER_LENGTH = 12   # 服务器生成的随机目录名长度
-    ZENITH_PATH_SEPERATOR = '\\'    # 服务器所属文件系统的目录分隔符，Windows为\\，*nix 为//
-    ZENITH_FILE_STORE_PATH = 'G:\\Cloud\\'  # 服务器存储用户文件的路径
-    ZENITH_TEMPFILE_STORE_PATH = ZENITH_FILE_STORE_PATH + \
-                                 'TEMP' + ZENITH_PATH_SEPERATOR
-        # 服务器生成随机目录所在的路径，默认为文件存储路径下的 TMEP 文件夹
-    ZENITH_FOLDER_ZIP_SUFFIX = 'zenith'
-    ZENITH_INVALID_INFFIX = ['//', '\\', '/', '..', '%', '^', '&',
-                             '*', '$', '!', '+', '#']
-    EMAIL_ADMIN ='forec@bupt.edu.cn'                # 管理员账户的邮箱
     ZENITH_RANDOM_PATH_ELEMENTS = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
                                        'h', 'i', 'j', 'k', 'l', 'm', 'n',
                                        'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -67,17 +54,9 @@ class TestingConfig(Config):                # 测试环境配置
     TESTING = True
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'temp/test.sqlite')
-    ZENITH_PATH_SEPERATOR = '/'
-    ZENITH_FILE_STORE_PATH = 'temp/store/'
-    ZENITH_TEMPFILE_STORE_PATH = ZENITH_FILE_STORE_PATH + \
-                                 'TEMP' + ZENITH_PATH_SEPERATOR
     ZENITH_SERVER_ADDRESS = '127.0.0.1'
 
 class WindowsConfig(Config):
-    ZENITH_PATH_SEPERATOR = '\\'    # 服务器所属文件系统的目录分隔符，Windows为\\，*nix 为//
-    ZENITH_FILE_STORE_PATH = 'G:\\Cloud\\'  # 服务器存储用户文件的路径
-    ZENITH_TEMPFILE_STORE_PATH = ZENITH_FILE_STORE_PATH + \
-                                 'TEMP' + ZENITH_PATH_SEPERATOR
     ZENITH_SERVER_ADDRESS = '127.0.0.1'# or 'cloud.forec.cn' # 服务器部署的域名/IP地址
     SERVER_NAME = ZENITH_SERVER_ADDRESS
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'work.db')
@@ -89,10 +68,6 @@ class WindowsConfig(Config):
                     "Cloud-Storage-2016"
 
 class LinuxConfig(Config):
-    ZENITH_PATH_SEPERATOR = '/'    # 服务器所属文件系统的目录分隔符，Windows为\\，*nix 为//
-    ZENITH_FILE_STORE_PATH = '/root/work/cloud/Cloud/'  # 服务器存储用户文件的路径
-    ZENITH_TEMPFILE_STORE_PATH = ZENITH_FILE_STORE_PATH + \
-                                 'TEMP' + ZENITH_PATH_SEPERATOR
     ZENITH_SERVER_ADDRESS = 'cloud.forec.cn' # 服务器部署的域名/IP地址
     SERVER_NAME = ZENITH_SERVER_ADDRESS
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'work.db')

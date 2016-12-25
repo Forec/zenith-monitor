@@ -31,7 +31,10 @@ class WorkThread(threading.Thread):
             data += self.conn.recv(81920)
         do = json.loads(data)
         code = do.get('code')
-        if code is None:
+        token = do.get('token')
+        if code is None or token is None:
+            return
+        if manager.verify(token) == False:
             return
         if do.get('shutdown'):
             self.manager.shutdown(code)
@@ -56,6 +59,7 @@ class ListenThread(threading.Thread):
     def run(self):
         while (True):
             conn, addr = self.sock.accept()
+            print addr, "接入"
             # 过滤非服务器请求
             if addr.split(':')[0] != SERVER_IP:
                 continue
@@ -95,6 +99,8 @@ class Manager():
         device = self.deviceSet.get(code)
         if device:
             device.set(setRequest)
+    def verify(self, token):
+        return self.token == token
 
 if __name__ == '__main__':
     f = open('device.txt', 'r')
