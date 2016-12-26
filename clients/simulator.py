@@ -1,8 +1,8 @@
 #coding=utf-8
 __author__ = 'Forec'
-import  urllib,  threading, json, struct
+import  urllib,  threading, json, struct, pickle
 from socket import *
-from models import Bulb, TV
+from models import Bulb, TV, AirConditional
 from config import PORT, SERVER_IP
 
 def buildPostData(code, status):
@@ -27,9 +27,12 @@ class WorkThread(threading.Thread):
         packed_size = data[:payload_size]
         data = data[payload_size:]
         msg_size = struct.unpack("L", packed_size)[0]
+        print "消息长度", msg_size, '消息为：', data
         while len(data) < msg_size:
             data += self.conn.recv(81920)
+        data= pickle.loads(data)
         do = json.loads(data)
+        print "接收到远程指令：", do
         code = do.get('code')
         token = do.get('token')
         if code is None or token is None:
@@ -61,7 +64,7 @@ class ListenThread(threading.Thread):
             conn, addr = self.sock.accept()
             print addr, "接入"
             # 过滤非服务器请求
-            if addr.split(':')[0] != SERVER_IP:
+            if addr[0] != SERVER_IP:
                 continue
             print "远程服务器有连接接入"
             # 启动新线程处理
@@ -85,7 +88,8 @@ class Manager():
     def deviceTable():
         return {
             'Bulb': Bulb,
-            'TV': TV
+            'TV': TV,
+            'Air': AirConditional
         }
     def shutdown(self, code):
         device = self.deviceSet.get(code)

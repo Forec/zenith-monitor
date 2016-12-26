@@ -8,7 +8,6 @@ from flask            import Flask
 from flask_mail       import Mail
 from flask_login      import LoginManager
 from flask_moment     import Moment
-from flask_pagedown   import PageDown
 from flask_bootstrap  import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 import os, pymysql
@@ -20,7 +19,6 @@ mail = Mail()                   # 导入邮件处理函数
 moment = Moment()               # 导入时间处理函数
 db = SQLAlchemy()               # 导入数据库接口
 login_manager = LoginManager()  # 导入用户登录处理代理
-pagedown = PageDown()           # 导入 Md 渲染接口
 
 # 设置用户 session 的安全性，可为 None/basic/strong
 login_manager.session_protection = 'strong'
@@ -42,8 +40,6 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
-    pagedown.init_app(app)
-
     # 注册蓝本
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

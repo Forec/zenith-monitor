@@ -5,7 +5,7 @@
 #    文件操作、下载、聊天模块、管理员界面等。
 # 蓝本：main
 
-import os, random, shutil, os.path, json
+import os, random, shutil, os.path, json, calendar
 from config       import basedir
 from flask        import render_template, redirect, url_for, \
                         abort, flash, request, current_app, jsonify
@@ -16,6 +16,7 @@ from .            import main
 from ..           import db
 from ..models     import User ,Pagination, Device, Record
 from ..devices    import deviceTable, deviceNumbers
+from datetime import datetime
 
 # ----------------------------------------------------------------
 # home 函数提供了介绍界面的入口
@@ -237,7 +238,7 @@ def update_status():
     token = request.form.get('token')
     type = request.form.get('type')
     status = request.form.get('status')
-    print(code, token, type)#, status)
+    # print(code, token, type)#, status)
     if code is None or token is None or \
         type is None or status is None:
         return 'fail'
@@ -292,29 +293,137 @@ def show_status():
 
 @main.route('/set_device/', methods=['POST'])
 def set_device():
-    token = request.form.get('request[token]')
-    email = request.form.get('request[email]')
-    code = request.form.get('request[code]')
+    req = request.form.get('request')
+    if req is None:
+        return 'fail'
+    req = json.loads(req)
+    token = req.get('token')
+    email = req.get('email')
+    code = req.get('code')
+    print(token, email, code)
     if token is None or email is None or code is None:
         return 'fail'
     user = User.query.filter_by(email=email).first()
     if user is None or not user.verify_token(token):
         return 'fail'
-    device = Device.query.filter_by(code=code)
+    device = Device.query.filter_by(code=code).first()
     if device.owner != user:
         return 'fail'
-    setRequest = request.form.get('request[set]')
-    print('set Request:', setRequest)
+    setRequest = req.get('set')
     if setRequest is None:
         return 'succ'
-    try:
-        setRequest = json.loads(setRequest)
-    except:
-        return 'fail'
     if setRequest.get('shutdown') is not None:
         device.shutdown()
     elif setRequest.get('setup') is not None:
         device.setup()
     else:
-        device.setStatus(setRequest)
+        setStatus = device.verify_status(setRequest)
+        if setStatus:
+            device.setStatus(setRequest)
     return 'succ'
+
+@main.route('/get_history/', methods=['POST'])
+def get_history():
+    req = request.form.get('request')
+    if req is None:
+        return 'fail'
+    req = json.loads(req)
+    token = req.get('token')
+    email = req.get('email')
+    code = req.get('code')
+    time = req.get('time')
+    period = req.get('period')      # 查询区间为多少秒
+    inter = req.get('inter')        # 多少秒计算一次平均值
+    if token is None or email is None or code is None or time is None:
+        return 'fail'
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token):
+        return 'fail'
+    device = Device.query.filter_by(code=code).first()
+    if device.owner != user:
+        return 'fail'
+    try:
+        year = time.get('year')
+        month = time.get('month')
+        day = time.get('day')
+        hour = time.get('hour') or '00'
+        minute = time.get('minute') or '00'
+        second = time.get('second') or '00'
+        int(year);int(month);int(day);
+        int(minute);int(second);int(hour);
+        timeString = '%s-%s-%s %s:%s:%s' % (year,month,day,hour,minute,second)
+        d = datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
+    except:
+        return "fail"
+    try:
+        period = int(period)
+    except:
+        period = 3600       # 1h默认
+    try:
+        inter = int(inter)
+    except:
+        inter = 300       # 5min默认
+    stamp = int(calendar.timegm(d.utctimetuple()))
+    records = device.records.order_by(Record.timestamp.desc()).all()
+    PeriodRecords = []
+    for record in records:
+        record_stamp =  int(calendar.timegm(record.timestamp.utctimetuple()))
+        interval = record_stamp - stamp
+        if interval < 0:        # 早于查询时间
+            break
+        if interval > period:   # 晚于查询区间
+            continue
+        PeriodRecords.append((record_stamp, record.status))
+    class AverageCalc():
+        def __init__(self):
+            self.temperature = 0
+            self.volume = 0
+            self.current = 0
+            self.power = 0
+            self.count = 0
+        def add(self, status):
+            try:
+                status = json.loads(status)
+                volume = int(status.get('volume'))
+                current = int(status.get('current'))
+                power = int(status.get('power'))
+                temperature = int(status.get('temperature'))
+            except:
+                return
+            self.temperature += temperature
+            self.volume += volume
+            self.current += current
+            self.power += power
+            self.count += 1
+        def average(self):
+            if self.count == 0:
+                return{
+                    'volume': 0,
+                    'current': 0,
+                    'power': 0,
+                    'temperature': 0
+                }
+            return {
+                'volume': self.volume // self.count,
+                'current': self.current // self.count,
+                'power': self.power // self.count,
+                'temperature': self.temperature // self.count
+            }
+
+    PeriodRecords.reverse()
+    # 已获取到区间内的记录
+    returnAns = {stamp: AverageCalc()}
+    for (curstamp, status) in PeriodRecords:
+        if curstamp - stamp < inter:        # 还在上一个区间中
+            returnAns[stamp].add(status)        # 增加
+        else:
+            returnAns[stamp] = returnAns[stamp].average()   # 转为平均值
+            while curstamp - stamp > inter:
+                stamp += inter
+                returnAns[stamp] = AverageCalc()
+            returnAns[stamp].add(status)
+    for key, value in returnAns.items():
+        if type(value) == AverageCalc:
+            returnAns[key] = value.average()
+    print(returnAns)
+    return jsonify(returnAns)

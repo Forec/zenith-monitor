@@ -14,7 +14,7 @@ if os.environ.get('ZENITH_COVERAGE'):
 
 from app           import create_app, db
 from app.models    import User, Device
-from app.devices   import deviceTable, Bulb, TV
+from app.devices   import deviceTable, Bulb, TV, AirCondition
 from flask_script  import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -107,9 +107,17 @@ def init():
              about = '这是电视'
              )
 
+    d4 = AirCondition(name = '空调',
+             owner = u2,
+            code='EFID2141FJKD',
+             interval = 5,
+             about = '这是空调'
+             )
+
     db.session.add(d1)
     db.session.add(d2)
     db.session.add(d3)
+    db.session.add(d4)
     db.session.commit()
 
 # 清空数据库并初始化测试用户
@@ -128,7 +136,7 @@ def simple_init():
              nickname='测试者',
              password='zenith',
              confirmed=True,
-             about_me='欢迎来到顶点云的线上测试')
+             about_me='欢迎来到不知叫啥名的线上测试')
     db.session.add(u)
     u = User(email='dragoncat@forec.cn',
              nickname='龙猫',

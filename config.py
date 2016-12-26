@@ -10,7 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     DEBUG = True
     TEMP_PATH = 'temp/'
-    CLIENT_ADDRESS = '127.0.0.1'
+    CLIENT_ADDRESS = '10.201.14.176'
     CLIENT_PORT = 50002
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
                  '9d0e91f3372224b3ec7afec2' \
@@ -79,6 +79,7 @@ class LinuxConfig(Config):
                     "Cloud-Storage-2016"
 
 config = {
+    'basis': Config,
     'development' : DevelopmentConfig,      # 开发环境
     'linux': LinuxConfig,                   # 提供的 Linux 模板环境
     'windows': WindowsConfig,               # 提供的 Windows模板环境

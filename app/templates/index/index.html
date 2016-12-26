@@ -19,9 +19,7 @@
                 {% for device in devices %}
                 <div class="device-block" id="{{ device.code }}">
                     设备编号：<span id = "Code">{{ device.code }}</span>
-                    {% if device.warning %}
-                        <span id = "Warning" class="btn btn-danger">设备告警！</span>
-                    {% endif %}
+                    <span id = "Warning"></span>
                     <br/>
                     设备名称：<span id ="Name">{{ device.name }}</span>&nbsp;&nbsp;&nbsp;
                     设备类型：<span id ="Type">{{ device.type }}</span>&nbsp;&nbsp;&nbsp;
@@ -35,21 +33,27 @@
                                 设备暂未工作
                             {% endif %}
                         </span>
+                        <span id="Open">
+                        </span>
+                            电压：<span id="Volume">{{ device.volume }}</span> V&nbsp;&nbsp;
+                            电流：<span id="Current">{{ device.current }}</span> mA&nbsp;&nbsp;
+                            功率：<span id="Power">{{ device.power }}</span> W&nbsp;&nbsp;
                         <br/>
                         {% if device.type == "Bulb" %}
                             灯光亮度：<span id="BulbLightDegree">{{ device.lightDegree }}</span> 级&nbsp;&nbsp;
                             灯光饱和度：<span id="BulbFull">{{ device.full }}</span> %&nbsp;&nbsp;
-                            电压：<span id="BulbVolume">{{ device.volume }}</span> V&nbsp;&nbsp;
-                            电流：<span id="BulbCurrent">{{ device.current }}</span> mA&nbsp;&nbsp;
-                            功率：<span id="BulbPower">{{ device.power }}</span> W&nbsp;&nbsp;
                         {% elif device.type == "TV" %}
-                            电压：<span id="TVVolume">{{ device.volume }}</span> V&nbsp;&nbsp;
-                            电流：<span id="TVCurrent">{{ device.current }}</span> mA&nbsp;&nbsp;
-                            功率：<span id="TVPower">{{ device.power }}</span> W&nbsp;&nbsp;
                             频道：<span id="TVStation">{{ device.station }}</span> 台&nbsp;&nbsp;
-                            音量：<span id="TVVoiceVolume">{{ device.Voicevolume }}</span> L&nbsp;&nbsp;
+                            音量：<span id="TVVoiceVolume">{{ device.voice }}</span> L&nbsp;&nbsp;
                             <br/>
                             <img id="TVImage" src="{{ url_for('static', filename='tvs/' ~ device.image ~ '.png') }}"/>
+                        {% elif device.type == "Air" %}
+                            功效等级：<span id="AirLevel">{{ device.level }}</span> 级&nbsp;&nbsp;
+                            风速：<span id="AirSpeed">{{ device.speed }}</span> 级&nbsp;&nbsp;
+                            当前温度：<span id="AirAir">{{ device.air }}</span> 度&nbsp;&nbsp;
+                            目标温度：<span id="AirTarget">{{ device.target }}</span> 度&nbsp;&nbsp;
+                            模式：<span id="AirMode">{{ device.mode }}</span>&nbsp;&nbsp;
+
                         {% endif %}
                     </div>
                 </div>

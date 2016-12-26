@@ -53,6 +53,28 @@ class Bulb(Device):
                    status = json.dumps(self.getStatus())))
         db.session.add(self)
 
+    def verify_status(self, jsondata):
+        lightDegree = jsondata.get('lightDegree')
+        full = jsondata.get('full')
+        same = Device.verify_status(self, jsondata)
+        try:
+            if lightDegree is not None:
+                lightDegree = int(lightDegree)
+            if full is not None:
+                full = int(full)
+        except:
+            return None
+        if lightDegree is not None and lightDegree != self.lightDegree:
+            self.lightDegree = lightDegree
+            same = False
+        if full is not None and full != self.full:
+            self.full = full
+            same = False
+        if same == False:
+            db.session.add(self)
+            return self.getStatus()
+        return None
+
     # 设置远程设备状态
     def setStatus(self, jsondata):
         def set(interval = jsondata.get('interval') or self.interval,
@@ -74,9 +96,129 @@ class PC(Device):
     type = 'PC'
     pass
 
-class Fridge(Device):
-    type = 'Fridge'
-    pass
+class AirCondition(Device):
+    __tablename__ = 'Airs'
+
+    # 与父类表相连
+    uid = db.Column(db.Integer,
+                    db.ForeignKey('BasicDevices.uid'),
+                    primary_key=True)
+    # 类型
+    level = db.Column(db.Integer, default=-1)    # 功效等级
+    speed = db.Column(db.Integer, default=-1)    # 风速
+    mode = db.Column(db.Boolean, default=-1)    # 模式
+    target = db.Column(db.Integer, default=-1)  # 目标温度
+    air = db.Column(db.Integer, default=-1)     # 空调管辖范围内温度
+
+    __mapper_args__ = {
+       'polymorphic_identity': 'Air',
+    }
+
+    # 获取 JSON 格式状态
+    def getStatus(self):
+        status = Device.getStatus(self)
+        status['level'] = self.level
+        status['speed'] = self.speed
+        status['mode'] = self.mode
+        status['target'] = self.target
+        status['air'] = self.air
+        return status
+
+    # 更新设备信息
+    def updateStatus(self, status):
+        status = json.loads(status)
+        Device.updateStatus(self,status)
+        speed = status.get('speed')
+        target = status.get('target')
+        mode = status.get('mode')
+        air = status.get('air')
+        level = status.get('level')
+        try:
+            if level is not None:
+                level = int(level)
+                if level < 0:
+                    level = 0
+                if level > 5:
+                    level = 5
+                self.level = level
+            if speed is not None:
+                speed = int(speed)
+                if speed < 0:
+                    speed = 0
+                if speed > 5:
+                    speed = 5
+                self.speed = speed
+            if target is not None:
+                target = int(target)
+                self.target = target
+            if mode is not None:
+                mode = bool(mode)
+                self.mode = mode
+            if air is not None:
+                air = int(air)
+                self.air = air
+        except:
+            return
+        db.session.add(Record(device = self,
+                   status = json.dumps(self.getStatus())))
+        db.session.add(self)
+
+    def verify_status(self, jsondata):
+        level = jsondata.get('level')
+        target = jsondata.get('target')
+        speed = jsondata.get('speed')
+        mode = jsondata.get('mode')
+        same = Device.verify_status(self, jsondata)
+        try:
+            if level is not None:
+                level = int(level)
+            if mode is not None:
+                mode = bool(mode)
+            if target is not None:
+                target = int(target)
+            if speed is not None:
+                speed = int(speed)
+        except:
+            return None
+        if level is not None and level != self.level:
+            self.level = level
+            same = False
+        if mode is not None and mode != self.mode:
+            self.mode = mode
+            same = False
+        if target is not None and target != self.target:
+            self.target = target
+            same = False
+        if speed is not None and speed != self.speed:
+            self.speed = speed
+            same = False
+        if same == False:
+            db.session.add(self)
+            return self.getStatus()
+        return None
+
+    # 设置远程设备状态
+    def setStatus(self, jsondata):
+        def set(interval = jsondata.get('interval') or self.interval,
+                level = jsondata.get('level') or self.level,
+                mode = jsondata.get('mode') or self.mode,
+                air = jsondata.get('air') or self.air,
+                target = jsondata.get('target') or self.target,
+                speed = jsondata.get('speed') or self.speed):
+            request = RequestThread(json.dumps({
+                'code': self.code,
+                'token': self.owner.token_hash,
+                'set':{
+                    'interval': interval,
+                    'speed': speed,
+                    'level': level,
+                    'target': target,
+                    'air': air,
+                    'mode': mode
+                }
+            }), self)
+            request.start()
+        return set()
 
 class TV(Device):
     __tablename__ = 'TVs'
@@ -87,8 +229,9 @@ class TV(Device):
                     primary_key=True)
     # 类型
     station = db.Column(db.Integer, default=-1)
-    Voicevolume = db.Column(db.Integer, default=-1)
+    voice = db.Column(db.Integer, default=-1)
     image = db.Column(db.String(32), default='')
+    preimage = db.Column(db.String(32), default ='')
 
     __mapper_args__ = {
        'polymorphic_identity': 'TV',
@@ -98,7 +241,7 @@ class TV(Device):
     def getStatus(self):
         status = Device.getStatus(self)
         status['station'] = self.station
-        status['Voicevolume'] = self.Voicevolume,
+        status['voice'] = self.voice
         status['image'] = self.image
         return status
 
@@ -106,7 +249,7 @@ class TV(Device):
     def updateStatus(self, status):
         status = json.loads(status)
         Device.updateStatus(self, status)
-        voiceVolume = status.get('voicevolume')
+        voice = status.get('voice')
         station =status.get('station')
         image = status.get('image')
         try:
@@ -115,44 +258,68 @@ class TV(Device):
                 if station < 0:
                     station = 0
                 self.station = station
-            if voiceVolume is not None:
-                voiceVolume = int(voiceVolume)
-                self.voiceVolume = voiceVolume
-        except:
+            if voice is not None:
+                voice = int(voice)
+                self.voice = voice
+        except Exception as e:
             return
         db.session.add(self)
         try:
             if image is not None:
                 image = json.loads(image, object_hook=json_numpy_obj_hook)
-            # try:
-            #     os.remove(os.path.join(basedir,
-            #                            'app/static/tvs/' +
-            #                            self.image + '.png'))
-            # except:
-            #     pass
+            self.preimage = self.image
             self.image = self.randomCode()
             store_path = os.path.join(basedir,
                                  'app/static/tvs/' +
                                     self.image + '.png')
             cv2.imwrite(store_path, image)
+            try:
+                os.remove(os.path.join(basedir,
+                                       'app/static/tvs/' +
+                                       self.preimage + '.png'))
+            except:
+                pass
+
         except Exception as e:
             print(e)
         r = Record(device = self,
                    status = json.dumps(self.getStatus()))
         db.session.add(r)
 
+    def verify_status(self, jsondata):
+        station = jsondata.get('station')
+        voice = jsondata.get('voice')
+        same = Device.verify_status(self, jsondata)
+        try:
+            if station is not None:
+                station = int(station)
+            if voice is not None:
+                voice = int(voice)
+        except:
+            return None
+        if station is not None and station != self.station:
+            self.station = station
+            same = False
+        if voice is not None and voice != self.voice:
+            self.voice = voice
+            same = False
+        if same == False:
+            db.session.add(self)
+            return self.getStatus()
+        return None
+
     # 设置远程设备状态
     def setStatus(self, jsondata):
         def set(interval = jsondata.get('interval') or self.interval,
                 station = jsondata.get('station') or self.station,
-                volume = jsondata.get('volume') or self.volume):
+                voice = jsondata.get('voice') or self.voice):
             request = RequestThread(json.dumps({
                 'code': self.code,
                 'token': self.owner.token_hash,
                 'set':{
                     'interval': interval,
                     'station': station,
-                    'volume': volume
+                    'voice': voice
                 }
             }), self)
             request.start()
@@ -161,13 +328,13 @@ class TV(Device):
 deviceTable = {
     'PC': PC,
     'Bulb': Bulb,
-    'Fridge': Fridge,
+    'Air': AirCondition,
     'TV': TV
 }
 
 deviceNumbers = {
     1: 'PC',
     2: 'Bulb',
-    3: 'Fridge',
+    3: 'Air',
     4: 'TV'
 }

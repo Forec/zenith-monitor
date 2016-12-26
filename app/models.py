@@ -3,7 +3,7 @@
 # 邮箱：forec@bupt.edu.cn
 # 关于此文件：应用涉及的全部模型，包括用户、设备
 
-import hashlib, threading, struct, os, json
+import hashlib, threading, struct, os, json, pickle, time, calendar
 from random import randint
 from math import ceil
 from socket import *
@@ -34,7 +34,7 @@ class RequestThread(threading.Thread):
         self.sock = socket(AF_INET ,SOCK_STREAM)
         self.ADDR = (current_app.config['CLIENT_ADDRESS'],
                      current_app.config['CLIENT_PORT'])
-        self.data = data
+        self.data = pickle.dumps(data, protocol=2)
         self.device = device
     def __del__(self):
         if self.sock:
@@ -43,7 +43,8 @@ class RequestThread(threading.Thread):
         try:
             self.sock.connect(self.ADDR)
             self.sock.sendall(struct.pack("L", len(self.data)) + self.data)
-        except:
+        except Exception as e:
+            print("控制线程发送失败，错误：", e)
             return
 
 # -------------------------------------------------------------------------
@@ -92,6 +93,9 @@ class Device(db.Model):
     volume = db.Column(db.Integer, default=-1)    # 电压
     current = db.Column(db.Integer, default = -1) # 电流
     power = db.Column(db.Integer, default=-1)     # 功率
+    room = db.Column(db.Integer, default=-1)      # 室温
+    last_seen = db.Column(db.Integer,
+        default=int(calendar.timegm(datetime.utcnow().utctimetuple())))
 
     def __repr__(self):
         return '<Device %r>' % self.name
@@ -126,7 +130,9 @@ class Device(db.Model):
             'power': self.power,
             'warning': self.warning,
             'interval': self.interval,
-            'temperature': self.temperature
+            'temperature': self.temperature,
+            'room': self.room,
+            'last_seen': self.last_seen
         }
         return statusJSON
 
@@ -137,8 +143,9 @@ class Device(db.Model):
         volume = status.get('volume')
         current = status.get('current')
         power = status.get('power')
-        internal = status.get('internal')
+        interval = status.get('interval')
         temperature = status.get('temperature')
+        room = status.get('room')
         try:
             if work is not None:
                 work = bool(work)
@@ -146,8 +153,8 @@ class Device(db.Model):
             if warning is not None:
                 warning = bool(warning)
                 self.warning = warning
-            if internal is not None:
-                internal = int(internal)
+            if interval is not None:
+                internal = int(interval)
                 if internal < 1:
                     internal = 1
                 self.interval = internal
@@ -163,8 +170,26 @@ class Device(db.Model):
             if power is not None:
                 int(power)
                 self.power = power
+            if room is not None:
+                int(room)
+                self.room = room
         except:
             return
+        self.last_seen = int(calendar.timegm(datetime.utcnow().utctimetuple()))  # 更新上次时间
+
+    def verify_status(self, jsondata):
+        interval = jsondata.get('interval')
+        try:
+            if interval is not None:
+                interval = int(interval)
+        except:
+            return True
+        print(interval, self.interval)
+        if interval is not None:
+            if interval != self.interval:
+                self.interval = interval
+                return False
+        return True
 
     # 设置远程设备状态
     def setStatus(self, jsondata):

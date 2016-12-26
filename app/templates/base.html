@@ -109,9 +109,6 @@
 <script src="{{ url_for('static', filename='js/notification/notificationFx.js', _external=True) }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.timers-1.1.2.js', _external=True) }}"></script>
 
-<script>
-	window.url = 'http://10.201.14.176:5000';
-</script>
 {% for message in get_flashed_messages() %}
     <script>
 		// create the notification
