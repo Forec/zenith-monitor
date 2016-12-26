@@ -4,7 +4,7 @@
 # 关于此文件：此文件包含了服务器认证部分的视图函数，包括登录、注册、密码重置等。
 # 蓝本：auth
 
-from flask       import render_template, redirect, url_for, request, flash
+from flask       import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from .           import auth
 from .forms      import LoginForm, RegistrationForm, ChangePasswordForm,\
@@ -13,6 +13,7 @@ from .forms      import LoginForm, RegistrationForm, ChangePasswordForm,\
 from .. import db
 from ..models import User
 from ..email import send_email
+import json
 
 
 # ----------------------------------------------------------------
@@ -23,22 +24,33 @@ def rules():
 
 # ----------------------------------------------------------------
 # login 函数提供了登录界面入口
-@auth.route('/login', methods = ['GET', 'POST'])
+@auth.route('/login/', methods = ['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index', _external=True))
-    form  = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(
-                email = form.email.data
-        ).first()
-        if user is not None and \
-            user.verify_password(form.password.data):
-            login_user(user, form.remember_me.data)
-            return redirect(request.args.get('next') or \
-                    url_for('main.index', _external=True))
-        flash('错误的用户名或密码')
-    return render_template('auth/login.html', form = form)
+    if request.method == 'GET':
+        return render_template('extra-login.html')
+    else:
+        req = request.form.get('request')
+        if req is None:
+            return 'fail'
+        req = json.loads(req)
+        email = req.get('email')
+        password = req.get('passwd')
+        if email is None or password is None:
+            return jsonify({
+                'code': False
+            })
+        user = User.query.filter_by(email = email).first()
+        if user is None or not user.verify_password(password):
+            return jsonify({
+                'code': False
+            })
+        else:
+            login_user(user)
+            return jsonify({
+                'code': True
+            })
+            return redirect(url_for('main.home'))
+
 
 # -----------------------------------------------------------------
 # logout 函数提供了登出操作，登出后默认重定向到登陆入口

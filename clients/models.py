@@ -97,18 +97,18 @@ class Bulb(Basic):
         self.type = 'Bulb'
         self.temperature = room_temperature    # 20-60度
         self.lightDegree = randint(1, 5)      # 1-5级灯光
-        self.volume = randint(180, 260)       # 180 ~ 260V
+        self.volume = randint(15, 25)       # 15 ~ 25V
         self.initialize()
     def initialize(self):
         self.full = randint(80, 90)          # 饱和度， 60~90%
-        self.power = randint(30, 50)          # 30-50 W
-        self.current = randint(300, 600)      # 3.0 ~ 6.0 A
+        self.current = randint(10000, 15000)      # 10.0 ~ 15.0 A
+        self.power = int(self.current * self.volume / 1000)          # 30-50 W
     def change(self):
         Basic.change(self)
         if self.work == True:
-            self.power += randint(-2, 2)      # 功率变动 -2 ~ 2 W
-            self.volume += randint(-3, 3)     # 电压变动 -5 ~ 5 V
-            self.current += randint(-30, 30)   # 电流变动 -0.3V ~ 0.3V
+            self.volume += randint(-1, 1)     # 电压变动 -1 ~ 1 V
+            self.current += randint(-100, 100)   # 电流变动 -0.1A ~ 0.1A
+            self.power  = int(self.volume * self.current / 1000)      # 计算功率
             self.full += randint(-1, 1)       # 饱和度变动-1 ~ 1
             if self.full > 100:
                 self.full = 100
@@ -126,10 +126,10 @@ class Bulb(Basic):
         check = False
         if self.temperature > 60:               # 任何时候电灯超过 60 度报警
             check = True
-        if self.volume > 300 or (self.work and self.volume < 120):
+        if self.volume > 40 or (self.work and self.volume < 5):
             check = True                 # 工作时电压过低/或任何时候过高
-        if self.current > 800:
-            check = True                 # 任何时候电流过高
+        if self.current > 30000:
+            check = True                 # 任何时候电流过高 > 30000mA
         if self.power > 80 or self.work == False and self.power > 20:
             # 任何时候功率过高 或 不工作时候功率大于 20
             check = True

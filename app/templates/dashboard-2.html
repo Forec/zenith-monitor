@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Xenon Boostrap Admin Panel" />
+	<meta name="author" content="" />
+	
+	<title>Xenon - Dashboard 2</title>
+{{ url_for('static', filename='')}}
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-core.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-forms.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-components.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-skins.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css')}}">
+
+	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/timepicker/bootstrap-timepicker.min.js')}}"></script>
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	
+	
+</head>
+<body class="page-body">
+
+
+	
+	<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+			
+		<!-- Add "fixed" class to make the sidebar fixed always to the browser viewport. -->
+		<!-- Adding class "toggle-others" will keep only one menu item open at a time. -->
+		<!-- Adding class "collapsed" collapse sidebar root elements and show only icons. -->
+		<div class="sidebar-menu toggle-others fixed">
+			
+			<div class="sidebar-menu-inner">	
+
+				<!--左边菜单图标-->
+				<header class="logo-env">
+
+					<!-- logo -->
+					<div class="logo">
+						<a href="dashboard-1.html" class="logo-expanded">
+							<img src="{{ url_for('static', filename='assets/images/logo@2x.png')}}" width="80" alt="" />
+						</a>
+
+						<a href="dashboard-1.html" class="logo-collapsed">
+							<img src="{{ url_for('static', filename='assets/images/logo-collapsed@2x.png')}}" width="40" alt="" />
+						</a>
+					</div>
+
+					<!-- This will toggle the mobile menu and will be visible only on mobile devices -->
+					<div class="mobile-menu-toggle visible-xs">
+						<a href="#" data-toggle="user-info-menu">
+							<i class="fa-bell-o"></i>
+							<span class="badge badge-success">7</span>
+						</a>
+
+						<a href="#" data-toggle="mobile-menu">
+							<i class="fa-bars"></i>
+						</a>
+					</div>
+
+				</header>
+
+				<!--左边菜单-->
+				<ul id="main-menu" class="main-menu">
+					<!-- add class "multiple-expanded" to allow multiple submenus to open -->
+					<!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
+					<li class="opened active">
+						<a href="">
+							<!--<i class=""></i>-->
+							<span class="title">账户管理</span>
+						</a>
+					</li>
+					<li class="opened active">
+						<a href="tables-basic.html">
+							<!--<i class="linecons-database"></i>-->
+							<span class="title">设备管理</span>
+						</a>
+						<ul>
+							<li>
+								<a href="tables-responsive.html">
+									<span class="title">温度监控</span>
+								</a>
+							</li>
+							<li>
+								<a href="dashboard-1.html">
+									<span class="title">控制面板</span>
+								</a>
+							</li>
+							<li class="active">
+								<a href="dashboard-2.html">
+									<span class="title">历史记录</span>
+								</a>
+							</li>
+						</ul>
+					</li>
+					<li class="opened active">
+						<a>
+							<span class="title">注销</span>
+						</a>
+					</li>
+				</ul>
+						
+			</div>
+			
+		</div>
+		
+		<div class="main-content">
+					
+			<!-- User Info, Notifications and Menu Bar -->
+			<nav class="navbar user-info-navbar" role="navigation">
+
+				<!-- Right links for user info navbar -->
+				<ul class="user-info-menu right-links list-inline list-unstyled">
+					
+					<li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
+						
+						<form method="get" action="extra-search.html">
+							<input type="text" name="s" class="form-control search-field" placeholder="Type to search..." />
+							
+							<button type="submit" class="btn btn-link">
+								<i class="linecons-search"></i>
+							</button>
+						</form>
+						
+					</li>
+					
+					<li class="dropdown user-profile">
+						<a href="#" data-toggle="dropdown">
+							<img src="{{ url_for('static', filename='assets/images/user-4.png')}}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+							<span>
+								forec
+								<i class="fa-angle-down"></i>
+							</span>
+						</a>
+						
+						<ul class="dropdown-menu user-profile-menu list-unstyled">
+							<li>
+								<a href="#edit-profile">
+									<i class="fa-edit"></i>
+									用户信息
+								</a>
+							</li>
+							<li class="last">
+								<a href="extra-lockscreen.html">
+									<i class="fa-lock"></i>
+									登出
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				
+			</nav>
+			<script>
+				jQuery(document).ready(function($)
+				{
+					var gaugesPalette = ['#8dc63f', '#40bbea', '#ffba00', '#cc3f44'];
+						
+					// Data Sources for all charts
+					/*
+					var reqs_per_second_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), reqs: 110 },
+						{ time: new Date("October 02, 2014 02:00:00"), reqs: 79 },
+						{ time: new Date("October 02, 2014 03:00:00"), reqs: 115 },
+						{ time: new Date("October 02, 2014 04:00:00"), reqs: 186 },
+						{ time: new Date("October 02, 2014 05:00:00"), reqs: 110 },
+						{ time: new Date("October 02, 2014 06:00:00"), reqs: 196 },
+						{ time: new Date("October 02, 2014 07:00:00"), reqs: 128 },
+						{ time: new Date("October 02, 2014 08:00:00"), reqs: 51 },
+						{ time: new Date("October 02, 2014 09:00:00"), reqs: 70 },
+						{ time: new Date("October 02, 2014 10:00:00"), reqs: 54 },
+						{ time: new Date("October 02, 2014 11:00:00"), reqs: 2 },
+						{ time: new Date("October 02, 2014 12:00:00"), reqs: 184 },
+						{ time: new Date("October 02, 2014 13:00:00"), reqs: 48 },
+						{ time: new Date("October 02, 2014 14:00:00"), reqs: 75 },
+						{ time: new Date("October 02, 2014 15:00:00"), reqs: 200 },
+						{ time: new Date("October 02, 2014 16:00:00"), reqs: 9 },
+						{ time: new Date("October 02, 2014 17:00:00"), reqs: 37 },
+						{ time: new Date("October 02, 2014 18:00:00"), reqs: 152 },
+						{ time: new Date("October 02, 2014 19:00:00"), reqs: 78 },
+						{ time: new Date("October 02, 2014 20:00:00"), reqs: 154 },
+						{ time: new Date("October 02, 2014 21:00:00"), reqs: 184 },
+						{ time: new Date("October 02, 2014 22:00:00"), reqs: 167 },
+						{ time: new Date("October 02, 2014 23:00:00"), reqs: 12 },
+						{ time: new Date("October 03, 2014 00:00:00"), reqs: 88 },
+					];
+					*/
+					var reqs_per_second_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), reqs: 110 },
+						{ time: new Date("October 02, 2014 01:05:00"), reqs: 79 },
+						{ time: new Date("October 02, 2014 01:10:00"), reqs: 115 },
+						{ time: new Date("October 02, 2014 01:15:00"), reqs: 186 },
+						{ time: new Date("October 02, 2014 01:20:00"), reqs: 110 },
+						{ time: new Date("October 02, 2014 01:25:00"), reqs: 196 },
+						{ time: new Date("October 02, 2014 01:30:00"), reqs: 128 },
+						{ time: new Date("October 02, 2014 01:35:00"), reqs: 51 },
+						{ time: new Date("October 02, 2014 01:40:00"), reqs: 70 },
+						{ time: new Date("October 02, 2014 01:45:00"), reqs: 60 },
+						{ time: new Date("October 02, 2014 01:50:00"), reqs: 53 },
+						{ time: new Date("October 02, 2014 01:55:00"), reqs: 172 },
+					];
+					var cpu_usage_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), usage: 75 },
+						{ time: new Date("October 02, 2014 01:05:00"), usage: 55 },
+						{ time: new Date("October 02, 2014 01:10:00"), usage: 49 },
+						{ time: new Date("October 02, 2014 01:15:00"), usage: 87 },
+						{ time: new Date("October 02, 2014 01:20:00"), usage: 8 },
+						{ time: new Date("October 02, 2014 01:25:00"), usage: 20 },
+						{ time: new Date("October 02, 2014 01:30:00"), usage: 39 },
+						{ time: new Date("October 02, 2014 01:35:00"), usage: 26 },
+						{ time: new Date("October 02, 2014 01:40:00"), usage: 87 },
+						{ time: new Date("October 02, 2014 01:45:00"), usage: 69 },
+						{ time: new Date("October 02, 2014 01:50:00"), usage: 40 },
+						{ time: new Date("October 02, 2014 01:55:00"), usage: 57 }
+					];
+					
+					var memory_usage_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), used: 559 },
+						{ time: new Date("October 02, 2014 01:05:00"), used: 692 },
+						{ time: new Date("October 02, 2014 01:10:00"), used: 534 },
+						{ time: new Date("October 02, 2014 01:15:00"), used: 607 },
+						{ time: new Date("October 02, 2014 01:20:00"), used: 50 },
+						{ time: new Date("October 02, 2014 01:25:00"), used: 772 },
+						{ time: new Date("October 02, 2014 01:30:00"), used: 30 },
+						{ time: new Date("October 02, 2014 01:35:00"), used: 108 },
+						{ time: new Date("October 02, 2014 01:40:00"), used: 440 },
+						{ time: new Date("October 02, 2014 01:45:00"), used: 371 },
+						{ time: new Date("October 02, 2014 01:50:00"), used: 209 },
+						{ time: new Date("October 02, 2014 01:55:00"), used: 378 }
+					];
+						
+					// Requests per second gauge
+					$('#reqs-per-second').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 200,
+							majorTick: {
+								tickInterval: 50
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 50,
+									color: gaugesPalette[0]
+								}, {
+									startValue: 50,
+									endValue: 100,
+									color: gaugesPalette[1]
+								}, {
+									startValue: 100,
+									endValue: 150,
+									color: gaugesPalette[2]
+								}, {
+									startValue: 150,
+									endValue: 200,
+									color: gaugesPalette[3]
+								}
+							],
+						},
+						value: 44,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// Requests per second chart
+					$("#reqs-per-second-chart").dxChart({
+						dataSource: reqs_per_second_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#68b828',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "reqs", name: "Reqs per Second", color: '#68b828', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+					
+					
+						
+					// CPU Usage
+					$('#cpu-usage').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 100,
+							majorTick: {
+								tickInterval: 25
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 25,
+									color: gaugesPalette[0]
+								}, {
+									startValue: 25,
+									endValue: 50,
+									color: gaugesPalette[1]
+								}, {
+									startValue: 50,
+									endValue: 75,
+									color: gaugesPalette[2]
+								}, {
+									startValue: 75,
+									endValue: 100,
+									color: gaugesPalette[3]
+								}
+							],
+						},
+						value: 16,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// CPU Usage chart
+					$("#cpu-usage-chart").dxChart({
+						dataSource: cpu_usage_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#7c38bc',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "usage", name: "Capacity used", color: '#7c38bc', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+					
+					
+						
+					// Memory Usage
+					$('#memory-usage').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 1000,
+							majorTick: {
+								tickInterval: 250
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 250,
+									color: '#40bbea'
+								}, {
+									startValue: 250,
+									endValue: 500,
+									color: '#40bbea'
+								}, {
+									startValue: 500,
+									endValue: 750,
+									color: '#40bbea'
+								}, {
+									startValue: 750,
+									endValue: 1000,
+									color: '#40bbea'
+								}
+							],
+						},
+						value: 315,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// Memory Usage chart
+					$("#memory-usage-chart").dxChart({
+						dataSource: memory_usage_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#40bbea',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "used", name: "Megabytes occupied", color: '#40bbea', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+					
+					
+					// Combine charts for filtering, grouped by time
+					var all_data_sources = [];
+					
+					$.map(reqs_per_second_data, function(arg, i)
+					{
+						all_data_sources.push({
+							time: 					arg.time,
+							requestsPerMinute: 		reqs_per_second_data[i].reqs,
+							cpuUsage: 				cpu_usage_data[i].usage,
+							memoryUsed: 			memory_usage_data[i].used
+						});
+					});
+					
+					
+					// Range Filter
+					$("#range-chart").dxRangeSelector({
+						dataSource: all_data_sources,
+						size: {
+							height: 140
+						},
+						chart: {
+							series: [
+								{ argumentField: "time", valueField: "requestsPerMinute", color: '#68b828', opacity: .65 },
+								{ argumentField: "time", valueField: "cpuUsage", color: '#7c38bc', opacity: .65 },
+								{ argumentField: "time", valueField: "memoryUsed", color: '#40bbea', opacity: .65 }
+							]
+						},
+						
+						selectedRangeChanged: function(e)
+						{
+							var filter = {
+								reqsPerMinuteData: [],
+								cpuUsageData: [],
+								memoryUsageData: []
+							};
+							
+							$.map(all_data_sources, function(arg, i)
+							{
+								if(date("U", e.startValue) <= date("U", arg.time) && date("U", e.endValue) >= date("U", arg.time))
+								{
+									filter.reqsPerMinuteData.push({
+										time: arg.time,
+										reqs: arg.requestsPerMinute
+									});
+									
+									filter.cpuUsageData.push({
+										time: arg.time,
+										usage: arg.cpuUsage
+									});
+									
+									filter.memoryUsageData.push({
+										time: arg.time,
+										used: arg.memoryUsed
+									});
+								}
+							});
+							
+							$('#reqs-per-second-chart').dxChart('instance').option('dataSource', filter.reqsPerMinuteData);
+							$('#cpu-usage-chart').dxChart('instance').option('dataSource', filter.cpuUsageData);
+							$('#memory-usage-chart').dxChart('instance').option('dataSource', filter.memoryUsageData);
+						}
+					});
+					
+					
+					
+					// Resize charts
+					$(window).on('xenon.resize', function()
+					{
+						$("#range-chart").data("dxRangeSelector").render();
+						
+						$("#reqs-per-second-chart").data("dxChart").render();
+						$("#cpu-usage-chart").data("dxChart").render();
+						$("#memory-usage-chart").data("dxChart").render();
+						
+						$("#reqs-per-second").data("dxCircularGauge").render();
+						$("#cpu-usage").data("dxCircularGauge").render();
+						$("#memory-usage").data("dxCircularGauge").render();
+					});
+				});
+
+				//--------------------------------------------------------------------------自定
+				var ele_data = [];
+				vol_data = [];
+				pow_data = [];
+				function submitTime() {													//向服务器提交时间
+					var date_str = jQuery("#date-choose").val();
+					var time = jQuery("#time-choose").val();
+					if (date_str.length == 0){
+					    alert("请选择日期");
+					    return;
+					}
+					//---------------------------------------------获取时间信息
+					var param = date_str.split(' ');
+					var day = param[1];
+					var month = param[2];
+					var year = param[3];
+					time = time.substr(0, 2);
+
+					$.ajax({
+						url: '/get_history/',
+						data:{
+						    'request':JSON.stringify({
+								'token': jQuery("#info_token").val(),
+								'email': jQuery("#info_email").val(),
+								'code': jQuery("#info_code").val(),
+								'time':{
+								    'hour': time,
+									'minute': '00',
+									'second': '00',
+									'year': year,
+									'month': month,
+									'day': day
+								}
+							})
+						},
+						type: "POST",
+						success: function(response){
+							console.log("返回数据:" + response);
+						},
+						error: function(error){
+						    console.log("失败");
+						}
+					});
+
+					//---------------------------------------------
+					for(var i = 0; i < 12; ++i){
+					    ele_data.push({time: new Date(month+" "+day+", "+year+" "+time+":"+(i*5)+":00"), reqs: Math.floor(Math.random()*150)});
+					}
+					for(var i = 0; i < 12; ++i){
+					    vol_data.push({ time: new Date(month+" "+day+", "+year+" "+time+":"+(i*5)+":00"), usage: Math.floor(Math.random()*150)});
+					}
+					for(var i = 0; i < 12; ++i){
+						pow_data.push({ time: new Date(month+" "+day+", "+year+" "+time+":"+(i*5)+":00"), used: Math.floor(Math.random()*150)});
+					}
+
+					//alert(day + " " + month + " " + year + " " + time);
+					setElectricity(ele_data);
+					setVoltage(vol_data);
+					setPower(pow_data);
+                }
+
+                function setDegree(deg_data){
+
+				}
+
+                function setElectricity(ele_data){
+				    var ele = 55;
+				    jQuery("#super-electricity").text(ele+'A');
+				    jQuery("#reqs-per-second").dxCircularGauge('instance').value(ele);
+					jQuery("#reqs-per-second-chart").dxChart('instance').option('dataSource', ele_data);
+				}
+
+				function setVoltage(vol_data){
+                    var vol = 66;
+                    jQuery("#super-voltage").text(vol+'V');
+					jQuery("#cpu-usage").dxCircularGauge('instance').value(vol);
+	                jQuery("#cpu-usage-chart").dxChart('instance').option('dataSource', vol_data);
+                }
+
+                function setPower(pow_data){
+				    var pow = 77;
+				    jQuery("#super-power").text(pow+'W');
+					jQuery("#memory-usage").dxCircularGauge('instance').value(pow);
+					var p_data = $("#memory-usage-chart").dxChart('instance').option('dataSource');
+
+
+					for(var i = 0; i < 12; ++i){
+					    p_data.splice(0, 1);
+					    p_data.push(pow_data[i]);
+					}
+					jQuery("#memory-usage-chart").dxChart('instance').option('dataSource', p_data);
+				}
+
+			</script>
+
+			<div class="panel panel-default">
+				<input type="hidden" id = "info_token" class = "form-control" value = "{{ token }}">
+				<input type="hidden" id="info_email" class = "form-control" value="{{ email }}">
+				<input type="hidden" id="info_code" class = "form-control" value="{{ code }}">
+				<div class="panel-heading">
+					日期选择
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<form role="form" class="form-horizontal">
+								<div class="form-group">
+									<label class="col-sm-3 control-label">选择日期和时间</label>
+									<div class="col-sm-4">
+										<div class="date-and-time">
+											<input id="date-choose" type="text" class="form-control datepicker" data-format="D, dd MM yyyy">
+											<input id="time-choose" type="text" class="form-control timepicker" data-template="dropdown" data-show-seconds="true" data-default-time="11:25 AM" data-show-meridian="true" data-minute-step="5" data-second-step="5" />
+										</div>
+									</div>
+								</div>
+							</form>
+							<button class="btn btn-blue" onclick="submitTime()">确定</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					温度记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="range-chart"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					电流记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">最近一小时的电流平均值。</p>
+							<div id="super-electricity" class="super-large text-secondary" data-count="this" data-from="0" data-to="44" data-suffix="A" data-duration="1.5">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="reqs-per-second" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="reqs-per-second-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					电压记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">最近一小时的电压平均值。</p>
+							<div id="super-voltage" class="super-large text-purple" data-count="this" data-from="0" data-to="16" data-suffix="V" data-duration="2">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="cpu-usage" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="cpu-usage-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					功率记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">最近一小时的功率平均值。</p>
+							<div id="super-power" class="super-large text-info" data-count="this" data-from="0" data-to="315" data-suffix="W" data-duration="3">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="memory-usage" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="memory-usage-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Main Footer -->
+			<!-- Choose between footer styles: "footer-type-1" or "footer-type-2" -->
+			<!-- Add class "sticky" to  always stick the footer to the end of page (if page contents is small) -->
+			<!-- Or class "fixed" to  always fix the footer to the end of page -->
+			<footer class="main-footer sticky footer-type-1">
+				
+				<div class="footer-inner">
+				
+					<!-- Add your copyright text here -->
+					<div class="footer-text">
+						&copy; 2014 
+						<strong>Xenon</strong> 
+						More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a>
+					</div>
+					
+					
+					<!-- Go to Top Link, just add rel="go-top" to any link to add this functionality -->
+					<div class="go-up">
+					
+						<a href="#" rel="go-top">
+							<i class="fa-angle-up"></i>
+						</a>
+						
+					</div>
+					
+				</div>
+				
+			</footer>
+		</div>
+		
+			
+
+		
+		
+	</div>
+	
+	
+	<div class="page-loading-overlay">
+		<div class="loader-2"></div>
+	</div>
+	
+
+	<!-- Imported styles on this page -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/daterangepicker/daterangepicker-bs3.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/select2/select2.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/select2/select2-bootstrap.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/multiselect/css/multi-select.css')}}">
+
+	<!-- Bottom Scripts -->
+	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/TweenMax.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/resizeable.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/joinable.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-api.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-toggles.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/moment.min.js')}}"></script>
+
+	<!-- Imported scripts on this page -->
+	<script src="{{ url_for('static', filename='assets/js/datepicker/bootstrap-datepicker.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/timepicker/bootstrap-timepicker.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-widgets.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/knockout-3.1.0.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/globalize.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/dx.chartjs.js')}}"></script>
+
+
+	<!-- JavaScripts initializations and stuff -->
+	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js')}}"></script>
+
+</body>
+</html>

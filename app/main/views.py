@@ -21,8 +21,9 @@ from datetime import datetime
 # ----------------------------------------------------------------
 # home 函数提供了介绍界面的入口
 @main.route('/')
+@login_required
 def home():
-    return render_template('home.html')
+    return render_template('tables-responsive.html')
 
 # ----------------------------------------------------------------
 # index 为服务器主页入口点，将展示用户拥有的设备
@@ -149,14 +150,13 @@ def edit_profile():
 
 # ----------------------------------------------------------------------
 # device 显示具体的设备信息
-@main.route('/device/<int:id>', methods=['GET', 'POST'])
-def device(id):
-    device = Device.query.get_or_404(id)
-    if device.owner != current_user:
+@main.route('/device/<code>', methods=['GET', 'POST'])
+def device(code):
+    device = Device.query.filter_by(code = code).first()
+    if device is None or device.owner != current_user:
         # 设备不属于当前用户则返回 403 错误
         abort(403)
-    return render_template('main/device.html',
-                           device=device)
+    return render_template('dashboard-1.html', device=device)
 
 # --------------------------------------------------------------------
 # delete_device 为用户提供了删除设备界面的入口，用户需对自己的删除操作进行
@@ -209,9 +209,9 @@ def edit_device(id):
 
 # ------------------------------------------------------------------------
 # newdevice 为用户创建设备提供了入口
-@main.route('/new_device/', methods=['GET', 'POST'])
-@login_required
+@main.route('/new_device/', methods=['POST'])
 def newdevice():
+
     form = NewDeviceForm()
     if form.validate_on_submit():
         D = deviceTable.get(deviceNumbers.get(form.type.data))
@@ -282,7 +282,7 @@ def show_status():
             'list': returnDict
         })
     else:
-        device = Device.query.filter_by(code=code)
+        device = Device.query.filter_by(code=code).first()
         if device.owner != user:
             return
         return jsonify({
