@@ -1,3 +1,4 @@
+mstp_115_enonadmin
 __pycache__
 *.db
 *.pyc
@@ -7,3 +8,4 @@ __pycache__
 *.png
 tvs
 *.mp4
+*.zip

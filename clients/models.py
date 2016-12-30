@@ -2,10 +2,23 @@
 __author__ = 'Forec'
 
 import threading, urllib, urllib2, cookielib, time, json
-import cv2, pickle, zlib, base64
+import cv2
 from encoder import NumpyEncoder
 from random import randint
 from config import UPLOAD_URL
+
+def changeRange(low, high, inter1, inter2, i, rangeNum):
+    if i > high:
+        i += randint(-rangeNum, 0)
+    elif i < low:
+        i += randint(0, rangeNum)
+    elif i < inter1:
+        i += randint(-rangeNum, 2 * rangeNum)
+    elif i > inter2:
+        i += randint(-2*rangeNum, rangeNum)
+    else:
+        i += randint(-rangeNum, rangeNum)
+    return i
 
 class UploadThread(threading.Thread):
     def __init__(self, postdata):
@@ -44,9 +57,18 @@ class Basic(threading.Thread):
         self.interval = interval
     def change(self):
         if self.work == True:
-            self.temperature += randint(-2, 2)                  # 设备工作时波动在 -2 ~ 2 度
+            self.temperature =changeRange(self.room_temperature,
+                                          80,
+                                          self.room_temperature + 20,
+                                          55,
+                                          self.temperature,
+                                          1)
+                # 设备工作时波动在 -1 ~ 1 度
         else:
-            self.temperature += randint(-1, 0)                  # 设备不工作时逐渐降温
+            tempRange = randint(-1, 5)
+            if tempRange > 0:
+                tempRange = 0
+            self.temperature += tempRange   # 逐渐降温
             if self.temperature < self.room_temperature:
                 self.temperature = self.room_temperature
             self.power = 0
@@ -83,13 +105,17 @@ class Basic(threading.Thread):
             pass
     def run(self):
         print self.type + " " + self.code + " 监控启动"
+        count = 0
         while True:
             self.change()
-            status = self.getStatus()
-            print self.type + " " + self.code + " 发送设备状态: ", status
-            upload = UploadThread(status)
-            upload.start()
-            time.sleep(self.interval)
+            count += 1
+            if count % self.interval == 0:
+                count = 0
+                status = self.getStatus()
+                print self.type + " " + self.code + " 发送设备状态: ", status
+                upload = UploadThread(status)
+                upload.start()
+            time.sleep(1)
 
 class Bulb(Basic):
     def __init__(self, token, code, interval, room_temperature, work):
@@ -97,40 +123,31 @@ class Bulb(Basic):
         self.type = 'Bulb'
         self.temperature = room_temperature    # 20-60度
         self.lightDegree = randint(1, 5)      # 1-5级灯光
-        self.volume = randint(15, 25)       # 15 ~ 25V
+        self.volume = randint(210, 220)       # 210 ~ 220V
         self.initialize()
     def initialize(self):
-        self.full = randint(80, 90)          # 饱和度， 60~90%
-        self.current = randint(10000, 15000)      # 10.0 ~ 15.0 A
-        self.power = int(self.current * self.volume / 1000)          # 30-50 W
+        self.full = randint(70, 80)          # 饱和度， 70~80%
+        self.current = randint(1000, 1200)      # 10.0 ~ 12.0 A
+        self.power = randint(40, 45)          # 40-45 W
     def change(self):
         Basic.change(self)
         if self.work == True:
-            self.volume += randint(-1, 1)     # 电压变动 -1 ~ 1 V
-            self.current += randint(-100, 100)   # 电流变动 -0.1A ~ 0.1A
-            self.power  = int(self.volume * self.current / 1000)      # 计算功率
-            self.full += randint(-1, 1)       # 饱和度变动-1 ~ 1
-            if self.full > 100:
-                self.full = 100
-            if self.full < 0:
-                self.full = 0
-            if self.current < 0:
-                self.current = 0
-            if self.volume < 0:
-                self.volume = 0
-            if self.power < 0:
-                self.power = 0
+            self.volume = changeRange(180, 250, 190, 240, self.volume, 3)    # 电压变动 -3 ~ 3 W
+            self.current = changeRange(800, 1400, 900, 1300, self.current, 30)    # 电流变动 -0.3 ~ 0.3 W
+            self.power = changeRange(25, 60, 30, 55, self.power, 1)    # 功率变动 -1 ~ 1 W
+            self.full = changeRange(60, 100, 70, 90, self.full, 1) # 饱和度变动-1 ~ 1
         else:
-            self.volume += randint(-5, 5)       # 电压仍然变动
+            self.volume = changeRange(180, 250, 190, 240, self.volume, 3) # 电压仍然变动
             self.full = 0
         check = False
         if self.temperature > 60:               # 任何时候电灯超过 60 度报警
             check = True
-        if self.volume > 40 or (self.work and self.volume < 5):
+        if self.volume > 240 or (self.work and self.volume < 190):
             check = True                 # 工作时电压过低/或任何时候过高
-        if self.current > 30000:
-            check = True                 # 任何时候电流过高 > 30000mA
-        if self.power > 80 or self.work == False and self.power > 20:
+        if self.current > 1300 or (self.work and self.current < 900):
+            check = True                 # 任何时候电流过高 > 1300mA
+        if self.power > 55 or (self.work == True and self.power < 30) or \
+                (self.work == False and self.power > 20):
             # 任何时候功率过高 或 不工作时候功率大于 20
             check = True
         self.warning = check
@@ -170,43 +187,38 @@ class TV(Basic):
     def __init__(self, token, code, interval, room_temperature, work):
         Basic.__init__(self, token, code, interval, room_temperature, work)
         self.type = 'TV'
-        self.temperature = randint(20, 40)                      # 20-40度
-        self.volume = randint(170, 260)       # 170 ~ 260V
+        self.temperature = room_temperature                    # 初始时为室温
+        self.volume = randint(210, 220)                         # 初始时电压 210~220V
         self.station = randint(1,1)                            # 开机位于1频道
-        self.voice = randint(10, 30)                           # 音量 10-30
-        self.cap = cv2.VideoCapture(str(self.station)+".mp4")   # 模拟视频 1
+        self.voice = randint(150, 200)                           # 音量 150 ~ 200
+        self.cap = cv2.VideoCapture(str(self.station)+".mp4")   # 模拟视频
         self.image = None                                       # 当前画面
         self.initialize()
     def initialize(self):
-        self.power = randint(120, 150)          # 120-150 W
-        self.current = randint(1200, 2400)      # 12.0 ~ 24.0 A
+        self.power = randint(450, 500)          # 450-500 W
+        self.current = randint(1600, 1800)      # 16.0 ~ 18.0 A
     def __del__(self):
         if self.cap:
             self.cap.release()
     def change(self):
         Basic.change(self)
         if self.work == True:
-            self.power += randint(-2, 2)      # 功率变动 -2 ~ 2 W
-            self.volume += randint(-3, 3)     # 电压变动 -5 ~ 5 V
-            self.current += randint(-30, 30)   # 电流变动 -0.3V ~ 0.3V
-            if self.current < 0:
-                self.current = 0
-            if self.volume < 0:
-                self.volume = 0
-            if self.power < 0:
-                self.power = 0
+            self.power = changeRange(300, 700, 350, 650, self.power, 7)    # 功率变动 -7 ~ 7 W
+            self.volume = changeRange(170, 260, 190, 240, self.volume, 2)    # 电压变动 -2 ~ 2 V
+            self.current = changeRange(1200, 2200, 1400, 2000, self.current, 30)   # 电流变动 -0.3V ~ 0.3V
         else:
             self.power = 0
-            self.volume += randint(-5, 5)       # 电压仍然变动
+            self.volume = changeRange(170, 260, 190, 240, self.volume, 2)    # 电压依然变动
             self.current = 0
         check = False
-        if self.temperature > 50:               # 电视超过 50 度报警
+        if self.temperature > 50:               # 电视自身超过 50 度报警
             check = True
-        if self.volume > 300 or (self.work and self.volume < 150):
+        if self.volume > 240 or (self.work and self.volume < 190):
             check = True                 # 工作时电压过低或任何时候电压过高
-        if (self.work==True and self.current < 700) or self.current > 3000:
+        if (self.work==True and self.current < 1400) or self.current > 2000:
             check = True                 # 工作时电流过低或任何时候电流过高
-        if self.power > 220 or (self.work == False and self.power > 20):
+        if self.power > 650 or (self.work == True and self.power < 350) or \
+                (self.work == False and self.power > 20):
             # 功率过高 或不工作时功率超过 20
             check = True
         self.warning = check
@@ -214,6 +226,7 @@ class TV(Basic):
         status = Basic.getStatusDict(self)
         status['station'] = self.station
         status['voice'] = self.voice
+        print self.name, self.code, "发送状态", status
         status['image'] = json.dumps(self.image, cls= NumpyEncoder)
         return {
             'token': self.token,
@@ -243,101 +256,111 @@ class TV(Basic):
     # 重写播放方法，播放视频
     def run(self):
         print self.type , self.code, " 监控启动"
+        count = 0
         while True:
             self.change()
-            status = self.getStatus()
-            print self.type + " " +self.code + " 发送设备状态: "#, status
-            upload = UploadThread(status)
-            upload.start()
-            frames = 0
-            if self.work:
-                if self.cap.isOpened():
-                    while frames < self.interval * 24:      # 每秒24帧
-                        ret, self.image = self.cap.read()
-                        frames += 1
-                        if ret == False:        # 读到视频结尾，循环
-                            try:
-                                self.cap.release()
-                            except:
-                                pass
-                            try:
-                                self.cap = cv2.VideoCapture(str(self.station)+".mp4")
-                            except Exception as e:
-                                print "电视切换频道错误，错误信息：", e
-                     # 已经通过读取视频流来减缓时间
-            else:
-                self.image = None
-            time.sleep(self.interval)
+            count += 1
+            if count % self.interval == 0:
+                count = 0
+                status = self.getStatus()
+                upload = UploadThread(status)
+                upload.start()
+                frames = 0
+                if self.work:
+                    if self.cap.isOpened():
+                        while frames < self.interval * 24:      # 每秒24帧
+                            ret, self.image = self.cap.read()
+                            frames += 1
+                            if ret == False:        # 读到视频结尾，循环
+                                try:
+                                    self.cap.release()
+                                except:
+                                    pass
+                                try:
+                                    self.cap = cv2.VideoCapture(str(self.station)+".mp4")
+                                except Exception as e:
+                                    print "电视切换频道错误，错误信息：", e
+                         # 已经通过读取视频流来减缓时间
+                else:
+                    self.image = None
+            time.sleep(1)
 
 class AirConditional(Basic):
     def __init__(self, token, code, interval, room_temperature, work):
         Basic.__init__(self, token, code, interval, room_temperature, work)
         self.type = 'Air'
-        self.temperature = randint(20, 40)    # 20-40度
-        self.volume = randint(180, 260)       # 180 ~ 260V
-        self.level = randint(1, 5)            # 等级
-        self.mode = bool(randint(0, 1))       # True 制热
-        self.speed = randint(1, 5)            # 风速
-        self.air = self.room_temperature      # 初始温度与室内相同
+        self.temperature = room_temperature
+        self.volume = randint(210, 220)              # 初始时 210 ~ 220V
+        self.level = randint(1, 5)                   # 等级
+        self.mode = bool(randint(0, 1))              # True 制热
+        self.speed = randint(1, 5)                   # 风速
+        self.air = self.room_temperature             # 初始温度与室内相同
+        self.wet = randint(30, 50)                   # 湿度维持 30 - 50 % 之间
         if self.mode == True:       # 制热
-            self.target = self.room_temperature + randint(10, 12)       # 比室温高 10 ~ 12 度
+            self.target = randint(room_temperature, 35)       # 制热温度在室温上，35度下
         else:
-            self.target = self.room_temperature + randint(-12, -10)     # 制冷时比室温低 10 ~ 12 度
+            self.target = randint(16, room_temperature)       # 制冷温度在室温下，16度上
         self.initialize()
     def initialize(self):
-        self.power = randint(800, 1000)          # 50-80 W
-        self.current = randint(1200, 2400)      # 12.0 ~ 24.0 A
+        self.power = randint(900, 1100)          # 初始功率 800 ~ 1000W
+        self.current = randint(1800, 2000)       # 18.0 ~ 20.0 A
     def change(self):
         Basic.change(self)
+        self.wet = changeRange(30, 50, 36, 44, self.wet, 1)
         if self.work == True:
-            self.power += randint(-2, 2)      # 功率变动 -2 ~ 2 W
-            self.volume += randint(-3, 3)     # 电压变动 -5 ~ 5 V
-            self.current += randint(-30, 30)   # 电流变动 -0.3V ~ 0.3V
+            self.power = changeRange(600, 1600, 700, 1300, self.power, 10)
+                # 功率变动 -10 ~ 10 W，高于 1300或低于 700 报警
+            self.volume = changeRange(170, 260, 190, 240, self.volume, 5)     # 电压变动 -5 ~ 5 V
+            self.current = changeRange(800, 3000, 1200, 2600, self.current, 50)
+                # 电流变动 -0.5A ~ 0.5A，高于 26A或低于12A报警
             if self.mode == True:             # 制热
-                self.air += randint(0, 1)     # 制热时增加温度
+                airrange = randint(-5, 1)      # 制热时随机增加温度
+                if airrange < 0:
+                    airrange = 0
+                self.air += airrange
                 if self.air > self.target:
                     self.air = self.target
                 if self.air < self.room_temperature:
                     self.air = self.room_temperature
             else:
-                self.air += randint(-1, 0)      # 制冷时降低温度
-                if self.air < self.target:
+                airrange = randint(-1, 5)      # 制冷时随机降低温度
+                if airrange > 0:
+                    airrange = 0
+                self.air += airrange
+                if self.air < self.target:      # 不允许低于目标温度
                     self.air = self.target
                 if self.air > self.room_temperature:
                     self.air = self.room_temperature
-            if self.current < 0:
-                self.current = 0
-            if self.volume < 0:
-                self.volume = 0
-            if self.power < 0:
-                self.power = 0
         else:
             self.power = 0
-            self.volume += randint(-5, 5)       # 电压仍然变动
+            self.volume = changeRange(170, 260, 190, 240, self.volume, 5)     # 电压仍然变动
             self.current = 0
-            if self.mode == True:
-                self.air += randint(-1, 0)          # 室内温度逐渐增加/减小
+            if self.mode == True:       # 制热情况下关闭，air必然比当前室温高
+                airrange = randint(-1, 3)
+                if airrange > 0:
+                    airrange = 0
+                self.air += airrange          # 室内温度逐渐增加/减小
                 if self.air < self.room_temperature:
                     self.air = self.room_temperature
             else:
-                self.air += randint(0, 1)
+                airrange = randint(-3, 1)
+                if airrange < 0:
+                    airrange = 0
+                self.air += airrange
                 if self.air > self.room_temperature:
                     self.air = self.room_temperature
 
         check = False
-        if self.temperature > 50:               # 空调超过 50 度报警
+        if self.temperature > 50:               # 空调自身超过 50 度报警
             check = True
-        if self.volume > 300 or (self.work and self.volume < 120):
+        if self.volume > 240 or (self.work and self.volume < 190):
             check = True                 # 电压过低/过高
-        if (self.work==True and self.current < 700) or self.current > 3000:
+        if (self.work==True and self.current < 1200) or self.current > 2600:
             check = True                 # 电流过高或工作时电流过低
-        if self.power > 1200 or (self.work == False and self.power > 20):
+        if self.power > 1300 or (self.work == True and self.power < 700) or \
+                (self.work == False and self.power > 20):
             # 功率过高 或不工作时功率超过 20
             check = True
-        if self.air < -8:
-            check = True                 # 温度过低
-        if self.air > 40:
-            check = True                 # 温度过高
         self.warning = check
     def getStatus(self):
         status = Basic.getStatusDict(self)
@@ -346,6 +369,7 @@ class AirConditional(Basic):
         status['air'] = self.air
         status['target'] = self.target
         status['level'] = self.level
+        status['wet'] = self.wet
         return {
             'token': self.token,
             'code': self.code,

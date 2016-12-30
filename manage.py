@@ -14,7 +14,7 @@ if os.environ.get('ZENITH_COVERAGE'):
 
 from app           import create_app, db
 from app.models    import User, Device
-from app.devices   import deviceTable, Bulb, TV, AirCondition
+from app.devices   import deviceTable, Bulb, TV, AirCondition, PC
 from flask_script  import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -102,7 +102,7 @@ def init():
 
     d3 = TV(name = '电视',
              owner = u2,
-            code='CE683231033B',
+             code='CE683231033B',
              interval = 5,
              about = '这是电视'
              )
@@ -114,10 +114,19 @@ def init():
              about = '这是空调'
              )
 
+    d5 = PC(
+        name = '树莓派',
+        owner= u2,
+        code = 'JFIDEO2193FJ',
+        interval = 3,
+        about = '这时树莓派'
+    )
+
     db.session.add(d1)
     db.session.add(d2)
     db.session.add(d3)
     db.session.add(d4)
+    db.session.add(d5)
     db.session.commit()
 
 # 清空数据库并初始化测试用户

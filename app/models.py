@@ -76,7 +76,7 @@ class Device(db.Model):
     created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def randomCode(self):
-        return hashlib.md5((str(self.uid)+
+        return hashlib.md5((str(self.name)+ str(self.ownerid) +
                          str(datetime.utcnow())).encode('utf-8')).\
                          hexdigest().upper()[:12]
 

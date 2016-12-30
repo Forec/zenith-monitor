@@ -1,127 +1,115 @@
-{% extends "bootstrap/base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="ZENITH CLOUD DEVICE MANAGEMENT" />
+	<meta name="author" content="" />
+	
+	<title>{% block title %}{% endblock %}</title>
 
-{% block title %}名字好难起{% endblock %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-core.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-forms.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-components.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-skins.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
 
-{% block head %}
-{{ super() }}
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/basic.css', _external=True) }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css', _external=True) }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template/main.css', _external=True) }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/notification/ns-default.css', _external=True) }}" />
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/notification/ns-style-bar.css', _external=True) }}" />
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.css', _external=True) }}" />
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.min.css', _external=True) }}" />
+	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js') }}"></script>
+	<script>
+		window.url = "{{ url_for('main.home', _external=True) }}";
+		window.url = window.url.substring(0,window.url.length-1);
+	</script>
+</head>
 
-<!--it's interesting the js needs to be put here-->
-<script src="{{ url_for('static', filename='js/notification/modernizr.custom.js', _external=True) }}"></script>
-{% endblock %}
 
-{% block navbar %}
-{% endblock %}
+<body class="page-body">
+	<div class="page-container">
+		<div class="sidebar-menu toggle-others fixed">
+			<div class="sidebar-menu-inner">	
+				<header class="logo-env">
+					<div class="logo">
+						<a href="{{ url_for('main.home') }}" class="logo-expanded">
+							<img src="{{ url_for('static', filename = 'assets/images/zenith-logo-white.png') }}" width="80" alt="" />
+						</a>
+					</div>
+					<div class="mobile-menu-toggle visible-xs">
+						<a href="#" data-toggle="user-info-menu">
+							<i class="fa-user"></i>
+						</a>
+						
+						<a href="#" data-toggle="mobile-menu">
+							<i class="fa-bars"></i>
+						</a>
+					</div>
+				</header>
 
-{% block content %}
-	{{ super() }}
-
-<!--header-->
-<div id="header">
-	<div class="top">
-		<!-- Logo -->
-		<div id="logo">
-			{% if current_user.is_authenticated %}	
-				<!--已登陆用户显示头像和简介，用户昵称链接到用户资料界面-->
-			<span class="image img-rounded avatar48"><img src="{{ current_user.gravatar(size=48) }}" alt="" /></span>
-				<h1 style="margin-left:40px"><a href="{{ url_for('main.user', id=current_user.uid, _external=True) }}">{{ current_user.nickname }}</a></h1>
-				<div style="margin-left:60px">
-					<p>{{ current_user.about_me }}</p>
-				</div>
-			{% else %}
-			<span class="image avatar48"><img src="{{ url_for('static', filename='images/anonymous.jpg', _external=True) }}" alt="" /></span>
-				<h1 id="title">游客</h1>
-				<p>您尚未登陆</p>
-			{% endif %}
+				{% block sidebar %}{% endblock %}
+			</div>
 		</div>
 		
-		<!-- Nav -->
-		<nav id="nav">
-			<ul>
-				<li><a href="{{ url_for('main.index', _external=True) }}" class="skel-layers-ignoreHref">
-					<span class="icon fa-share-alt">主页</span></a></li>
-				{% if current_user.is_authenticated %}
-					<li><a href="{{ url_for('main.index', _external=True) }}" id="top-link" class="skel-layers-ignoreHref">
-						<span class="icon fa-cloud">我的设备</span></a></li>
-					<li><a href="{{ url_for('auth.secure_center', _external=True) }}" class="skel-layers-ignoreHref">
-						<span class="icon fa-lock">安全中心</span></a></li>
+		<div class="main-content">
+			
+			{% block main %}
+			{% endblock %}
 
-					<li><a href="{{ url_for('auth.logout', _external=True) }}" class="skel-layers-ignoreHref">
-						<span class="icon fa-sign-out">登出</span></a></li>
-				{% else %}
-					<li><a href="{{ url_for('auth.login', _external=True) }}" class="skel-layers-ignoreHref">
-						<span class="icon fa-sign-in">登入</span></a></li>
-				{% endif %}
-			</ul>
-		</nav>
+			<footer class="main-footer sticky footer-type-1">
+				<div class="footer-inner">
+					<div class="footer-text">
+						京ICP备16060806号-1 &copy; 2016 
+						<strong>顶点云设备监控系统</strong> 
+						由 <a href="http://forec.cn" target="_blank" title="Forec">Forec</a> 和 <a href="https://github.com/non1996" title="non1996" target="_blank">non1996</a> 设计
+					</div>
+					
+					<div class="go-up">
+						<a href="#" rel="go-top">
+							<i class="fa-angle-up"></i>
+						</a>
+					</div>
+				</div>	
+			</footer>
+		</div>
 	</div>
-	<div class="bottom">
-		<!-- Social Icons -->
-		<ul class="icons">
-			<li><a href="{{ url_for('main.home', _external=True) }}" class="icon fa-home"><span class="label">Home</span></a></li>
-			<li><a href="http://blog.forec.cn" class="icon fa-coffee"><span class="label">Blog</span></a></li>
-			<li><a href="https://github.com/Forec" class="icon fa-github"><span class="label">Github</span></a></li>
-			<li><a href="mailto:forec@bupt.edu.cn" class="icon fa-envelope"><span class="label">Email</span></a></li>
-		</ul>
-	</div>
-</div>
+	
+	{% block floatPart %}
+	{% endblock %}
 
-<!-- Main -->
-<div id="main">
-	{% block page_content %}{% endblock %}
-</div>
+	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/TweenMax.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/resizeable.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/joinable.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-api.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-toggles.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/rwd-table/js/rwd-table.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/toastr/toastr.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>
 
-<!-- Footer -->
-<div id="footer">
-	<!-- Copyright -->
-	<ul class="copyright">
-		<li>&copy; 顶点云团队 2016</li><li>顶点云由 <a href="https://github.com/Forec"> Forec </a> 和 <a href="https://github.com/non1996"> non1996 </a>设计</li>
-	</ul>
-</div>   	
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
-{{ moment.include_jquery() }}
-{{ moment.lang("zh-CN") }}
-
-<!--<script src="{{ url_for('static', filename='js/bootstrap/bootstrap.js', _external=True) }}"></script>-->
-<!--<script src="{{ url_for('static', filename='js/bootstrap/bootstrap.min.js', _external=True) }}"></script>-->
-<script src="{{ url_for('static', filename='js/template/jquery.min.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/template/jquery.scrolly.min.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/template/jquery.scrollzer.min.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/template/skel.min.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/template/util.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/template/main.js', _external=True) }}"></script>
-
-<script src="{{ url_for('static', filename='js/notification/classie.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/notification/notificationFx.js', _external=True) }}"></script>
-<script src="{{ url_for('static', filename='js/jquery.timers-1.1.2.js', _external=True) }}"></script>
-
-{% for message in get_flashed_messages() %}
-    <script>
-		// create the notification
-		var notification = new NotificationFx({
-			message : '<i class="fa fa-bullhorn fa-2x"></i><p>{{ message }}</p>',
-			layout : 'bar',
-			effect : 'slidetop',
-			ttl : 5000,
-			type : 'notice',
-			// notice, warning or error
-		});
-		// show the notification
-		notification.show();
-	</script>
-{% endfor %}
-{% endblock %}
+	{% for message in get_flashed_messages() %}
+		<script>
+			var opts = {
+				"closeButton": true,
+				"debug": false,
+				"positionClass": "toast-top-full-width",
+				"onclick": null,
+				"showDuration": "5000",
+				"hideDuration": "1000",
+				"timeOut": "5000",
+				"extendedTimeOut": "5000",
+				"showEasing": "swing",
+				"hideEasing": "linear",
+				"showMethod": "fadeIn",
+				"hideMethod": "fadeOut"
+			};
+			toastr.success("{{ message }}", "", opts);
+		</script>
+	{% endfor %}
+	
+	{% block scripts %}
+	{% endblock %}
+	
+</body>
+</html>

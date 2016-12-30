@@ -13,7 +13,7 @@ from .forms      import LoginForm, RegistrationForm, ChangePasswordForm,\
 from .. import db
 from ..models import User
 from ..email import send_email
-import json
+import json, re
 
 
 # ----------------------------------------------------------------
@@ -22,12 +22,26 @@ import json
 def rules():
     return render_template('auth/rules.html')
 
+def verify_email(email):
+    if len(email) > 7 and re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+        return True
+    return False
+
+def verify_nickname(nickname):
+    invalid = ['?', '/', '=', '>', '<', '!', ',', ';', '.', '\\']
+    for inv in invalid:
+        if inv in nickname:
+            return False
+    return True
+
 # ----------------------------------------------------------------
 # login 函数提供了登录界面入口
 @auth.route('/login/', methods = ['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('extra-login.html')
+        if current_user.is_authenticated:
+            return redirect(url_for('main.home'))
+        return render_template('login.html')
     else:
         req = request.form.get('request')
         if req is None:
@@ -35,7 +49,8 @@ def login():
         req = json.loads(req)
         email = req.get('email')
         password = req.get('passwd')
-        if email is None or password is None:
+        if email is None or password is None or \
+            not verify_email(email):
             return jsonify({
                 'code': False
             })
@@ -65,17 +80,43 @@ def logout():
 # register 函数提供了注册入口
 @auth.route('/register', methods = ['GET', 'POST'])
 def register():
-    # 展示状态，禁止注册
-    # return render_template('auth/testing.html', _external=True)
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            flash('您已经登录，无需注册！')
+            return redirect(url_for('main.home'))
+        return render_template('register.html')
+    else:
+        req = request.form.get('request')
+        if req is None:
+            return jsonify({
+                'code': 0   # 没有请求
+            })
+        req = json.loads(req)
+        email = req.get('email')
+        password = req.get('passwd')
+        password2 = req.get('passwd2')
+        nickname = req.get('nickname')
+        if email is None or password is None or \
+            password2 is None or nickname is None or \
+            not verify_email(email) or not verify_nickname(nickname) or \
+            password != password2:
+            return jsonify({
+                'code': 1   # 填写格式不对
+            })
+        user1 = User.query.filter_by(email = email).first()
+        if user1 is not None:
+            return jsonify({
+                'code': 2      # 邮箱已被注册
+            })
 
-    form = RegistrationForm()
-    if current_user.is_authenticated:
-        flash('您已经登陆，登陆状态下无法注册')
-        return redirect(url_for('main.index', _external=True))
-    if form.validate_on_submit():
-        user = User(email = form.email.data,
-                    nickname = form.nickname.data,
-                    password = form.password.data)
+        user2 = User.query.filter_by(nickname = nickname).first()
+        if user2 is not None:
+            return jsonify({
+                'code': 3      # 此昵称已被注册已被注册
+            })
+        user = User(email = email,
+                    nickname = nickname,
+                    password = password)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
@@ -87,8 +128,9 @@ def register():
         flash('一封确认邮件已经发送到您填写的邮箱，'
               '请查看以激活您的帐号')
         login_user(user)
-        return redirect('http://mail.'+user.email.split('@')[-1])
-    return render_template('auth/register.html', form=form)
+        return jsonify({
+            'code': 4
+        })
 
 # -------------------------------------------------------------------
 # confirm 函数提供了用户注册邮箱激活入口，根据向用户发送的激活链接尾部的
@@ -102,7 +144,7 @@ def confirm(token):
         flash('您已经验证了您的邮箱！感谢您的支持！')
     else:
         flash('此验证链接无效或已过期！')
-    return redirect(url_for('main.index', _external=True))
+    return redirect(url_for('main.home', _external=True))
 
 # --------------------------------------------------------------------
 # resend_confirmation 用于在用户未收到激活邮件时重发。
@@ -178,60 +220,88 @@ def change_email(token):
 
 # --------------------------------------------------------------------
 # password_reset_request 为用户重置密码入口。
-@auth.route('/reset', methods=['GET', 'POST'])
+@auth.route('/password_reset_request/', methods=['GET', 'POST'])
 def password_reset_request():
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index',
-                                _external=True))
-    form = PasswordResetRequestForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(
-                email = form.email.data).first()
-        if user:
-            token = user.generate_reset_token()
-            send_email(user.email,
-                       '重置您的密码',
-                       'auth/email/reset_password',
-                       user = user,
-                       token = token,
-                       next = request.args.get('next'))
-            flash('一封指导您重置密码的邮件已经发送到您注册时'
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            flash('您已经登录，可在安全中心修改邮箱或密码！')
+            return redirect(url_for('main.home'))
+        return render_template('reset.html')
+    else:
+        req = request.form.get('request')
+        if req is None:
+            return jsonify({
+                'code': 0   # 没有请求
+            })
+        req = json.loads(req)
+        email = req.get('email')
+        if email is None or not verify_email(email):
+            return jsonify({
+                'code': 1   # 填写格式不对
+            })
+        user = User.query.filter_by(email = email).first()
+        if user is None:
+            return jsonify({
+                'code': 2      # 假装成功
+            })
+        token = user.generate_reset_token()
+        send_email(user.email,
+                    '重置您的密码',
+                    'auth/email/reset_password',
+                    user = user,
+                    token = token,
+                    next = request.args.get('next'))
+        flash('一封指导您重置密码的邮件已经发送到您注册时'
                   '填写的邮箱，请查看邮件并重置您的密码')
-            return redirect(url_for('auth.login',
-                                    _external=True))
-    return render_template('auth/reset_password.html',
-                           form=form)
+        return jsonify({
+            'code': 2       # 成功
+        })
 
 # -------------------------------------------------------------------
 # password_reset 函数用于验证用户重置密码请求 token 的合法性。
-@auth.route('/reset/<token>', methods=['GET', 'POST'])
+@auth.route('/password_reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index',
-                                _external=True))
-    form = PasswordResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(
-                email=form.email.data).first()
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('main.home'))
+        return render_template('password_reset.html', token=token)
+    else:
+        req = request.form.get('request')
+        if req is None:
+            return jsonify({
+                'code': 0   # 没有请求
+            })
+        req = json.loads(req)
+        email = req.get('email')
+        password = req.get('passwd')
+        password2 = req.get('passwd2')
+        if email is None or password is None or \
+            password2 is None or \
+            not verify_email(email) or \
+            password != password2:
+            return jsonify({
+                'code': 0   # 填写格式不对
+            })
+        user = User.query.filter_by(email = email).first()
         if user is None:
-            return redirect(url_for('main.index',
-                                    _external=True))
-        if user.reset_password(token, form.password.data):
-            flash('您的密码已经重置成功')
-            return redirect(url_for('auth.login',
-                                    _external=True))
+            return jsonify({
+                'code': 2      # 不存在相关账户
+            })
+        if user.reset_password(token, password):
+            return jsonify({
+                'code': 3
+            })
         else:
-            return redirect(url_for('main.index',
-                                    _external=True))
-    return render_template('auth/reset_password.html',
-                           form=form)
+            return jsonify({
+                'code': 2
+            })
 
 # ------------------------------------------------------------------
 # secure_center 返回安全中心界面。
 @auth.route('/secure_center')
 @login_required
 def secure_center():
-    return render_template('auth/secure/secure_center.html')
+    return render_template('secure_center.html')
 
 # -------------------------------------------------------------------
 # before_request 注册了用户未激活邮箱时的跳转接口。
@@ -251,4 +321,4 @@ def before_request():
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index', _external=True))
-    return render_template('auth/unconfirmed.html')
+    return render_template('unconfirmed.html')

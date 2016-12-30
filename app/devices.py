@@ -93,8 +93,109 @@ class Bulb(Device):
         return set()
 
 class PC(Device):
-    type = 'PC'
-    pass
+    __tablename__ = 'PCs'
+
+    # 与父类表相连
+    uid = db.Column(db.Integer,
+                    db.ForeignKey('BasicDevices.uid'),
+                    primary_key=True)
+    # 类型
+    cpu_use = db.Column(db.Float, default=-1)
+    cpu_temp = db.Column(db.Float, default=-1)
+    gpu_temp = db.Column(db.Float, default=-1)
+    disk_total = db.Column(db.String(12), default='')    # GB
+    disk_used = db.Column(db.String(12), default ='')
+    disk_perc = db.Column(db.Float, default=-1)
+    ram_total = db.Column(db.Float, default=-1) # MB
+    ram_used = db.Column(db.Float, default=-1)
+    ram_free = db.Column(db.Float, default=-1)
+
+    __mapper_args__ = {
+       'polymorphic_identity': 'PC',
+    }
+
+    # 获取 JSON 格式状态
+    def getStatus(self):
+        return {
+            'code': self.code,
+            'type': self.type,
+            'name': self.name,
+            'interval': self.interval,
+            'last_seen': self.last_seen,
+            'work': self.work,
+            'warning': self.warning,
+            'cpu_temp': self.cpu_temp,
+            'gpu_temp': self.gpu_temp,
+            'cpu_use': self.cpu_use,
+            'disk_total': self.disk_total,
+            'disk_used': self.disk_used,
+            'disk_perc': self.disk_perc,
+            'ram_total': self.ram_total,
+            'ram_used': self.ram_used,
+            'ram_free': self.ram_free,
+            'interval': self.interval
+        }
+
+    # 更新设备信息
+    def updateStatus(self, status):
+        status = json.loads(status)
+        Device.updateStatus(self,status)
+        ram_total = status.get('ram_total')
+        ram_used = status.get('ram_used')
+        ram_free = status.get('ram_free')
+        disk_total = status.get('disk_total')
+        disk_used = status.get('disk_used')
+        disk_perc = status.get('disk_perc')
+        cpu_use = status.get('cpu_use')
+        cpu_temp = status.get('cpu_temp')
+        gpu_temp = status.get('gpu_temp')
+
+        try:
+            if ram_total is not None:
+                ram_total = float(ram_total)
+                if ram_total < 0:
+                    ram_total = 0
+                self.ram_total = ram_total
+            if ram_used is not None:
+                ram_used = float(ram_used)
+                if ram_used < 0:
+                    ram_used = 0
+                self.ram_used = ram_used
+            if ram_free is not None:
+                ram_free = float(ram_free)
+                if ram_free < 0:
+                    ram_free = 0
+                self.ram_free = ram_free
+            if disk_total is not None:
+                self.disk_total = disk_total
+            if disk_used is not None:
+                self.disk_used = disk_used
+            if disk_perc is not None:
+                disk_perc = float(disk_perc)
+                if disk_perc < 0:
+                    disk_perc = 0
+                self.disk_perc = disk_perc
+            if cpu_temp is not None:
+                cpu_temp = float(cpu_temp)
+                self.cpu_temp = cpu_temp
+            if gpu_temp is not None:
+                gpu_temp = float(gpu_temp)
+                self.gpu_temp = gpu_temp
+            if cpu_use is not None:
+                cpu_use = float(cpu_use)
+                self.cpu_use = cpu_use
+        except:
+            return
+        db.session.add(Record(device = self,
+                   status = json.dumps(self.getStatus())))
+        db.session.add(self)
+
+    def verify_status(self, jsondata):
+        return None
+
+    # 设置远程设备状态
+    def setStatus(self, jsondata):
+        pass
 
 class AirCondition(Device):
     __tablename__ = 'Airs'
@@ -109,6 +210,7 @@ class AirCondition(Device):
     mode = db.Column(db.Boolean, default=-1)    # 模式
     target = db.Column(db.Integer, default=-1)  # 目标温度
     air = db.Column(db.Integer, default=-1)     # 空调管辖范围内温度
+    wet = db.Column(db.Integer, default=0)      # 湿度
 
     __mapper_args__ = {
        'polymorphic_identity': 'Air',
@@ -122,6 +224,7 @@ class AirCondition(Device):
         status['mode'] = self.mode
         status['target'] = self.target
         status['air'] = self.air
+        status['wet'] = self.wet
         return status
 
     # 更新设备信息
@@ -133,6 +236,7 @@ class AirCondition(Device):
         mode = status.get('mode')
         air = status.get('air')
         level = status.get('level')
+        wet = status.get('wet')
         try:
             if level is not None:
                 level = int(level)
@@ -140,6 +244,13 @@ class AirCondition(Device):
                     level = 0
                 if level > 5:
                     level = 5
+                self.level = level
+            if wet is not None:
+                wet = int(wet)
+                if wet < 0:
+                    level = 0
+                if wet > 100:
+                    wet = 100
                 self.level = level
             if speed is not None:
                 speed = int(speed)
@@ -168,10 +279,13 @@ class AirCondition(Device):
         target = jsondata.get('target')
         speed = jsondata.get('speed')
         mode = jsondata.get('mode')
+        wet = jsondata.get('wet')
         same = Device.verify_status(self, jsondata)
         try:
             if level is not None:
                 level = int(level)
+            if wet is not None:
+                wet = int(wet)
             if mode is not None:
                 mode = bool(mode)
             if target is not None:
@@ -182,6 +296,9 @@ class AirCondition(Device):
             return None
         if level is not None and level != self.level:
             self.level = level
+            same = False
+        if wet is not None and wet != self.wet:
+            self.wet = wet
             same = False
         if mode is not None and mode != self.mode:
             self.mode = mode
@@ -204,7 +321,8 @@ class AirCondition(Device):
                 mode = jsondata.get('mode') or self.mode,
                 air = jsondata.get('air') or self.air,
                 target = jsondata.get('target') or self.target,
-                speed = jsondata.get('speed') or self.speed):
+                speed = jsondata.get('speed') or self.speed,
+                wet = jsondata.get('wet') or self.wet):
             request = RequestThread(json.dumps({
                 'code': self.code,
                 'token': self.owner.token_hash,
@@ -214,7 +332,8 @@ class AirCondition(Device):
                     'level': level,
                     'target': target,
                     'air': air,
-                    'mode': mode
+                    'mode': mode,
+                    'wet': wet
                 }
             }), self)
             request.start()

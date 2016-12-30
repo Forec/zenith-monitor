@@ -156,79 +156,138 @@ def device(code):
     if device is None or device.owner != current_user:
         # 设备不属于当前用户则返回 403 错误
         abort(403)
-    return render_template('dashboard-1.html', device=device)
+    if device.type == 'Bulb':
+        return render_template('dashboard-bulb.html', device=device)
+    elif device.type == 'TV':
+        return render_template('dashboard-television.html', device=device)
+    elif device.type == 'PC':
+        return render_template('dashboard-pc.html', device=device)
+    else:
+        return render_template('dashboard-air.html', device=device)
 
 # --------------------------------------------------------------------
 # delete_device 为用户提供了删除设备界面的入口，用户需对自己的删除操作进行
 # 确认后，方可产生一个一次性的 token，并使用此 token 跳转到 delete_devi-
 # ce_confirm 入口执行删除操作。
-@main.route('/delete-device/<int:id>', methods=['GET','POST'])
+@main.route('/delete-device/', methods=['POST'])
 @login_required
-def delete_device(id):
-    device = Device.query.get_or_404(id)
-    if current_user != device.owner:
-        abort(403)
-    flash('小心！删除操作不能撤回！')
-    form = DeviceDeleteForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.password.data):
-            db.session.delete(device)
-            flash('设备' + device.name + '已被删除！')
-            return redirect(url_for('main.index'))
-        else:
-            flash('您输入的密码不正确！')
-            return redirect(url_for('main.device',
-                                    id = device.uid,
-                                    _external=True))
-    return render_template('main/devices/confirm_delete_device.html',
-                           device = device,
-                           form = form)
+def delete_device():
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    token = req.get('token')
+    password = req.get('password')
+    code = req.get('code')
+    if token is None or email is None or code is None or password is None:
+        return jsonify({
+            'code': 1   # 格式不合法
+        })
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token) or not user.verify_password(password):
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    device = Device.query.filter_by(code=code).first()
+    if device is None or device.owner != user:
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    db.session.delete(device)
+    db.session.commit()
+    return jsonify({
+        'code': 3       # 认证成功
+    })
 
 # -----------------------------------------------------------------------
 # edit_device 函数为用户编辑设备信息（重命名、选择类型、修改描述）界面提供了入口
-@main.route('/edit-file/<int:id>', methods=['GET','POST'])
+@main.route('/edit-device/', methods=['POST'])
 @login_required
-def edit_device(id):
-    device = Device.query.get_or_404(id)
-    if current_user != device.owner:
-        abort(403)
-    form = DeviceEditForm()
-    if form.validate_on_submit():
-        device.name = form.name.data
-        if form.name.data == '' or \
-            form.name.data is None:
-            device.name = '设备名称未指定'
-        device.about = form.about.data
-        device.type = form.type.data
-    form.about.data = device.about
-    form.name.data = device.name
-    form.type.data = device.type
-    return render_template('main/devices/edit_device.html',
-                           device = device,
-                           form = form)
+def edit_device():
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    token = req.get('token')
+    name = req.get('name')
+    code = req.get('code')
+    if token is None or email is None or code is None or name is None:
+        return jsonify({
+            'code': 1   # 格式不合法
+        })
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token):
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    device = Device.query.filter_by(code=code).first()
+    if device is None or device.owner != user:
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    device.name = name
+    db.session.add(device)
+    db.session.commit()
+    return jsonify({
+        'code': 3       # 认证成功
+    })
 
 # ------------------------------------------------------------------------
 # newdevice 为用户创建设备提供了入口
 @main.route('/new_device/', methods=['POST'])
 def newdevice():
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    token = req.get('token')
+    name = req.get('name')
+    interval = req.get('interval')
+    type = req.get('type')
+    if token is None or email is None or name is None or type is None:
+        return jsonify({
+            'code': 1   # 格式不合法
+        })
+    if interval is None:
+        interval = 5
+    else:
+        try:
+            interval = int(interval)
+        except:
+            return jsonify({
+                'code': 1
+            })
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token):
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    deviceType = deviceTable.get(type)
+    if deviceType is None:
+        return jsonify({
+            'code': 1   # 类型不合法
+        })
+    device = deviceType(
+        name = name,
+        interval = interval,
+        owner = user
+    )
+    device.code = device.randomCode()
+    db.session.add(device)
+    db.session.commit()
 
-    form = NewDeviceForm()
-    if form.validate_on_submit():
-        D = deviceTable.get(deviceNumbers.get(form.type.data))
-        if D is not None:
-            d = D(name = form.name.data,
-                  owner = current_user,
-                  interval = form.interval.data,
-                  about = form.about.data)
-            db.session.add(d)
-            db.session.commit()
-            d.code = d.randomCode()
-            db.session.add(d)
-        else:
-            abort(403)
-        return redirect(url_for('main.index'))
-    return render_template('main/devices/new_device.html',
-                           form = form)
+    return jsonify({
+        'code': device.code       # 认证成功
+    })
 
 # ------------------------------------------------------------------------
 # 设备更新信息路由
@@ -238,7 +297,7 @@ def update_status():
     token = request.form.get('token')
     type = request.form.get('type')
     status = request.form.get('status')
-    # print(code, token, type)#, status)
+    # print(code, token, type, status)
     if code is None or token is None or \
         type is None or status is None:
         return 'fail'
@@ -253,7 +312,7 @@ def update_status():
         return 'ok'
 
 
-@ main.route('/reset_token/<token>', methods=['POST'])
+@ main.route('/reset_token/<token>')
 @login_required
 def reset_token(token):
     if current_user.reset_token(token):
@@ -283,8 +342,8 @@ def show_status():
         })
     else:
         device = Device.query.filter_by(code=code).first()
-        if device.owner != user:
-            return
+        if device is None or device.owner != user:
+            return 'fail'
         return jsonify({
             'code': device.code,
             'status': device.getStatus()
@@ -307,7 +366,7 @@ def set_device():
     if user is None or not user.verify_token(token):
         return 'fail'
     device = Device.query.filter_by(code=code).first()
-    if device.owner != user:
+    if device is None or device.owner != user:
         return 'fail'
     setRequest = req.get('set')
     if setRequest is None:
