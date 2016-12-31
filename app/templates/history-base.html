@@ -9,6 +9,8 @@
 	<meta name="author" content="" />
 	
 	<title>{% block title %}{% endblock %}</title>	
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-core.css') }}">
@@ -18,7 +20,7 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
 
 	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='../../manage/templates/jquery.timers-1.1.2.js') }}"></script>	
+	<script src="{{ url_for('static', filename='assets/js/timepicker/bootstrap-timepicker.min.js') }}"></script>
 	<script>
 		window.url = "{{ url_for('main.home', _external=True) }}";
 		window.url = window.url.substring(0,window.url.length-1);
@@ -59,7 +61,7 @@
 						<ul>
 							<li>
 								<a href="{{ url_for('main.user') }}">
-									<span class="title">账户资料</span>
+									<span class="title">个人资料</span>
 								</a>
 							</li>
 							<li>
@@ -155,12 +157,11 @@
 				</ul>
 			</nav>
 			
-			
 			<div class="panel panel-default">
-				<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token }}">
-				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
-				<input type="hidden" id="info_code" class = "form-control" value="{{ device.code }}">
-				<input type="hidden" id="interval_time" class = "form-control" value="{{ current_user.interval }}">
+				<input type="hidden" id = "info_token" class = "form-control" value = "{{ token }}">
+				<input type="hidden" id="info_email" class = "form-control" value="{{ email }}">
+				<input type="hidden" id="info_code" class = "form-control" value="{{ code }}">
+				<input type="hidden" id="interval_time" class = "form-control" value="{{ interval }}">
 				<div class="panel-heading">
 					<div class="col-md-6">
 						设备信息
@@ -176,9 +177,6 @@
 								<label class="col-sm-3 control-label">设备名称：</label>
 								<label class="col-sm-3">{{ device.name }}</label>
 							</div>
-						</div>
-						<div class="col-sm-3">
-							<p id="iswarning" class="bg-success" style="text-align: center">工作正常</p>
 						</div>
 					</div>
 				</div>
@@ -210,6 +208,10 @@
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/jquery-ui/jquery-ui.min.css') }}">
 
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/daterangepicker/daterangepicker-bs3.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/select2/select2.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/select2/select2-bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/multiselect/css/multi-select.css') }}">
 	<!-- Bottom Scripts -->
 	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='assets/js/TweenMax.min.js') }}"></script>
@@ -217,28 +219,24 @@
 	<script src="{{ url_for('static', filename='assets/js/joinable.js') }}"></script>
 	<script src="{{ url_for('static', filename='assets/js/xenon-api.js') }}"></script>
 	<script src="{{ url_for('static', filename='assets/js/xenon-toggles.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/moment.min.js') }}"></script>
 
 	<!-- Imported scripts on this page -->
+	<script src="{{ url_for('static', filename='assets/js/datepicker/bootstrap-datepicker.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/timepicker/bootstrap-timepicker.min.js')}}"></script>
 	<script src="{{ url_for('static', filename='assets/js/xenon-widgets.js') }}"></script>
-	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/globalize.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/knockout-3.1.0.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/globalize.min.js')}}"></script>
 	<script src="{{ url_for('static', filename='assets/js/devexpress-web-14.1/js/dx.chartjs.js') }}"></script>
 	<script src="{{ url_for('static', filename='assets/js/toastr/toastr.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='assets/js/knob/jquery.knob.min.js') }}"></script>
 
 	<!-- JavaScripts initializations and stuff -->
-	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>	
+
 
 {% block scripts %}
-<script type="text/javascript">
-jQuery(document).ready(function($){
-	refresh_sidebar();
-	var init_interval = jQuery('#info_interval').val();
-	setInterval(function(){
-		refresh_sidebar();
-	}, init_interval*1000);
-
-});
-
+<!--script type="text/javascript">
 function refresh_sidebar() {
 	$.post( window.url + '/show_status/', {
 		'request':{
@@ -267,7 +265,7 @@ function refresh_sidebar() {
 		console.log(window.url + '/show_status/');
 	});
 }
-</script>
+</scripts>-->
 {% endblock %}
 </body>
 </html>

@@ -178,8 +178,6 @@
 				"showMethod": "fadeIn",
 				"hideMethod": "fadeOut"
 			};
-				
-						//toastr.info("You have been awarded with 1 year free subscription. Enjoy it!", "Account Subcription Updated", opts);
 		}, 3000);
 					
 					// Charts
@@ -569,6 +567,9 @@
 			var voice = info.voice;
 			var work = info.work;
 			var interval = info.interval;
+			var warning = info.warning;
+			set_warning(warning);
+			jQuery('#network-mbs-packets1').text(station);
 			jQuery('#voiceValue').val(voice);
 			jQuery('#interval').val(interval);
 			var room_temperature = info.room;
@@ -858,6 +859,17 @@
 	function between(randNumMin, randNumMax) {
 		var randInt = Math.floor((Math.random() * ((randNumMax + 1) - randNumMin)) + randNumMin);
 		return randInt;
+	}	
+	
+	function set_warning(isWarning){
+		if(isWarning == true){
+			$("#iswarning").text("设备告警");
+			$("#iswarning").attr("class", "bg-danger");
+		}
+		else{
+		    $("#iswarning").text("正常");
+			$("#iswarning").attr("class", "bg-success");
+		}
 	}
 </script>
 {% endblock %}

@@ -9,7 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     DEBUG = True
-    TEMP_PATH = 'temp/'
+    TEMP_PATH = 'temp'
     CLIENT_ADDRESS = '10.201.14.176'
     CLIENT_PORT = 50002
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
@@ -36,6 +36,8 @@ class Config:
     ZENITH_VALID_THUMBNAIL = ['.jpg', '.png', '.ico', '.jpeg']
         # 允许用户使用的头像后缀名
     ZENITH_VALID_THUMBNAIL_SIZE = 512 * 1024 # 最大 512K 头像
+    ZENITH_TEMPFOLDER_LENGTH = 14
+
 
     @staticmethod
     def init_app(app):

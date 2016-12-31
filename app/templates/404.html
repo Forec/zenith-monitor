@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}顶点云设备管理 - 404{% endblock %}
+
+{% block sidebar %}
+				<ul id="main-menu" class="main-menu">
+					<li>
+						<a href="">
+							<span class="title">账户管理</span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ url_for('main.user') }}">
+									<span class="title">账户资料</span>
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<span class="title">安全中心</span>
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.logout') }}">
+									<span class="title">登出</span>
+								</a>
+							</li>
+						</ul>						
+					</li>
+					<li>
+						<a href="">
+							<span class="title">设备管理</span>
+						</a>
+						<ul id="deviceListLeft">
+							<li>
+								<a href="{{ url_for('main.home') }}">
+									<span class="title">全部设备</span>
+								</a>
+							</li>
+						</ul>		
+					</li>
+				</ul>
+{% endblock %}
+{% block main %}
+<nav class="navbar user-info-navbar" role="navigation">
+	<!-- Right links for user info navbar -->
+	<ul class="user-info-menu right-links list-inline list-unstyled">
+		<li class="dropdown user-profile">
+			<a href="#" data-toggle="dropdown">
+			{% if current_user.is_authenticated %}
+				<img src="{{ current_user.gravatar(size=48) }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+				<span>
+					{{ current_user.nickname }}
+					<i class="fa-angle-down"></i>
+				</span>
+			{% else %}
+				<img src="{{ url_for('static', filename = 'assets/images/user-4.png') }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+				<span>
+					游客
+					<i class="fa-angle-down"></i>
+				</span>
+			{% endif %}
+			</a>
+			{% if current_user.is_authenticated %}
+				<ul class="dropdown-menu user-profile-menu list-unstyled">
+					<li>
+						<a href="{{ url_for('main.user') }}"><i class="fa-edit"></i>账户资料</a>
+					</li>
+					<li>
+						<a href="{{ url_for('main.home') }}"><i class="fa-dashboard"></i>设备管理</a>
+					</li>
+					<li>
+						<a href="{{ url_for('auth.secure_center') }}"><i class="fa-unlock"></i>安全中心</a>
+					</li>
+					<li class="last">
+						<a href="{{ url_for('auth.logout') }}"><i class="fa-sign-out"></i>登出</a>
+					</li>
+				</ul>
+			{% else %}
+				<ul class="dropdown-menu user-profile-menu list-unstyled">
+					<li>
+						<a href="{{ url_for('auth.register') }}">
+							<i class="fa-space-shuttle"></i>
+							注册
+						</a>
+					</li>
+					<li class="last">
+						<a href="{{ url_for('auth.login') }}">
+							<i class="fa-sign-in"></i>
+							登录
+						</a>
+					</li>
+				</ul>
+			{% endif %}
+		</li>
+	</ul>
+</nav>
+
+	<div class="page-error centered">
+		
+		<div class="error-symbol">
+			<i class="fa-warning"></i>
+		</div>
+		
+		<h2>
+			404 错误
+			<small>您请求的资源不存在或已经被移动！</small>
+		</h2>
+
+	</div>
+
+	<div class="page-error-search centered">
+		<a href="{{ url_for('main.index') }}" class="go-back">
+			<i class="fa-angle-left"></i>
+			返回主页面
+		</a>
+	</div>
+{% endblock %}

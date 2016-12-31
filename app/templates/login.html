@@ -39,7 +39,9 @@
 					required: true
 				},
 				passwd: {
-					required: true
+					required: true,
+					minlength: 8,
+					maxlength: 32
 				}
 			},
 			messages: {
@@ -47,7 +49,9 @@
 					required: '请输入邮箱'
 				},
 				passwd: {
-					required: '请输入密码'
+					required: '请输入密码',
+					minlength: '密码长度不能小于 8 个字符',
+					maxlength: '密码长度不能超过 32 个字符'
 				}
 			},
 		// Form Processing via AJAX

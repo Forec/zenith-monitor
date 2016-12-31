@@ -5,7 +5,7 @@
 #    文件操作、下载、聊天模块、管理员界面等。
 # 蓝本：main
 
-import os, random, shutil, os.path, json, calendar
+import os, random, shutil, os.path, json, calendar, re
 from config       import basedir
 from flask        import render_template, redirect, url_for, \
                         abort, flash, request, current_app, jsonify
@@ -18,6 +18,20 @@ from ..models     import User ,Pagination, Device, Record
 from ..devices    import deviceTable, deviceNumbers
 from datetime import datetime
 
+def verify_email(email):
+    if len(email) > 7 and re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+        return True
+    return False
+
+def verify_nickname(nickname):
+    if len(nickname) < 4:
+        return False
+    invalid = ['?', '/', '=', '>', '<', '!', ',', ';', '.', '\\']
+    for inv in invalid:
+        if inv in nickname:
+            return False
+    return True
+
 # ----------------------------------------------------------------
 # home 函数提供了介绍界面的入口
 @main.route('/')
@@ -27,7 +41,7 @@ def home():
 
 # ----------------------------------------------------------------
 # index 为服务器主页入口点，将展示用户拥有的设备
-@main.route('/index', methods=['GET', 'POST'])
+@main.route('/index')
 @login_required
 def index():
     page = request.args.get('page', 1, type=int)
@@ -46,34 +60,63 @@ def index():
                            pagination = pagination)
 
 # -------------------------------------------------------------------
-# user 函数为服务器用户资料界面入口点，用户资料界面包括用户基本信息、
-# 资料编辑。其中文件显示方式和 index 界面相同
-@main.route('/user/<int:id>')
-def user(id):
-    user = User.query.filter_by(uid=id).first()
-    if user is None:
-        abort(404)
-    return render_template('main/profile/user.html',
-                           user = user)
+# set_interval 为用户界面刷新速率提供修改。
+@main.route('/set_interval/', methods=['POST'])
+def set_interval():
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    token = req.get('token')
+    interval = req.get('interval')
+    if token is None or email is None or interval is None or \
+            not verify_email(email):
+        return jsonify({
+            'code': 1   # 格式不合法
+        })
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.verify_token(token):
+        return jsonify({
+            'code': 2   # 认证失败
+        })
+    try:
+        interval = int(interval)
+    except:
+        return jsonify({
+            'code': 1
+        })
+    user.interval = interval
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({
+        'code': 3       # 认证成功
+    })
 
 # -----------------------------------------------------------------------
 # edit_profile 为当前已登陆用户提供编辑用户资料入口
 @main.route('/edit-profile', methods=['GET','POST'])
 @login_required
-def edit_profile():
+def user():
     form = EditProfileForm()
     if form.validate_on_submit():
         # 验证上传头像的合法性
         if form.thumbnail.has_file():
             while True:
                 # 创建随机目录
-                randomBasePath = current_app.\
-                    config['TEMP_PATH'] + \
-                    ''.join(random.sample(
-                            current_app.\
-                                config['ZENITH_RANDOM_PATH_ELEMENTS'],
-                            current_app.\
-                                config['ZENITH_TEMPFOLDER_LENGTH']))
+                randomBasePath = os.path.join(
+                        basedir ,
+                        os.path.join(
+                            current_app.config['TEMP_PATH'],
+                            ''.join(random.sample(
+                                current_app.\
+                                    config['ZENITH_RANDOM_PATH_ELEMENTS'],
+                                current_app.\
+                                    config['ZENITH_TEMPFOLDER_LENGTH']))
+                            )
+                )
                 if os.path.exists(randomBasePath):
                 # 若创建的随机目录已存在则重新创建
                     continue
@@ -146,11 +189,11 @@ def edit_profile():
                                 _external=True))
     form.nickname.data = current_user.nickname
     form.about_me.data = current_user.about_me
-    return render_template('main/profile/edit_profile.html', form=form)
+    return render_template('user-info.html', form=form)
 
 # ----------------------------------------------------------------------
 # device 显示具体的设备信息
-@main.route('/device/<code>', methods=['GET', 'POST'])
+@main.route('/device/<code>')
 def device(code):
     device = Device.query.filter_by(code = code).first()
     if device is None or device.owner != current_user:
@@ -182,7 +225,8 @@ def delete_device():
     token = req.get('token')
     password = req.get('password')
     code = req.get('code')
-    if token is None or email is None or code is None or password is None:
+    if token is None or email is None or code is None or password is None or \
+            not verify_email(email):
         return jsonify({
             'code': 1   # 格式不合法
         })
@@ -217,7 +261,8 @@ def edit_device():
     token = req.get('token')
     name = req.get('name')
     code = req.get('code')
-    if token is None or email is None or code is None or name is None:
+    if token is None or email is None or code is None or name is None or \
+            not verify_email(email):
         return jsonify({
             'code': 1   # 格式不合法
         })
@@ -253,7 +298,8 @@ def newdevice():
     name = req.get('name')
     interval = req.get('interval')
     type = req.get('type')
-    if token is None or email is None or name is None or type is None:
+    if token is None or email is None or name is None or type is None or \
+            not verify_email(email):
         return jsonify({
             'code': 1   # 格式不合法
         })
@@ -312,7 +358,7 @@ def update_status():
         return 'ok'
 
 
-@ main.route('/reset_token/<token>')
+@main.route('/reset_token/<token>')
 @login_required
 def reset_token(token):
     if current_user.reset_token(token):
@@ -325,7 +371,7 @@ def show_status():
     token = request.form.get('request[token]')
     email = request.form.get('request[email]')
     code = request.form.get('request[code]')
-    if token is None or email is None:
+    if token is None or email is None or not verify_email(email):
         return 'fail'
     user = User.query.filter_by(email=email).first()
     if user is None or not user.verify_token(token):
@@ -360,7 +406,7 @@ def set_device():
     email = req.get('email')
     code = req.get('code')
     print(token, email, code)
-    if token is None or email is None or code is None:
+    if token is None or email is None or code is None or not verify_email(email):
         return 'fail'
     user = User.query.filter_by(email=email).first()
     if user is None or not user.verify_token(token):
@@ -381,6 +427,16 @@ def set_device():
             device.setStatus(setRequest)
     return 'succ'
 
+@main.route('/show_history/<code>')
+@login_required
+def show_history(code):
+    if not verify_nickname(code):
+        abort(403)
+    device = Device.query.filter_by(code = code).first()
+    if device is None or device.owner != current_user:
+        abort(403)
+    return render_template('history.html', device = device)
+
 @main.route('/get_history/', methods=['POST'])
 def get_history():
     req = request.form.get('request')
@@ -393,7 +449,8 @@ def get_history():
     time = req.get('time')
     period = req.get('period')      # 查询区间为多少秒
     inter = req.get('inter')        # 多少秒计算一次平均值
-    if token is None or email is None or code is None or time is None:
+    if token is None or email is None or code is None or time is None or \
+            not verify_email(email):
         return 'fail'
     user = User.query.filter_by(email=email).first()
     if user is None or not user.verify_token(token):
@@ -408,6 +465,7 @@ def get_history():
         hour = time.get('hour') or '00'
         minute = time.get('minute') or '00'
         second = time.get('second') or '00'
+        print(year, month, day)
         int(year);int(month);int(day);
         int(minute);int(second);int(hour);
         timeString = '%s-%s-%s %s:%s:%s' % (year,month,day,hour,minute,second)
@@ -468,7 +526,6 @@ def get_history():
                 'power': self.power // self.count,
                 'temperature': self.temperature // self.count
             }
-
     PeriodRecords.reverse()
     # 已获取到区间内的记录
     returnAns = {stamp: AverageCalc()}
@@ -477,12 +534,19 @@ def get_history():
             returnAns[stamp].add(status)        # 增加
         else:
             returnAns[stamp] = returnAns[stamp].average()   # 转为平均值
+            stamp += inter
+            returnAns[stamp] = AverageCalc()
             while curstamp - stamp > inter:
                 stamp += inter
                 returnAns[stamp] = AverageCalc()
             returnAns[stamp].add(status)
-    for key, value in returnAns.items():
+    returnList = {}
+    index = 0
+    for key in sorted(returnAns.keys(), reverse=False):
+        value = returnAns[key]
         if type(value) == AverageCalc:
             returnAns[key] = value.average()
-    print(returnAns)
-    return jsonify(returnAns)
+        returnList[index] = returnAns[key]
+        index += 1
+    print(returnList)
+    return jsonify(returnList)

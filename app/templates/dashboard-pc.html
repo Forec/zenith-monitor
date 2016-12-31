@@ -690,6 +690,8 @@
 				//磁盘容量
 				myDiskTotalChange(info.disk_total);
 				jQuery('#interval').val(info.interval);
+				var warning = info.warning;
+				set_warning(warning);
 		}).fail(function (data){
 			console.log("失败");
 		});
@@ -895,6 +897,17 @@
 	function between(randNumMin, randNumMax) {
 		var randInt = Math.floor((Math.random() * ((randNumMax + 1) - randNumMin)) + randNumMin);
 		return randInt;
+	}
+	
+	function set_warning(isWarning){
+		if(isWarning == true){
+			$("#iswarning").text("设备告警");
+			$("#iswarning").attr("class", "bg-danger");
+		}
+		else{
+		    $("#iswarning").text("正常");
+			$("#iswarning").attr("class", "bg-success");
+		}
 	}
 </script>
 {% endblock %}

@@ -8,8 +8,8 @@
 						</a>
 						<ul>
 							<li>
-								<a href="{{ url_for('main.user', id=current_user.uid) }}">
-									<span class="title">个人资料</span>
+								<a href="{{ url_for('main.user') }}">
+									<span class="title">账户资料</span>
 								</a>
 							</li>
 							<li>
@@ -42,15 +42,6 @@
 <nav class="navbar user-info-navbar" role="navigation">
 	<!-- Right links for user info navbar -->
 	<ul class="user-info-menu right-links list-inline list-unstyled">
-		<li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
-			<form method="get" action="extra-search.html">
-				<input type="text" name="s" class="form-control search-field" placeholder="查找设备..." />
-					<button type="submit" class="btn btn-link">
-						<i class="linecons-search"></i>
-					</button>
-			</form>
-		</li>
-				
 				
 		<li class="dropdown user-profile">
 			<a href="#" data-toggle="dropdown">
@@ -71,13 +62,10 @@
 			{% if current_user.is_authenticated %}
 				<ul class="dropdown-menu user-profile-menu list-unstyled">
 					<li>
-						<a href="{{ url_for('main.user', id = current_user.uid) }}"><i class="fa-suitcase"></i>账户资料</a>
+						<a href="{{ url_for('main.user') }}"><i class="fa-edit"></i>账户资料</a>
 					</li>
 					<li>
 						<a href="{{ url_for('main.home') }}"><i class="fa-dashboard"></i>设备管理</a>
-					</li>
-					<li>
-						<a href="{{ url_for('main.edit_profile', id = current_user.uid) }}"><i class="fa-edit"></i>编辑信息</a>
 					</li>
 					<li>
 						<a href="{{ url_for('auth.secure_center') }}"><i class="fa-unlock"></i>安全中心</a>
@@ -131,10 +119,11 @@
 <!-----------------------------------------------------------在这里渲染token和email--------------------------------------------------------------------------->
 				<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
 				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
+				<input type="hidden" id="info_interval" class = "form-control" value="{{ current_user.interval }}">
 				<div class="panel-options">
-					<a href="#">
+					<span onclick="showInterval()">
 						<i class="linecons-cog"></i>
-					</a>
+					</span>
 					<a href="#" data-toggle="panel">
 						<span class="collapse-icon">&ndash;</span>
 						<span class="expand-icon">+</span>
@@ -258,7 +247,34 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn btn-info" data-dismiss="modal" onclick="editEquipment()">确认</button>
+				<button type="button" id="edit-device-button" class="btn btn-info" data-dismiss="modal" onclick="editEquipment()">确认</button>
+				<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="edit-interval">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">修改刷新间隔</h4>
+			</div>
+
+			<div class="modal-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="edit-interval-text">刷新间隔</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-interval-text" placeholder="请输入刷新间隔（单位为 s）">
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" id="confirm-edit-interval-button" class="btn btn-info" data-dismiss="modal" onclick="editInterval()">确认</button>
 				<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
 			</div>
 		</div>
@@ -302,13 +318,16 @@
 			
 {% block scripts %}
 <script type="text/javascript">
+var intervalTimer;
 jQuery(document).ready(function($){
 	
 	refresh();
 
-	setInterval(function(){
+	var init_interval = jQuery('#info_interval').val();
+	intervalTimer = setInterval(function(){
 		refresh();
-	}, 2000);
+	}, 
+	init_interval * 1000);
 	
     //---------------------------------close
     $("#degreeList").on('click', '#openbutton', function(){
@@ -382,9 +401,9 @@ function refresh() {
 					isopen = "<a type='button' id='openbutton' class='btn btn-success btn-xs'>开启</a>";
 				}
 				if (data.list[key].warning == false){
-					data.list[key].warning = "<td><span class='btn btn-success btn-xs'>正常</span></td>";
+					data.list[key].warning = "<td><span class='text-success'><b>正常</b></span></td>";
 				} else {
-					data.list[key].warning = "<td><span class='btn btn-danger btn-xs'>告警</span></td>";
+					data.list[key].warning = "<td><span class='text-danger'><b>告警</b></span></td>";
 				}
 	
 				// something about pc
@@ -398,7 +417,7 @@ function refresh() {
 								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
 									window.url + "/device/" + key + "\">详细</a>" +
 								"<a type='button' class='btn btn-warning btn-xs' href=\""+ 
-									window.url + "/get_history/" + "\">历史</a>" +
+									window.url + "/show_history/" + key + "\">历史</a>" +
 								"<a type='button' onclick=\"showDelete('" + key + 
 									"')\" class='btn btn-red btn-xs'>删除</a>" +
 								"</td>";
@@ -408,7 +427,7 @@ function refresh() {
 								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
 									window.url + "/device/" + key + "\">详细</a>" +
 								"<a type='button' class='btn btn-warning btn-xs' href=\""+ 
-									window.url + "/get_history/" + "\">历史</a>" +
+									window.url +  "/show_history/" + key + "\">历史</a>" +
 								"<a type='button' onclick=\"showDelete('" + key + 
 									"')\" class='btn btn-red btn-xs'>删除</a>" +
 								"</td>";
@@ -417,7 +436,7 @@ function refresh() {
 				if (currentDate - deviceDate <= 2000 * data.list[key].interval){		// 在线
 					list_str = list_str + "<tr>" +
 								"<th id=\"equipmentCode\">" + key + "<span class='co-name'></span></th>" +
-								"<td>" + data.list[key].name + "</td>" +
+								"<td><div onclick=\"showEdit('" + key + "')\">" + data.list[key].name + "</div></td>" +
 								"<td>" + data.list[key].type + "</td>" +
 								"<td>" + temperature + "</td>" +
 								"<td id=\"IsEquipmentWork\">" + data.list[key].work + "</td>" +
@@ -427,15 +446,16 @@ function refresh() {
 				} else{
 					list_str = list_str + "<tr>" +
 								"<th id=\"equipmentCode\">" + key + "<span class='co-name'></span></th>" +
-								"<td>" + data.list[key].name + "</td>" +
+								"<td><div onclick=\"showEdit('" + key + "')\">" + data.list[key].name + "</div></td>" +
 								"<td>" + data.list[key].type + "</td>" +
 								"<td id=\"IsEquipmentWork\">未知</td>" +
 								"<td>未知</td>" +
-								"<td><span class='btn btn-danger btn-xs'>设备失去连接</span></td>" +
+								"<td><span class='text-danger'><b>设备失去连接</b></span></td>" +
 								"<td class='text-left'>" +
 								"<a type='button' class='btn btn-blue btn-xs' href=\"" + 
 									window.url + "/device/" + key + "\">详细</a>" +
-								"<a type='button' class='btn btn-warning btn-xs' href=\"dashboard-2.html\">历史</a>" +
+								"<a type='button' class='btn btn-warning btn-xs' href=\""+ window.url + 
+								"/show_history/" + key +"\">历史</a>" +
 								"<a type='button' onclick=\"showDelete('" + key + 
 									"')\" class='btn btn-red btn-xs'>删除</a>" +
 								"</td>" +
@@ -518,8 +538,15 @@ function addEquipment(){
 	jQuery("#field-3").text('');
 }
 
-function editEquipment(code){
+function showEdit(code){
+	jQuery('#edit-device').modal('show', {backdrop: 'fade'});
 	jQuery("#edit-device-code").text(code);
+	jQuery('#edit-device-button').attr('onclick', "editEquipment();");
+}
+
+function editEquipment(){
+	var code = jQuery("#edit-device-code").val();
+	console.log(code);
 	var opts = {
 		"closeButton": true,
 		"debug": false,
@@ -556,9 +583,10 @@ function editEquipment(code){
 			}
 		},
 		error: function(error){
-			toastr.error("您填写的设备编号有误或您的身份未通过验证！", "删除失败", opts);
+			toastr.error("远程服务器拒绝连接或您的身份未通过验证！", "修改失败", opts);
 		}
 	});	
+	jQuery("#edit-device-name").text('');
 }
 
 
@@ -611,6 +639,60 @@ function showDelete(code){
 	jQuery('#delete-device-code').text(code);
 	jQuery('#delete-device-code-confirm').val(code);
 	jQuery('#confirm-delete-device-button').attr('onclick', "deleteEquipment();");
+}
+
+function showInterval(){
+	jQuery('#edit-interval').modal('show', {backdrop: 'fade'});
+	jQuery('#edit-interval-text').val(jQuery('#info_interval').val());
+	jQuery('#confirm-edit-interval-button').attr('onclick', "editInterval();");
+}
+
+function editInterval(){
+	var  inter = jQuery("#edit-interval-text").val();
+	var opts = {
+		"closeButton": true,
+		"debug": false,
+		"positionClass": "toast-top-full-width",
+		"onclick": null,
+		"showDuration": "5000",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+    $.ajax({
+        url: window.url + '/set_interval/',
+		type: "POST",
+		data: {
+            'request':JSON.stringify({
+				'token': jQuery("#info_token").val(),
+				'email': jQuery("#info_email").val(),
+				'interval': inter
+			})
+		},
+		success: function(response){
+			if(response.code == 0 || response.code == 1){
+				toastr.error("发送请求失败！您的刷新间隔未能成功修改！", "修改失败", opts);
+			} else if (response.code == 2){
+				toastr.error("认证失败！请确认您拥有对设备的管理权限！", "修改失败", opts);
+			} else{
+				toastr.success("刷新间隔已经更新！", "修改成功", opts);
+				refresh();
+			}
+			jQuery('#info_interval').val(inter);
+			clearInterval(intervalTimer);
+			intervalTimer = setInterval(function(){
+				refresh();
+			},
+			inter * 1000);
+		},
+		error: function(error){
+			toastr.error("远程服务器拒绝连接或您的身份未通过验证！", "修改失败", opts);
+		}
+	});	
 }
 
 jQuery(document).ready(function($){

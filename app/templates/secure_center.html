@@ -8,7 +8,7 @@
 						</a>
 						<ul>
 							<li>
-								<a href="{{ url_for('main.user', id=current_user.uid) }}">
+								<a href="{{ url_for('main.user') }}">
 									<span class="title">个人资料</span>
 								</a>
 							</li>
@@ -42,14 +42,6 @@
 <nav class="navbar user-info-navbar" role="navigation">
 	<!-- Right links for user info navbar -->
 	<ul class="user-info-menu right-links list-inline list-unstyled">
-		<li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
-			<form method="get" action="extra-search.html">
-				<input type="text" name="s" class="form-control search-field" placeholder="查找设备..." />
-					<button type="submit" class="btn btn-link">
-						<i class="linecons-search"></i>
-					</button>
-			</form>
-		</li>
 				
 				
 		<li class="dropdown user-profile">
@@ -71,13 +63,10 @@
 			{% if current_user.is_authenticated %}
 				<ul class="dropdown-menu user-profile-menu list-unstyled">
 					<li>
-						<a href="{{ url_for('main.user', id = current_user.uid) }}"><i class="fa-suitcase"></i>账户资料</a>
+						<a href="{{ url_for('main.user') }}"><i class="fa-edit"></i>账户资料</a>
 					</li>
 					<li>
 						<a href="{{ url_for('main.home') }}"><i class="fa-dashboard"></i>设备管理</a>
-					</li>
-					<li>
-						<a href="{{ url_for('main.edit_profile', id = current_user.uid) }}"><i class="fa-edit"></i>编辑信息</a>
 					</li>
 					<li>
 						<a href="{{ url_for('auth.secure_center') }}"><i class="fa-unlock"></i>安全中心</a>
@@ -114,13 +103,13 @@
 	<div class="breadcrumb-env">
 		<ol class="breadcrumb bc-1">
 			<li>
-				<a href="dashboard-1.html"><i class="fa-home"></i>主页</a>
+				<a href="{{ url_for('main.index') }}"><i class="fa-home"></i>主页</a>
 			</li>
 			<li>
-				<a href="tables-basic.html">账户管理</a>
+				<a href="{{ url_for('main.user') }}">账户管理</a>
 			</li>
 			<li class="active">
-				<strong>安全中心</strong>
+				<a href="{{ url_for('auth.secure_center') }}"><strong>安全中心</strong></a>
 			</li>
 		</ol>
 	</div>
@@ -131,27 +120,26 @@
 			<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
 				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
 				<div class="panel panel-default">
-					<form role="form" id="form1" method="post" class="validate" name="myForm" action="#">
+					<form role="form" id="form-edit-email" method="post" name="form-edit-email">
 						<div class="form-group">
 							<label class="control-label">更换绑定邮箱</label>
-							<input id ="newEmail" type="text" class="form-control" name="newEmail" placeholder="请输入您要更换的新邮箱" />
+							<input id ="newEmail" type="email" class="form-control" name="newEmail" placeholder="请输入您要更换的新邮箱" />
 						</div>
 						<div class="form-group">
 							<label class="control-label">当前密码</label>
 								<input id="currentEmailPassword" type="password" class="form-control" name="currentEmailPassword"  placeholder="请输入当前密码" />
 						</div>
+						<div class="form-group">
+							<button class="btn btn-success" type="submit">提交</button>
+						</div>
 					</form>
-					<p id = "hint1"></p>
-					<div class="form-group">
-						<button class="btn btn-success" onclick="">提交</button>
-					</div>
 				</div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-12">
 				<div class="panel panel-default">
-					<form role="form" id="form2" method="post" class="validate" name="myForm" action="#">
+					<form role="form" id="form-edit-password" method="post" name="form-edit-password">
 						<div class="form-group">
 							<label class="control-label">当前密码</label>
 								<input id="currentPassword" type="password" class="form-control" name="currentPassword" placeholder="请输入当前密码" />
@@ -164,11 +152,10 @@
 							<label class="control-label">确认新密码</label>
 							<input id="newPassword2" type="password" class="form-control" name="newPassword2" placeholder="请再次输入新密码以确认" />
 						</div>
-						<p id = "hint2"></p>
+						<div class="form-group">
+							<button class="btn btn-success" type="submit">提交</button>
+						</div>
 					</form>
-				<div class="form-group">
-				<button class="btn btn-success" onclick="">提交</button>
-			</div>
 		</div>
 	</div>
 </div>
@@ -183,105 +170,177 @@ jQuery(document).ready(function($){
 	setInterval(function(){
 		refresh();
 	}, 2000);
+	
+	jQuery('#newEmail').text('');
+	jQuery('#currentEmailPassword').text('');
+	jQuery('#currentPassword').text('');
+	jQuery('#newPassword').text('');
+	jQuery('#newPassword2').text('');
 });
 
 jQuery(document).ready(function($){
-	setTimeout(function(){ $(".fade-in-effect").addClass('in'); }, 1);
-		
-	$("form#register").validate({
+	$("form#form-edit-email").validate({
 		rules: {
 			email: {
-				required: true
-			},
-			nickname: {
 				required: true,
-				minlength: 4,
-				maxlength: 24
+				email: true
 			},
-			passwd: {
-				required: true,
+			currentEmailPassword: {
+			    required: true,
 				minlength: 8,
-			},
-			passwd2: {
-				required: true,
-				minlength: 8,
-				equalTo: "#passwd"
+				maxlength: 32
 			}
 		},
 		messages: {
 			email: {
-				required: '请输入邮箱'
+				required: '请输入邮箱',
+				email: '邮箱格式不合法'
 			},
-			nickname: {
-				required: '请输入昵称',
-				minlength: '昵称至少为 4 个字符',
-				maxlength: '昵称不能超过 24 个字符'
-			},
-			passwd: {
-				required: '请输入密码',
-				minlength: '密码长度不能小于 8 个字符'
-			},
-			passwd2: {
-				required: '请确认您的密码',
-				equalTo: "两次输入密码不一致",
-				minlength: '密码长度不能小于 8 个字符'
+			currentEmailPassword: {
+			    required: '当前密码不能为空',
+				minlength: '密码长度不能小于8字符',
+				maxlength: '密码长度不能大于32字符'
 			}
 		},
-			submitHandler: function(form){
-				show_loading_bar(70); // Fill progress bar to 70% (just a given value)
-				var opts = {
-					"closeButton": true,
-					"debug": false,
-					"positionClass": "toast-top-full-width",
-					"onclick": null,
-					"showDuration": "5000",
-					"hideDuration": "1000",
-					"timeOut": "5000",
-					"extendedTimeOut": "5000",
-					"showEasing": "swing",
-					"hideEasing": "linear",
-					"showMethod": "fadeIn",
-					"hideMethod": "fadeOut"
-				};
-				$.ajax({
-					url: "{{ url_for('auth.register') }}",
-					method: 'POST',
-					dataType: 'json',
-					data: {
-						'request':JSON.stringify({
-							'email': $(form).find('#email').val(),
-							'passwd': $(form).find('#passwd').val(),
-							'passwd2': $(form).find('#passwd2').val(),
-							'nickname': $(form).find('#nickname').val()
-						})										
-					},
-					success: function(resp){										
-						show_loading_bar({
-							delay: .5,
-							pct: 100,
-							finish: function(){
-								if(resp.code == 0 || resp.code == 1){
-									toastr.error("尝试发送请求失败，请检查您填写项是否合法并重试！", "注册失败", opts);
-									$passwd.select();
-								} else if (resp.code == 4){
-									toastr.success("您的账号已经注册成功！一封确认邮件已经发送到您填写的邮箱，请您注意查收！页面即将跳转到顶点云设备管理主界面。", "注册成功", opts);
-									setTimeout("window.location.href = '{{ url_for('main.home') }}'", 4000);
-								} else if (resp.code == 2){
-									toastr.error("您填写的电子邮箱已经被注册！", "您填写的信息需要变更", opts);
-									$email.select();
-								} else  if (resp.code == 3){
-									toastr.error("您填写的昵称已经被注册！", "您填写的信息需要变更", opts);
-									$nickname.select();
-								}
+		submitHandler: function(form){
+			show_loading_bar(70);
+			var opts = {
+				"closeButton": true,
+				"debug": false,
+				"positionClass": "toast-top-full-width",
+				"onclick": null,
+				"showDuration": "5000",
+				"hideDuration": "1000",
+				"timeOut": "5000",
+				"extendedTimeOut": "5000",
+				"showEasing": "swing",
+				"hideEasing": "linear",
+				"showMethod": "fadeIn",
+				"hideMethod": "fadeOut"
+			};
+			$.ajax({
+				url: "{{ url_for('auth.change_email_request') }}",
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					'request':JSON.stringify({
+						'newemail': $(form).find('#newEmail').val(),
+						'token': jQuery('#info_token').val(),
+						'passwd': $(form).find('#currentEmailPassword').val(),
+						'email':  jQuery('#info_email').val()
+					})
+				},
+				success: function(resp){
+					show_loading_bar({
+						delay: .5,
+						pct: 100,
+						finish: function(){
+							if(resp.code == 0 || resp.code == 1){
+								toastr.error("尝试发送请求失败，请检查您填写项是否合法并重试！", "修改失败", opts);
+							} else if (resp.code == 3){
+								toastr.success("您的请求已成功发送，一封确认邮件已经发送到您填写的邮箱，验证后即可完成邮箱的修改，请您注意查收！", "请求发送成功", opts);
+							} else if (resp.code == 2) {
+								toastr.error("远程服务器拒绝了您的请求，可能是您填写的电子邮箱已经被注册，或者您的身份没有通过认证！", "您填写的信息需要变更", opts);
 							}
-						});
-					}
-				});
-			}
-		});
-		
-		$("form#register .form-group:has(.form-control):first .form-control").focus();
+						}
+					});
+				}
+			});
+			jQuery('#newEmail').text('');
+			jQuery('#currentEmailPassword').text('');
+		}
 	});
+
+	$("form#form-edit-password").validate({
+		rules: {
+			currentPassword: {
+				required: true,
+	//			minlength: 8,
+				maxlength: 32
+			},
+			newPassword:{
+				required: true,
+				minlength: 8,
+				maxlength: 32
+			},
+			newPassword2: {
+				required: true,
+				equalTo: "#newPassword"
+			}
+		},
+		messages: {
+			currentPassword: {
+				required: '请输入旧密码',
+				minlength: '密码长度不能小于8字符',
+				maxlength: '密码长度不能大于32字符'
+			},
+			newPassword:{
+				required: '请输入新密码',
+				minlength: '密码长度不能小于8字符',
+				maxlength: '密码长度不能大于32字符'
+			},
+			newPassword2:{
+				required: '请再次输入新密码',
+				equalTo: '两次密码输入不一致'
+			}
+		},
+		submitHandler: function(form){
+			show_loading_bar(70); // Fill progress bar to 70% (just a given value)
+			var opts = {
+				"closeButton": true,
+				"debug": false,
+				"positionClass": "toast-top-full-width",
+				"onclick": null,
+				"showDuration": "5000",
+				"hideDuration": "1000",
+				"timeOut": "5000",
+				"extendedTimeOut": "5000",
+				"showEasing": "swing",
+				"hideEasing": "linear",
+				"showMethod": "fadeIn",
+				"hideMethod": "fadeOut"
+			};
+			$.ajax({
+				url: "{{ url_for('auth.change_password') }}",
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					'request':JSON.stringify({
+						'email': jQuery('#info_email').val(),
+						'token': jQuery('#info_token').val(),
+						'passwd': $(form).find('#currentPassword').val(),
+						'newpasswd': $(form).find('#newPassword2').val()
+					})
+				},
+				success: function(resp){
+					show_loading_bar({
+						delay: .5,
+						pct: 100,
+						finish: function(){
+							if (resp.code == 3){
+								toastr.success("您的密码已修改成功！", "修改成功", opts);
+							}
+							else if (resp.code == 0 || resp.code == 1){
+								toastr.error("尝试发送请求失败，请检查您填写项是否合法并重试！", "请求发送失败", opts);
+								$('#currentPassword').select();
+							}
+							else if (resp.code == 2){
+								toastr.error("远程服务器拒绝了您的请求，请确认您拥有此账户的管理权限", "身份认证失败", opts);
+								$('#currentPassword').select();
+							}
+						}
+					});
+				}
+			});
+			jQuery('#currentPassword').text('');
+			jQuery('#newPassword').text('');
+			jQuery('#newPassword2').text('');
+		}
+	});
+
+	$("form#form-edit-password .form-group:has(.form-control):first .form-control").focus();
+	$("form#form-edit-email .form-group:has(.form-control):first .form-control").focus();
+});
 
 function refresh() {
 	$.post( window.url + '/show_status/', {

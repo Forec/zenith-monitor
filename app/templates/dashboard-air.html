@@ -112,7 +112,7 @@
 								功耗
 							</div>
 							<div class="chart-entry-value">
-								<div class="input-group spinner" data-step="1" data-min="1" data-max="3">
+								<div class="input-group spinner" data-step="1" data-min="1" data-max="5">
 									<span class="input-group-btn">
 										<button class="btn btn-gray" data-type="decrement" onclick="lowerPowerConsumption()">-</button>
 									</span>
@@ -133,7 +133,7 @@
 								监控间隔
 							</div>
 							<div class="chart-entry-value">
-								<div class="input-group spinner" data-step="1" data-min="1" data-max="60">
+								<div class="input-group spinner" data-step="1" data-min="1" data-max="9">
 										<span class="input-group-btn">
 											<button class="btn btn-gray" data-type="decrement" onclick="lowerEquipmentInterval()">-</button>
 										</span>
@@ -600,6 +600,8 @@
 				var target = info.target;
 				var mode = info.mode;
 				var interval = info.interval;
+				var warning = info.warning;
+				set_warning(warning);
 				console.log(interval);
 				jQuery('#coldOrHot').val(mode);
 				jQuery('#interval').val(interval);
@@ -861,7 +863,7 @@
 	function upperEquipmentInterval(){										//提高刷新间隔
 		var inte_str = $('#interval').val();
 		var interv = parseInt(inte_str);
-		if(interv == 10){
+		if(interv == 9){
 			return;
 		}
 		console.log(interv+1);
@@ -944,6 +946,17 @@
 	function between(randNumMin, randNumMax) {
 		var randInt = Math.floor((Math.random() * ((randNumMax + 1) - randNumMin)) + randNumMin);
 		return randInt;
+	}
+	
+	function set_warning(isWarning){
+		if(isWarning == true){
+			$("#iswarning").text("设备告警");
+			$("#iswarning").attr("class", "bg-danger");
+		}
+		else{
+		    $("#iswarning").text("正常");
+			$("#iswarning").attr("class", "bg-success");
+		}
 	}
 </script>
 {% endblock %}

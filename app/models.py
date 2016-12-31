@@ -232,6 +232,9 @@ class User(UserMixin, db.Model):
     # 上次登录时间
     last_seen = db.Column(db.DateTime,
                           default = datetime.utcnow)
+    # 刷新间隔
+    interval = db.Column(db.Integer, default=2)
+
     # 用户拥有的设备，外链 Device 表
     devices = db.relationship('Device',
                               backref='owner',

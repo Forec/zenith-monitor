@@ -483,6 +483,8 @@
        		    var power = info.power;		//功率
 				var degree = info.temperature;	//设备温度
 				var interval = info.interval;
+				var warning = info.warning;
+				set_warning(warning);
 				if(info.type == "Bulb"){
 					var saturability = info.full;		//饱和度
 					var light = info.lightDegree;		//亮度
@@ -647,6 +649,17 @@
 	function between(randNumMin, randNumMax){
 		var randInt = Math.floor((Math.random() * ((randNumMax + 1) - randNumMin)) + randNumMin);
 		return randInt;
+	}
+	
+	function set_warning(isWarning){
+		if(isWarning == true){
+			$("#iswarning").text("设备告警");
+			$("#iswarning").attr("class", "bg-danger");
+		}
+		else{
+		    $("#iswarning").text("正常");
+			$("#iswarning").attr("class", "bg-success");
+		}
 	}
 </script>
 {% endblock %}

@@ -164,47 +164,76 @@ def resend_confirmation():
 
 # --------------------------------------------------------------------
 # change_password 为用户修改密码的视图函数。
-@auth.route('/change-password', methods=['GET','POST'])
-@login_required
+@auth.route('/change-password', methods=['POST'])
 def change_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.oldPassword.data):
-            current_user.password = form.newPassword.data
-            db.session.add(current_user)
-            db.session.commit()
-            flash('您的密码已更新')
-            return redirect(url_for('main.index',
-                                    _external=True))
-        else:
-            flash('密码错误')
-    return render_template('auth/secure/change_password.html',
-                           form = form)
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    password = req.get('passwd')
+    token = req.get('token')
+    newpassword = req.get('newpasswd')
+    if email is None or password is None or \
+        token is None or newpassword is None:
+            return jsonify({
+                'code': 1   # 填写格式不对
+            })
+    user = User.query.filter_by(email = email).first()
+    if user is None or user!=current_user or \
+            not user.verify_token(token) or \
+            not user.verify_password(password):
+        return jsonify({
+            'code': 2      # 认证失败
+        })
+    user.password = newpassword
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({
+        'code': 3
+    })
 
 # ----------------------------------------------------------------------
 # change_email_request 为用户重置邮箱请求入口。
-@auth.route('/change-email', methods = ['GET', 'POST'])
-@login_required
+@auth.route('/change-email-request', methods = ['POST'])
 def change_email_request():
-    form =ChangeEmailForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.password.data):
-            new_email = form.email.data
-            token = current_user.\
-                generate_email_change_token(new_email)
-            send_email(new_email,
-                       '确认您的邮箱',
-                       'auth/email/change_email',
-                       user = current_user,
-                       token = token)
-            flash('一封包含指导您激活新邮箱的'
-                  '邮件已经发到您的新邮箱')
-            return redirect(url_for('main.index',
-                                    _external=True))
-        else:
-            flash('错误的的用户名或密码')
-    return render_template("auth/secure/change_email.html",
-                           form=form)
+    req = request.form.get('request')
+    if req is None:
+        return jsonify({
+            'code': 0   # 没有请求
+        })
+    req = json.loads(req)
+    email = req.get('email')
+    password = req.get('passwd')
+    token = req.get('token')
+    newemail = req.get('newemail')
+    if email is None or password is None or \
+        token is None or newemail is None or \
+        not verify_email(email) or \
+        not verify_email(newemail):
+            return jsonify({
+                'code': 1   # 填写格式不对
+            })
+    user = User.query.filter_by(email = email).first()
+    user2 = User.query.filter_by(email=newemail).first()
+    if user2 is not None or user is None or \
+            user!=current_user or \
+            not user.verify_token(token) or \
+            not user.verify_password(password):
+        return jsonify({
+            'code': 2      # 认证失败
+        })
+    email_token = current_user.generate_email_change_token(newemail)
+    send_email(newemail,
+            '确认您的邮箱',
+            'auth/email/change_email',
+            user = current_user,
+            token = email_token)
+    return jsonify({
+        'code': 3
+    })
 
 # --------------------------------------------------------------------
 # change_email 用于验证用户重置邮箱后的激活链接。
@@ -224,7 +253,6 @@ def change_email(token):
 def password_reset_request():
     if request.method == 'GET':
         if current_user.is_authenticated:
-            flash('您已经登录，可在安全中心修改邮箱或密码！')
             return redirect(url_for('main.home'))
         return render_template('reset.html')
     else:
