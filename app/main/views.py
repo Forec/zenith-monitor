@@ -181,6 +181,7 @@ def user():
 
         current_user.nickname = form.nickname.data
         current_user.about_me = form.about_me.data
+        current_user.monitor_url = form.url.data
         db.session.add(current_user)
         db.session.commit()
         flash('您的资料已更新')
@@ -189,6 +190,7 @@ def user():
                                 _external=True))
     form.nickname.data = current_user.nickname
     form.about_me.data = current_user.about_me
+    form.url.data = current_user.monitor_url
     return render_template('user-info.html', form=form)
 
 # ----------------------------------------------------------------------
@@ -335,6 +337,11 @@ def newdevice():
         'code': device.code       # 认证成功
     })
 
+@main.route('/monitor/')
+@login_required
+def monitor():
+    return render_template('monitor.html')
+
 # ------------------------------------------------------------------------
 # 设备更新信息路由
 @main.route('/upload_status/', methods=['POST'])
@@ -356,6 +363,8 @@ def update_status():
     if device.owner.verify_token(token):
         device.updateStatus(status)
         return 'ok'
+    else:
+        return 'fail'
 
 
 @main.route('/reset_token/<token>')
@@ -528,6 +537,7 @@ def get_history():
             }
     PeriodRecords.reverse()
     # 已获取到区间内的记录
+    backupStamp = stamp
     returnAns = {stamp: AverageCalc()}
     for (curstamp, status) in PeriodRecords:
         if curstamp - stamp < inter:        # 还在上一个区间中
@@ -542,11 +552,17 @@ def get_history():
             returnAns[stamp].add(status)
     returnList = {}
     index = 0
-    for key in sorted(returnAns.keys(), reverse=False):
-        value = returnAns[key]
+    for key in range(backupStamp, backupStamp + period, inter):
+        value = returnAns.get(key)
+        if value is None:
+            returnAns[key] = {
+                'volume': 0,
+                'current': 0,
+                'power': 0,
+                'temperature': 0
+            }
         if type(value) == AverageCalc:
             returnAns[key] = value.average()
         returnList[index] = returnAns[key]
         index += 1
-    print(returnList)
     return jsonify(returnList)

@@ -4,6 +4,7 @@
 				<ul id="main-menu" class="main-menu">
 					<li class="opened">
 						<a href="">
+							<i class="linecons-cog"></i>
 							<span class="title">账户管理</span>
 						</a>
 						<ul>
@@ -26,6 +27,7 @@
 					</li>
 					<li>
 						<a href="">
+							<i class="linecons-desktop"></i>
 							<span class="title">设备管理</span>
 						</a>
 						<ul id="deviceListLeft">
@@ -36,10 +38,24 @@
 							</li>
 						</ul>		
 					</li>
+					<li>
+						<a href="{{ url_for('main.monitor') }}">
+							<i class="linecons-camera"></i>
+							<span class="title">视频监控</span>
+						</a>
+					</li>
 				</ul>
 {% endblock %}
 {% block main %}
 <nav class="navbar user-info-navbar" role="navigation">
+
+	<ul class="user-info-menu left-links list-inline list-unstyled">
+		<li class="hidden-sm hidden-xs">
+			<a href="#" data-toggle="sidebar">
+				<i class="fa-bars"></i>
+			</a>
+		</li>
+	</ul>
 	<!-- Right links for user info navbar -->
 	<ul class="user-info-menu right-links list-inline list-unstyled">
 				
@@ -115,6 +131,9 @@
 	</div>
 					
 	</div>
+					<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
+				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
+				<input type="hidden" id="info_interval" class = "form-control" value="{{ current_user.interval }}">
 		<div class="row">
 			<div class="col-md-12">				
 			<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">

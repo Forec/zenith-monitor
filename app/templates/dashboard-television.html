@@ -563,6 +563,9 @@
 			if (image != null){
 				image = image + "/" + info.image + ".png";
 			}
+			if (info.work == false){
+				image = "{{ url_for('static', filename='tvs/tvclose.png') }}";
+			}
 			var station = info.station;
 			var voice = info.voice;
 			var work = info.work;

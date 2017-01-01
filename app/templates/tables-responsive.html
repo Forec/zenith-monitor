@@ -4,6 +4,7 @@
 				<ul id="main-menu" class="main-menu">
 					<li>
 						<a href="">
+							<i class="linecons-cog"></i>
 							<span class="title">账户管理</span>
 						</a>
 						<ul>
@@ -26,6 +27,7 @@
 					</li>
 					<li class="opened">
 						<a href="">
+							<i class="linecons-desktop"></i>
 							<span class="title">设备管理</span>
 						</a>
 						<ul id="deviceListLeft">
@@ -36,10 +38,24 @@
 							</li>
 						</ul>		
 					</li>
+					<li>
+						<a href="{{ url_for('main.monitor') }}">
+							<i class="linecons-camera"></i>
+							<span class="title">视频监控</span>
+						</a>
+					</li>
 				</ul>
 {% endblock %}
 {% block main %}
 <nav class="navbar user-info-navbar" role="navigation">
+	<ul class="user-info-menu left-links list-inline list-unstyled">
+		<li class="hidden-sm hidden-xs">
+			<a href="#" data-toggle="sidebar">
+				<i class="fa-bars"></i>
+			</a>
+		</li>
+	</ul>
+
 	<!-- Right links for user info navbar -->
 	<ul class="user-info-menu right-links list-inline list-unstyled">
 				
@@ -377,7 +393,7 @@ jQuery(document).ready(function($){
 });
 
 function refresh() {
-	$.post( window.url + '/show_status/', {
+	$.post( '/show_status/', {
 		'request':{
 			'token': jQuery("#info_token").val(),
 			'email': jQuery("#info_email").val()
@@ -507,7 +523,6 @@ function addEquipment(){
 	} else {
 		return;
 	}
-	alert(type);
     $.ajax({
         url: window.url + '/new_device/',
 		type: "POST",

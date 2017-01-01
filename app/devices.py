@@ -14,8 +14,8 @@ class Bulb(Device):
                     db.ForeignKey('BasicDevices.uid'),
                     primary_key=True)
     # 类型
-    lightDegree = db.Column(db.Integer, default=-1)
-    full = db.Column(db.Integer, default=-1)    # 饱和度
+    lightDegree = db.Column(db.Integer, default=0)
+    full = db.Column(db.Integer, default=0)    # 饱和度
 
     __mapper_args__ = {
        'polymorphic_identity': 'Bulb',
@@ -100,15 +100,15 @@ class PC(Device):
                     db.ForeignKey('BasicDevices.uid'),
                     primary_key=True)
     # 类型
-    cpu_use = db.Column(db.Float, default=-1)
-    cpu_temp = db.Column(db.Float, default=-1)
-    gpu_temp = db.Column(db.Float, default=-1)
+    cpu_use = db.Column(db.Float, default=0)
+    cpu_temp = db.Column(db.Float, default=0)
+    gpu_temp = db.Column(db.Float, default=0)
     disk_total = db.Column(db.String(12), default='')    # GB
     disk_used = db.Column(db.String(12), default ='')
-    disk_perc = db.Column(db.Float, default=-1)
-    ram_total = db.Column(db.Float, default=-1) # MB
-    ram_used = db.Column(db.Float, default=-1)
-    ram_free = db.Column(db.Float, default=-1)
+    disk_perc = db.Column(db.Float, default=0)
+    ram_total = db.Column(db.Float, default=0) # MB
+    ram_used = db.Column(db.Float, default=0)
+    ram_free = db.Column(db.Float, default=0)
 
     __mapper_args__ = {
        'polymorphic_identity': 'PC',
@@ -205,11 +205,11 @@ class AirCondition(Device):
                     db.ForeignKey('BasicDevices.uid'),
                     primary_key=True)
     # 类型
-    level = db.Column(db.Integer, default=-1)    # 功效等级
-    speed = db.Column(db.Integer, default=-1)    # 风速
-    mode = db.Column(db.Boolean, default=-1)    # 模式
-    target = db.Column(db.Integer, default=-1)  # 目标温度
-    air = db.Column(db.Integer, default=-1)     # 空调管辖范围内温度
+    level = db.Column(db.Integer, default=0)    # 功效等级
+    speed = db.Column(db.Integer, default=0)    # 风速
+    mode = db.Column(db.Boolean, default=0)    # 模式
+    target = db.Column(db.Integer, default=0)  # 目标温度
+    air = db.Column(db.Integer, default=0)     # 空调管辖范围内温度
     wet = db.Column(db.Integer, default=0)      # 湿度
 
     __mapper_args__ = {

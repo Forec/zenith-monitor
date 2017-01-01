@@ -1,5 +1,5 @@
 {% extends "history-base.html" %}
-{% block title %}{{ device.name }} - {{ device.code }}{% endblock %}
+{% block title %}历史记录 - {{ device.name }} - {{ device.code }}{% endblock %}
 {% block main %}
 
 			<div class="panel panel-default">
@@ -25,7 +25,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<p class="text-medium">最近一小时的电流平均值。</p>
+							<p class="text-medium">区间内电流均值</p>
 							<div id="super-electricity" class="super-large text-secondary" data-count="this" data-from="0" data-to="0" data-suffix="A" data-duration="1.5">0</div>
 						</div>
 						<div class="col-sm-3">
@@ -47,7 +47,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<p class="text-medium">最近一小时的电压平均值。</p>
+							<p class="text-medium">区间内电压均值</p>
 							<div id="super-voltage" class="super-large text-purple" data-count="this" data-from="0" data-to="0" data-suffix="V" data-duration="2">0</div>
 						</div>
 						<div class="col-sm-3">
@@ -69,7 +69,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<p class="text-medium">最近一小时的功率平均值。</p>
+							<p class="text-medium">区间内功率均值</p>
 							<div id="super-power" class="super-large text-info" data-count="this" data-from="0" data-to="0" data-suffix="W" data-duration="3">0</div>
 						</div>
 						<div class="col-sm-3">
@@ -84,31 +84,33 @@
 			</div>
 			
 			<div class="panel panel-default">
-				<input type="hidden" id = "info_token" class = "form-control" value = "{{ token }}">
-				<input type="hidden" id="info_email" class = "form-control" value="{{ email }}">
-				<input type="hidden" id="info_code" class = "form-control" value="{{ code }}">
 				<div class="panel-heading">
-					日期选择
+					时间选择
 				</div>
 				<div class="panel-body">
 					<div class="row">
-						<div class="col-sm-12">
+						<div class="col-sm-3">
+							<label class="control-label">选择查询区间的时间</label>
+						</div>
+						<div class="col-sm-5">
 							<form role="form" class="form-horizontal">
 								<div class="form-group">
-									<label class="col-sm-3 control-label">选择日期和时间</label>
-									<div class="col-sm-4">
+									<!--<div class="col-sm-4">-->
 										<div class="date-and-time">
 											<input id="date-choose" type="text" class="form-control datepicker" data-format="D, dd MM yyyy">
-											<input id="time-choose" type="text" class="form-control timepicker" data-template="dropdown" data-show-seconds="true" data-default-time="11:25 AM" data-show-meridian="true" data-minute-step="5" data-second-step="5" />
+											<input id="time-choose" type="text" class="form-control timepicker" data-template="dropdown" data-show-minutes="false" data-show-seconds="false" data-default-time="11:00 AM" data-show-meridian="true" data-minute-step="1"/>
 										</div>
-									</div>
+									<!--</div>-->
 								</div>
 							</form>
+						</div>
+						<div class="col-sm-1">
 							<button class="btn btn-blue" onclick="submitTime()">确定</button>
 						</div>
 					</div>
 				</div>
-			</div>			
+			</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -534,9 +536,31 @@
 					var monthName = param[2];
 					var month = monthTranslate(param[2]);
 					var year = param[3];
-					time = time.split(':');
-					hour = time[0];
-					minute = time[1];
+					console.log(time);
+					temptime = time.split(':');
+					hour = temptime[0];
+					minute = temptime[1].substr(0, 2);
+					pm = temptime[1].substr(3,5);
+					if (pm == "PM"){
+						hour = parseInt(hour)
+						hour += 12;
+					}
+					hour = parseInt(hour);
+					hour -= 8;
+					if (hour < 1){
+						day -= 1;
+						hour += 24;
+					}
+					if (day < 0){
+						day = 30;
+						month = parseInt(month);
+						month -= 1;
+						if (month == 0){
+							year = parseInt(year);
+							year -= 1;
+							month = '12';
+						}
+					}
 
 					$.ajax({
 						url: '/get_history/',
@@ -565,13 +589,12 @@
 								var status = response[i];
 								var temperature = parseInt(status.temperature);
 								var volume = parseInt(status.volume);
-								var current = parseInt(status.current) / 100;
+								var current = parseInt(status.current);
 								var power = parseInt(status.power);
-								//console.log(status.temperature, status.volume, status.current, status.power);
-								degree_data.push({time: new Date(monthName+" "+day+", "+year+" "+time+":"+(i*5)+":00"), requestsPerMinute: temperature});
-								ele_data.push({time: new Date(monthName+" "+day+", "+year+" "+time+":"+(i*5)+":00"), reqs: current});
-								vol_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time+":"+(i*5)+":00"), usage: volume});
-								pow_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time+":"+(i*5)+":00"), used: power});
+								degree_data.push({time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), requestsPerMinute: temperature});
+								ele_data.push({time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), reqs: current});
+								vol_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), usage: volume});
+								pow_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), used: power});
 							}
 							setDegree(degree_data);
 							setElectricity(ele_data);
@@ -592,12 +615,18 @@
 				}
 
                 function setElectricity(ele_data){
-				    var ele = 0;
-
+				    var ele = 0.0;
+					var totalTimes = 0;
 				    for(var i = 0; i < ele_data.length; ++i){
-						ele += ele_data[i].reqs / 100;
+						if (ele_data[i].reqs != 0){
+							ele += (ele_data[i].reqs / 100);
+							totalTimes ++;
+						}
 					}
-					ele /= 12;
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					ele /= totalTimes;
 					ele = ele.toFixed(1);
 
 				    jQuery("#super-electricity").text(ele+'A');
@@ -606,36 +635,43 @@
 				}
 
 				function setVoltage(vol_data){
-                    var vol = 0;
-
+                    var vol = 0.0;
+					var totalTimes = 0;
 				    for(var i = 0; i < vol_data.length; ++i){
-						vol += vol_data[i].usage;
+						if (vol_data[i].usage != 0){
+							vol += vol_data[i].usage;
+							totalTimes ++;
+						}
 					}
-					vol /= 12;
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					vol /= totalTimes;
 					vol = parseInt(vol);
+					
                     jQuery("#super-voltage").text(vol+'V');
 					jQuery("#cpu-usage").dxCircularGauge('instance').value(vol);
 	                jQuery("#cpu-usage-chart").dxChart('instance').option('dataSource', vol_data);
                 }
 
                 function setPower(pow_data){
-				    var pow = 0;
-
+				    var pow = 0.0;
+					var totalTimes = 0;
 				    for(var i = 0; i < pow_data.length; ++i){
-						pow += pow_data[i].used;
+						if (pow_data[i].used != 0){
+							pow += pow_data[i].used;
+							totalTimes ++;
+						}
 					}
-					pow /= 12;
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					pow /= totalTimes;
 					pow = parseInt(pow);
+					
 				    jQuery("#super-power").text(pow+'W');
 					jQuery("#memory-usage").dxCircularGauge('instance').value(pow);
-					var p_data = $("#memory-usage-chart").dxChart('instance').option('dataSource');
-
-
-					for(var i = 0; i < 12; ++i){
-					    p_data.splice(0, 1);
-					    p_data.push(pow_data[i]);
-					}
-					jQuery("#memory-usage-chart").dxChart('instance').option('dataSource', p_data);
+					jQuery("#memory-usage-chart").dxChart('instance').option('dataSource', pow_data);
 				}
 
 			</script>

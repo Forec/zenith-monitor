@@ -21,6 +21,7 @@ class EditProfileForm(FlaskForm):
     thumbnail = FileField('上传头像')
     nickname = StringField('昵称',
         validators=[Length(3, 64, message='昵称长度必须在 3 ~ 64 个字符之间！')])
+    url = StringField('监控视频源')
     about_me = TextAreaField('关于我',
         validators=[Length(0, 60, message='不能超过 40 个字符！')])
     submit = SubmitField('提交')

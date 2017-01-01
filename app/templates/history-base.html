@@ -27,6 +27,129 @@
 	</script>
 </head>
 <body class="page-body">
+	<div class="settings-pane">
+			
+		<a href="#" data-toggle="settings-pane" data-animate="true">
+			&times;
+		</a>
+		
+		<div class="settings-pane-inner">
+			
+			<div class="row">
+				
+				<div class="col-md-4">
+					
+					<div class="user-info">
+						
+						<div class="user-image">
+							<a href="extra-profile.html">
+								<img src="{{ current_user.gravatar(size=64) }}" class="img-responsive img-circle" />
+							</a>
+						</div>
+						
+						<div class="user-details">
+							
+							<h3>
+								<a href="{{ url_for('main.user') }}">{{ current_user.nickname }}</a>
+								
+								<!-- Available statuses: is-online, is-idle, is-busy and is-offline -->
+								<span class="user-status is-online"></span>
+							</h3>
+							
+							<p class="user-title"></p>
+							
+							<div class="user-links">
+								<a href="extra-profile.html" class="btn btn-primary">编辑资料</a>
+								<a href="extra-profile.html" class="btn btn-success">安全中心</a>
+							</div>
+							
+						</div>
+						
+					</div>
+					
+				</div>
+				
+				<div class="col-md-8 link-blocks-env">
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>帮助</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									安全中心
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改密码
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改邮箱
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('main.reset_token',token = current_user.generate_resetToken_token(expiration=3600)) }}">
+									<i class="fa-angle-right"></i>
+									更新 Token
+								</a>
+							</li>
+						</ul>
+					</div>
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>关注我们</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="http://forec.cn">
+									<i class="fa-angle-right"></i>
+									Forec 的官方网站
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/Forec">
+									<i class="fa-angle-right"></i>
+									Forec 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/non1996">
+									<i class="fa-angle-right"></i>
+									non1996 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="http://cloud.forec.cn">
+									<i class="fa-angle-right"></i>
+									顶点云存储
+								</a>
+							</li>
+						</ul>
+					</div>
+					
+				</div>
+				
+			</div>
+		
+		</div>
+		
+	</div>
+
+
 	<div class="page-container">
 		<!--token, email, code在这里渲染------------------------------------------------------------------------------->
 		<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
@@ -55,7 +178,7 @@
 				<ul id="main-menu" class="main-menu">
 					<li>
 						<a href="">
-							<!--<i class=""></i>-->
+							<i class="linecons-cog"></i>
 							<span class="title">账户管理</span>
 						</a>
 						<ul>
@@ -79,6 +202,7 @@
 					
 					<li class="opened">
 						<a href="">
+							<i class="linecons-desktop"></i>
 							<span class="title">设备管理</span>
 						</a>
 						<ul id="deviceListLeft">
@@ -94,13 +218,28 @@
 							</li>
 						</ul>
 					</li>
+					<li>
+						<a href="{{ url_for('main.monitor') }}">
+							<i class="linecons-camera"></i>
+							<span class="title">视频监控</span>
+						</a>
+					</li>
 				</ul>		
 			</div>
 		</div>
 		
 		<div class="main-content">
+
 					
 			<nav class="navbar user-info-navbar" role="navigation">
+			
+			<ul class="user-info-menu left-links list-inline list-unstyled">
+				<li class="hidden-sm hidden-xs">
+					<a href="#" data-toggle="sidebar">
+						<i class="fa-bars"></i>
+					</a>
+				</li>
+			</ul>
 				<ul class="user-info-menu right-links list-inline list-unstyled">
 					<li class="dropdown user-profile">
 						<a href="#" data-toggle="dropdown">
@@ -173,9 +312,9 @@
 						<div class="col-sm-9">
 							<div class="form-group">
 								<label class="col-sm-3 control-label">设备号：</label>
-								<label class="col-lg-3">{{ device.code }}</label>
+								<label class="col-lg-3"><b>{{ device.code }}</b></label>
 								<label class="col-sm-3 control-label">设备名称：</label>
-								<label class="col-sm-3">{{ device.name }}</label>
+								<label class="col-sm-3"><b>{{ device.name }}</b></label>
 							</div>
 						</div>
 					</div>
@@ -234,9 +373,15 @@
 	<!-- JavaScripts initializations and stuff -->
 	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>	
 
+<script type="text/javascript">
 
-{% block scripts %}
-<!--script type="text/javascript">
+jQuery(document).ready(function($){
+	refresh_sidebar();
+	var init_interval = jQuery('#info_interval').val();
+	setInterval(function(){
+		refresh_sidebar();
+	}, init_interval*1000);
+});
 function refresh_sidebar() {
 	$.post( window.url + '/show_status/', {
 		'request':{
@@ -246,7 +391,7 @@ function refresh_sidebar() {
 	}).done(function (data) {
 		if ('list' in data){
 		    $('#deviceListLeft').empty();
-			var leftSideBar = "<li class=\"active\"><a href=\""+ window.url + 
+			var leftSideBar = "<li><a href=\""+ window.url + 
 							"\"><span class=\"title\">全部设备</span></a></li>";
 			for (var key in data.list){
 			    var deviceDate = 1000* data.list[key].last_seen;
@@ -265,7 +410,9 @@ function refresh_sidebar() {
 		console.log(window.url + '/show_status/');
 	});
 }
-</scripts>-->
+</script>
+{% block scripts %}
+
 {% endblock %}
 </body>
 </html>

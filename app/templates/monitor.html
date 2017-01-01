@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block title %}账户管理{% endblock %}
+{% block title %}视频监控{% endblock %}
 {% block sidebar %}
 				<ul id="main-menu" class="main-menu">
-					<li class="opened">
+					<li>
 						<a href="">
 							<i class="linecons-cog"></i>
 							<span class="title">账户管理</span>
 						</a>
 						<ul>
-							<li class="active">
+							<li>
 								<a href="{{ url_for('main.user') }}">
 									<span class="title">账户资料</span>
 								</a>
@@ -39,7 +38,7 @@
 							</li>
 						</ul>		
 					</li>
-					<li>
+					<li class="active">
 						<a href="{{ url_for('main.monitor') }}">
 							<i class="linecons-camera"></i>
 							<span class="title">视频监控</span>
@@ -49,7 +48,6 @@
 {% endblock %}
 {% block main %}
 <nav class="navbar user-info-navbar" role="navigation">
-
 	<ul class="user-info-menu left-links list-inline list-unstyled">
 		<li class="hidden-sm hidden-xs">
 			<a href="#" data-toggle="sidebar">
@@ -60,7 +58,6 @@
 
 	<!-- Right links for user info navbar -->
 	<ul class="user-info-menu right-links list-inline list-unstyled">
-				
 				
 		<li class="dropdown user-profile">
 			<a href="#" data-toggle="dropdown">
@@ -112,52 +109,46 @@
 		</li>
 	</ul>
 </nav>
+			
+<div class="page-title">
+	<div class="title-env">
+		<h1 class="title">实时视频监控</h1>
+	</div>
+	<div class="breadcrumb-env">
+		<ol class="breadcrumb bc-1">
+			<li>
+				<a href="{{ url_for('main.home') }}"><i class="fa-home"></i>主页</a>
+			</li>
+			<li>
+				<a href="{{ url_for('main.home') }}">视频监控</a>
+			</li>
+		</ol>
+	</div>
+</div>
 
-			<div class="page-title">				
+<div class="row">
 				<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
 				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
 				<input type="hidden" id="info_interval" class = "form-control" value="{{ current_user.interval }}">
-				
-				<div class="title-env">
-					<h1 class="title">账户资料</h1>
-					<p class="description"></p>
-				</div>
-				
-					<div class="breadcrumb-env">
-						<ol class="breadcrumb bc-1">
-						<li>
-							<a href="{{ url_for('main.index') }}"><i class="fa-home"></i>主页</a>
-						</li>
-						<li>
-							<a href="{{ url_for('main.user') }}">账户管理</a>
-						</li>
-						<li class="active">
-							<strong>修改用户信息</strong>
-						</li>
-						</ol>
-					</div>
-					
-			</div>
-			<!-- Responsive Table -->
-			<!--列表-->
-			<div class= "row">
-				<div class="col-md-8">
-					<span style="font-size:16px">您当前的 Token 值为： <b>{{ current_user.token_hash }}</b></span>
-				</div>
-				<div class="col-md-4" style="text-align:right">
-					<a href="{{ url_for('main.reset_token', token = current_user.generate_resetToken_token(expiration=3600)) }}" class="btn btn-success">更新 Token</a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-						{{ wtf.quick_form(form) }}
-					</div>
-				</div>
-			</div>
+	{% if current_user.monitor_url %}
+	<div class="col-md-8" style="text-align:center">
+	<div class="panel panel-default">
+		<img id ="monitor" src="{{ current_user.monitor_url }}" alt="非常抱歉，您的监控设备似乎出了一些问题，我们无法获取视频数据" class="shrinkToFit" height="385" width="513">
+	</div>
+	</div>
+	{% else %}
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<h2>您尚未配置监控数据源，<a style="color:red" href="{{ url_for('main.user') }}">点此</a> 配置后可开启实时监控</h2>
+		</div>
+	</div>
+	{% endif %}
+</div>
 {% endblock %}
+			
 {% block scripts %}
-<script>
+<script type="text/javascript">
+	
 jQuery(document).ready(function($){
 	
 	refresh();

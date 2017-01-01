@@ -41,7 +41,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-medium text-muted">CPU使用率</span>
-							<div id = "cpu" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="14.85" data-suffix="%" data-duration="1">0</div>
+							<div id = "cpu" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="%" data-duration="1">0</div>
 						</div>
 						<div id="pageviews-visitors-chart" style="height: 298px;"></div>
 					</div>
@@ -51,7 +51,7 @@
 
 					<div class="chart-item-bg">
 						<div class="chart-label chart-label-small">
-							<div id="Memory" class="h4 text-purple text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="V" data-duration="1.5"></div>
+							<div id="Memory" class="h4 text-purple text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="MB" data-duration="1.5"></div>
 							<span class="text-small text-upper text-muted">内存使用量</span>
 						</div>
 						<div id="server-uptime-chart" style="height: 134px;"></div>
@@ -77,7 +77,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-small text-muted text-upper">CPU温度</span>
-							<div id="cpu-degree-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="21.05" data-suffix="℃" data-duration="1">0.00</div>
+							<div id="cpu-degree-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="℃" data-duration="1">0.00</div>
 						</div>
 							<div class="chart-right-legend">
 								<div id="cpu-degree-gauge" style="width: 170px; height: 140px"></div>
@@ -86,81 +86,12 @@
 					</div>
 
 					<div class="chart-item-bg">
-						<!--<div id="pageviews-stats" style="height: 3350px; padding: 20px 0;"></div>-->
-						<!--<p style="height: 335px; padding: 20px 0;">在这里显示画面</p>-->
-						<!--
-						<div class="chart-entry-value" style="height: 440px; padding: 20px 0;">
-							<img id="television" src="assets\images\album-image-full.jpg" style="height: 400px; padding: 20px 0;"/>
-						</div>
-						-->
-						<!--<div class="chart-entry-view">
-							<div class="chart-entry-label">
-								湿度
-							</div>
-							<div class="chart-entry-value">
-								<div class="xe-label">
-									<div id = "wet" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="100.0" data-suffix="%" data-duration="1">0</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="chart-entry-view">
-							<div class="chart-entry-label">
-								范围内温度
-							</div>
-							<div class="chart-entry-value">
-								<div class="form-block">
-									<div id = "areaDegree" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="30.0" data-suffix="℃" data-duration="1">0</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="chart-entry-view">
-							<div class="chart-entry-label">
-								制冷/制热
-							</div>
-							<div class="chart-entry-value">
-								<div class="form-block">
-									<input id="coldOrHot" type="checkbox" class="iswitch-xlg iswitch-red" onclick="setColdHotMode()">
-								</div>
-							</div>
-						</div>
-
-						<div class="chart-entry-view">
-							<div class="chart-entry-label">
-								功耗
-							</div>
-							<div class="chart-entry-value">
-								<div class="input-group spinner" data-step="1" data-min="1" data-max="3">
-									<span class="input-group-btn">
-										<button class="btn btn-gray" data-type="decrement" onclick="lowerPowerConsumption()">-</button>
-									</span>
-									<input id="powerConsumption" type="text" class="form-control text-center" readonly="1" value="1" />
-									<span class="input-group-btn">
-										<button class="btn btn-gray" data-type="increment" onclick="upperPowerConsumption()">+</button>
-									</span>
-								</div>
-							</div>
-						</div>-->
-
-
 						<div class="chart-entry-view">
 							<div class="chart-entry-value">
 								<button id="closeButton" class="btn btn-red btn-lg" onclick="closeEquipment(this)" value="1"><i class="fa fa-power-off"></i></button>
 							</div>
-							<!--<div class="chart-entry-label">
-								状态
-							</div>
-							<div class="chart-entry-value">
-								<div class="chart-entry-value">
-									<button class="btn btn-blue btn-lg" disabled>运行</button>
-								</div>
-							</div>-->
 							<div class="chart-entry-label">
-								<!--<button class="btn btn-success" onclick="setEquipmentInterval()">设置监控间隔</button>-->
-								<!--<div class="col-md-3">-->
 								监控间隔
-								<!--</div>-->
 							</div>
 							<div class="chart-entry-value">
 								<div class="input-group spinner" data-step="1" data-min="1" data-max="10">
@@ -186,7 +117,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-small text-muted text-upper">GPU温度</span>
-							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="21.05" data-suffix="℃" data-duration="1">0.00</div>
+							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="℃" data-duration="1">0.00</div>
 						</div>
 						<div class="chart-right-legend">
 							<div id="network-realtime-gauge" style="width: 170px; height: 140px"></div>

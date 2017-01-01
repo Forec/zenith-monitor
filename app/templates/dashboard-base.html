@@ -9,6 +9,7 @@
 	<meta name="author" content="" />
 	
 	<title>{% block title %}{% endblock %}</title>	
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-core.css') }}">
@@ -18,13 +19,134 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
 
 	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='../../manage/templates/jquery.timers-1.1.2.js') }}"></script>	
 	<script>
 		window.url = "{{ url_for('main.home', _external=True) }}";
 		window.url = window.url.substring(0,window.url.length-1);
 	</script>
 </head>
 <body class="page-body">
+	<div class="settings-pane">
+			
+		<a href="#" data-toggle="settings-pane" data-animate="true">
+			&times;
+		</a>
+		
+		<div class="settings-pane-inner">
+			
+			<div class="row">
+				
+				<div class="col-md-4">
+					
+					<div class="user-info">
+						
+						<div class="user-image">
+							<a href="{{ url_for('main.user') }}">
+								<img src="{{ current_user.gravatar(size=64) }}" class="img-responsive img-circle" />
+							</a>
+						</div>
+						
+						<div class="user-details">
+							
+							<h3>
+								<a href="{{ url_for('main.user') }}">{{ current_user.nickname }}</a>
+								
+								<!-- Available statuses: is-online, is-idle, is-busy and is-offline -->
+								<span class="user-status is-online"></span>
+							</h3>
+							
+							<p class="user-title"></p>
+							
+							<div class="user-links">
+								<a href="{{ url_for('main.user') }}" class="btn btn-primary">编辑资料</a>
+								<a href="{{ url_for('auth.secure_center') }}" class="btn btn-success">安全中心</a>
+							</div>
+							
+						</div>
+						
+					</div>
+					
+				</div>
+				
+				<div class="col-md-8 link-blocks-env">
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>帮助</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									安全中心
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改密码
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改邮箱
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('main.reset_token',token = current_user.generate_resetToken_token(expiration=3600)) }}">
+									<i class="fa-angle-right"></i>
+									更新 Token
+								</a>
+							</li>
+						</ul>
+					</div>
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>关注我们</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="http://forec.cn">
+									<i class="fa-angle-right"></i>
+									Forec 的官方网站
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/Forec">
+									<i class="fa-angle-right"></i>
+									Forec 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/non1996">
+									<i class="fa-angle-right"></i>
+									non1996 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="http://cloud.forec.cn">
+									<i class="fa-angle-right"></i>
+									顶点云存储
+								</a>
+							</li>
+						</ul>
+					</div>
+					
+				</div>
+				
+			</div>
+		
+		</div>
+		
+	</div>
+
 	<div class="page-container">
 		<!--token, email, code在这里渲染------------------------------------------------------------------------------->
 		<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
@@ -53,7 +175,7 @@
 				<ul id="main-menu" class="main-menu">
 					<li>
 						<a href="">
-							<!--<i class=""></i>-->
+							<i class="linecons-cog"></i>
 							<span class="title">账户管理</span>
 						</a>
 						<ul>
@@ -77,6 +199,7 @@
 					
 					<li class="opened">
 						<a href="">
+							<i class="linecons-desktop"></i>
 							<span class="title">设备管理</span>
 						</a>
 						<ul id="deviceListLeft">
@@ -92,6 +215,12 @@
 							</li>
 						</ul>
 					</li>
+					<li>
+						<a href="{{ url_for('main.monitor') }}">
+							<i class="linecons-camera"></i>
+							<span class="title">视频监控</span>
+						</a>
+					</li>
 				</ul>		
 			</div>
 		</div>
@@ -99,6 +228,13 @@
 		<div class="main-content">
 					
 			<nav class="navbar user-info-navbar" role="navigation">
+				<ul class="user-info-menu left-links list-inline list-unstyled">
+					<li class="hidden-sm hidden-xs">
+						<a href="#" data-toggle="sidebar">
+							<i class="fa-bars"></i>
+						</a>
+					</li>
+				</ul>	
 				<ul class="user-info-menu right-links list-inline list-unstyled">
 					<li class="dropdown user-profile">
 						<a href="#" data-toggle="dropdown">
@@ -163,7 +299,7 @@
 				<input type="hidden" id="interval_time" class = "form-control" value="{{ current_user.interval }}">
 				<div class="panel-heading">
 					<div class="col-md-6">
-						设备信息
+						<b style="font-size:30px"><span id="isLostLabel">设备信息</span></b>
 					</div>
 				</div>
 
@@ -200,7 +336,7 @@
 					</div>
 				</div>
 			</footer>
-		</div>
+		</div>		
 	</div>
 	
 	
@@ -208,6 +344,20 @@
 		<div class="loader-2"></div>
 	</div>
 
+			
+	<div class="modal fade" id="lost-connection">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h2 class="modal-title"><b>警告：您的设备已失去连接</b></h2>
+				</div>
+				<h3>设备 {{ device.name }} （编号 {{ device.code }}）已失去连接，您可以 <a style ="color:red" href="{{ url_for('main.monitor') }}">点此</a> 查看监控视频，或返回
+				<a href="{{ url_for('main.index') }}">管理控制界面</a>。</h3>
+			</div>
+		</div>
+	</div>
+	
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/js/jquery-ui/jquery-ui.min.css') }}">
 
 	<!-- Bottom Scripts -->
@@ -228,8 +378,8 @@
 	<!-- JavaScripts initializations and stuff -->
 	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>
 
-{% block scripts %}
 <script type="text/javascript">
+var isWarningAlready = false;
 jQuery(document).ready(function($){
 	refresh_sidebar();
 	var init_interval = jQuery('#info_interval').val();
@@ -239,35 +389,65 @@ jQuery(document).ready(function($){
 
 });
 
+function showLost(){
+	jQuery('#lost-connection').modal('show', {backdrop: 'fade'});
+}
+
+function hideLost(){
+	jQuery('#lost-connection').removeClass('show');
+	jQuery('#lost-connection').addClass('fade');
+}
+
 function refresh_sidebar() {
-	$.post( window.url + '/show_status/', {
+	$.post('/show_status/', {
 		'request':{
 			'token': jQuery("#info_token").val(),
 			'email': jQuery("#info_email").val()
 		}
 	}).done(function (data) {
 		if ('list' in data){
+			var current_device = $('#info_code').val();
+			var current_device_lost = false;
 		    $('#deviceListLeft').empty();
-			var leftSideBar = "<li class=\"active\"><a href=\""+ window.url + 
+			var leftSideBar = "<li><a href=\""+ window.url + 
 							"\"><span class=\"title\">全部设备</span></a></li>";
 			for (var key in data.list){
 			    var deviceDate = 1000* data.list[key].last_seen;
 				var currentDate = new Date().getTime();
 				var sidename = data.list[key].name;
 				if (currentDate - deviceDate > 2000 * data.list[key].interval){	
+					if (key == current_device){
+						current_device_lost = true;
+					}
 					sidename = data.list[key].name + "（失去连接）";
 				}
 				leftSideBar = leftSideBar + "<li id=\"code" + key +"\"><a href=\"" + window.url + "/device/" + key + "\">" + 
 							"<span class=\"title\">" + sidename + "</span></a></li>";
 			}
 		    $('#deviceListLeft').html(leftSideBar);
-			$('#code' + jQuery("#info_code").val()).addClass('active');
+			$('#code' + current_device).addClass('active');
+			if (current_device_lost == true){
+				jQuery('#isLostLabel').text('警告：此设备已失去连接');
+				jQuery('#isLostLabel').attr('style', 'color:red');
+				if (!isWarningAlready){
+					showLost();
+					isWarningAlready = true;
+				}
+			}
+			if (current_device_lost == false){
+				isWarningAlready = false;
+				hideLost();
+				jQuery('#isLostLabel').empty();
+				jQuery('#isLostLabel').text('设备信息');
+				jQuery('#isLostLabel').attr('style', 'color:black');
+			}
 		}
 	}).fail(function (data) {
 		console.log(window.url + '/show_status/');
 	});
 }
 </script>
+{% block scripts %}
 {% endblock %}
 </body>
 </html>

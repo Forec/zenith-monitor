@@ -90,10 +90,10 @@ class Device(db.Model):
     work = db.Column(db.Boolean, default=False)
     # 是否报警
     warning = db.Column(db.Boolean, default=False)
-    volume = db.Column(db.Integer, default=-1)    # 电压
-    current = db.Column(db.Integer, default = -1) # 电流
-    power = db.Column(db.Integer, default=-1)     # 功率
-    room = db.Column(db.Integer, default=-1)      # 室温
+    volume = db.Column(db.Integer, default=0)    # 电压
+    current = db.Column(db.Integer, default = 0) # 电流
+    power = db.Column(db.Integer, default=0)     # 功率
+    room = db.Column(db.Integer, default=0)      # 室温
     last_seen = db.Column(db.Integer,
         default=int(calendar.timegm(datetime.utcnow().utctimetuple())))
 
@@ -234,6 +234,8 @@ class User(UserMixin, db.Model):
                           default = datetime.utcnow)
     # 刷新间隔
     interval = db.Column(db.Integer, default=2)
+
+    monitor_url = db.Column(db.String(256))
 
     # 用户拥有的设备，外链 Device 表
     devices = db.relationship('Device',

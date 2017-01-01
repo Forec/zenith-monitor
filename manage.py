@@ -79,8 +79,9 @@ def init():
              about_me='Wait for updating')
     u2 = User(email='test@test.com',
              nickname='testuser',
+              monitor_url="http://monitor.cross.forec.cn",
              token_hash='9490544C18C15B21286685B41F825684',
-             password='test',
+             password='testtest',
              confirmed=True,
              about_me='this is a test user')
     db.session.add(u1)
