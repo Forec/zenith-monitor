@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+{% block title %}全部设备{% endblock %}
+{% block sidebar %}
+				<ul id="main-menu" class="main-menu">
+					<li>
+						<a href="">
+							<i class="linecons-cog"></i>
+							<span class="title">账户管理</span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ url_for('main.user') }}">
+									<span class="title">账户资料</span>
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<span class="title">安全中心</span>
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.logout') }}">
+									<span class="title">登出</span>
+								</a>
+							</li>
+						</ul>						
+					</li>
+					<li class="opened">
+						<a href="">
+							<i class="linecons-desktop"></i>
+							<span class="title">设备管理</span>
+						</a>
+						<ul id="deviceListLeft">
+							<li class="active">
+								<a href="{{ url_for('main.home') }}">
+									<span class="title">全部设备</span>
+								</a>
+							</li>
+						</ul>		
+					</li>
+					<li>
+						<a href="{{ url_for('main.monitor') }}">
+							<i class="linecons-camera"></i>
+							<span class="title">视频监控</span>
+						</a>
+					</li>
+					<li>
+						<a href="http://forec.cn:20000">
+							<i class="linecons-key"></i>
+							<span class="title">远程登录</span>
+						</a>
+					</li>
+				</ul>
+{% endblock %}
+{% block main %}
+<nav class="navbar user-info-navbar" role="navigation">
+	<ul class="user-info-menu left-links list-inline list-unstyled">
+		<li class="hidden-sm hidden-xs">
+			<a href="#" data-toggle="sidebar">
+				<i class="fa-bars"></i>
+			</a>
+		</li>
+	</ul>
+
+	<!-- Right links for user info navbar -->
+	<ul class="user-info-menu right-links list-inline list-unstyled">
+				
+		<li class="dropdown user-profile">
+			<a href="#" data-toggle="dropdown">
+			{% if current_user.is_authenticated %}
+				<img src="{{ current_user.gravatar(size=48) }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+				<span>
+					{{ current_user.nickname }}
+					<i class="fa-angle-down"></i>
+				</span>
+			{% else %}
+				<img src="{{ url_for('static', filename = 'assets/images/user-4.png') }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+				<span>
+					游客
+					<i class="fa-angle-down"></i>
+				</span>
+			{% endif %}
+			</a>
+			{% if current_user.is_authenticated %}
+				<ul class="dropdown-menu user-profile-menu list-unstyled">
+					<li>
+						<a href="{{ url_for('main.user') }}"><i class="fa-edit"></i>账户资料</a>
+					</li>
+					<li>
+						<a href="{{ url_for('main.home') }}"><i class="fa-dashboard"></i>设备管理</a>
+					</li>
+					<li>
+						<a href="{{ url_for('auth.secure_center') }}"><i class="fa-unlock"></i>安全中心</a>
+					</li>
+					<li class="last">
+						<a href="{{ url_for('auth.logout') }}"><i class="fa-sign-out"></i>登出</a>
+					</li>
+				</ul>
+			{% else %}
+				<ul class="dropdown-menu user-profile-menu list-unstyled">
+					<li>
+						<a href="{{ url_for('auth.register') }}">
+							<i class="fa-space-shuttle"></i>
+							注册
+						</a>
+					</li>
+					<li class="last">
+						<a href="{{ url_for('auth.login') }}">
+							<i class="fa-sign-in"></i>
+							登录
+						</a>
+					</li>
+				</ul>
+			{% endif %}
+		</li>
+	</ul>
+</nav>
+			
+<div class="page-title">
+	<div class="title-env">
+		<h1 class="title">设备管理列表</h1>
+		<p class="description">实时监控设备信息，出现异常即时报警</p>
+	</div>
+	<div class="breadcrumb-env">
+		<ol class="breadcrumb bc-1">
+			<li>
+				<a href="{{ url_for('main.home') }}"><i class="fa-home"></i>主页</a>
+			</li>
+			<li>
+				<a href="{{ url_for('main.home') }}">设备管理</a>
+			</li>
+		</ol>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">温度列表</h3>
+<!-----------------------------------------------------------在这里渲染token和email--------------------------------------------------------------------------->
+				<input type="hidden" id = "info_token" class = "form-control" value = "{{ current_user.token_hash }}">
+				<input type="hidden" id="info_email" class = "form-control" value="{{ current_user.email }}">
+				<input type="hidden" id="info_interval" class = "form-control" value="{{ current_user.interval }}">
+				<div class="panel-options">
+					<span onclick="showInterval()">
+						<i class="linecons-cog"></i>
+					</span>
+					<a href="#" data-toggle="panel">
+						<span class="collapse-icon">&ndash;</span>
+						<span class="expand-icon">+</span>
+					</a>
+								
+					<a href="#" id="refreshAtOnce" data-toggle="reload">
+						<i class="fa-rotate-right"></i>
+					</a>
+				</div>
+			</div>
+			
+			<div class="panel-body">				
+				<div class="table-responsive" data-focus-btn-icon="fa-asterisk" data-sticky-table-header="true" data-add-display-all-btn="true" data-add-focus-btn="true">
+					<table id="degreeList" cellspacing="0" class="table table-small-font table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>设备号</th>
+								<th data-priority="1">设备名称</th>
+								<th data-priority="3">设备类型</th>
+								<th data-priority="1">温度</th>
+								<th data-priority="3">开/关</th>
+								<th data-priority="3">状态</th>
+								<th data-priority="6">操作</th>
+							</tr>
+						</thead>
+						<tbody>									
+						</tbody>
+					</table>
+				</div>
+				<a href="javascript:;" onclick="jQuery('#modal-1').modal('show', {backdrop: 'fade'});" class="btn btn-success">创建新设备</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block floatPart %}
+<!-- 模态对话框，添加监管设备-->
+<div class="modal fade" id="modal-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">添加新设备</h4>
+			</div>
+
+			<div class="modal-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="field-1">设备名称</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="field-1" placeholder="请输入你想指定的设备名称">
+						</div>
+					</div>
+						
+					<div class="form-group-separator"></div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="field-2">设备简介</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="field-2" placeholder="请输入该设备简介">
+						</div>
+					</div>
+					<div class="form-group-separator"></div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="field-3">监测间隔</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="field-3" placeholder="请输入监测周期（单位为 s）">
+						</div>
+					</div>
+					<div class="form-group-separator"></div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">设备类型</label>
+						<div class="col-sm-10">
+								<div class="radio">
+									<label>
+									<input id="type1" type="radio" name="radio-1" value="Bulb" checked>
+										照明
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input id="type2" type="radio" name="radio-1" value="TV">
+										电视
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input id="type3" type="radio" name="radio-1" value="PC">
+										计算机
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input id="type4" type="radio" name="radio-1" value="Air">
+										空调
+									</label>
+								</div>								
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-info" data-dismiss="modal" onclick="addEquipment()">确认</button>
+				<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="edit-device">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">编辑设备信息</h4>
+			</div>
+			<p>编辑编号为 <b id="edit-device-code"></b> 的设备信息</p>
+
+			<div class="modal-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="edit-device-name">设备名称</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-device-name" placeholder="请输入设备名称">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="edit-device-about">设备简介</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-device-about" placeholder="请输入设备简介">
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" id="edit-device-button" class="btn btn-info" data-dismiss="modal" onclick="editEquipment()">确认</button>
+				<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="edit-interval">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">修改刷新间隔</h4>
+			</div>
+
+			<div class="modal-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="edit-interval-text">刷新间隔</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-interval-text" placeholder="请输入刷新间隔（单位为 s）">
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" id="confirm-edit-interval-button" class="btn btn-info" data-dismiss="modal" onclick="editInterval()">确认</button>
+				<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="delete-device">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">确认您的操作</h4>
+			</div>
+
+			<div class="modal-body">
+				<p>您即将删除编号为 <b id="delete-device-code"></b> 的设备</p>
+				<form role="form" class="form-horizontal">					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="delete-device-code-confirm">确认设备</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="delete-device-code-confirm" placeholder="输入待删除设备的设备号">
+						</div>
+					</div>
+					<div class="form-group-separator"></div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="delete-device-password">输入密码</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="delete-device-password" placeholder="输入你的密码以确认此操作">
+						</div>
+					</div>
+
+				<div class="modal-footer">
+					<button id = "confirm-delete-device-button" type="button" class="btn btn-info" data-dismiss="modal" onclick="deleteEquipment()">确认</button>
+					<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+			
+{% block scripts %}
+<script type="text/javascript">
+var intervalTimer;
+jQuery(document).ready(function($){
+	
+	refresh();
+
+	var init_interval = jQuery('#info_interval').val();
+	intervalTimer = setInterval(function(){
+		refresh();
+	}, 
+	init_interval * 1000);
+	
+    //---------------------------------close
+    $("#degreeList").on('click', '#openbutton', function(){
+        //alert($(this).parent("td").siblings("#equipmentCode").text());
+		//console.log($(this).parent("td").siblings("#equipmentCode").text());
+		//$(this).parent("td").children("#openbutton").text('正在开启');
+		//$(this).parent("td").children("#openbutton").removeClass('btn-success');
+		//$(this).parent("td").children("#openbutton").addClass('btn-warning');
+		var iswork = $(this).parent("td").siblings("#IsEquipmentWork").text();
+		if (iswork == '开'){
+			$.ajax({
+				url:"{{ url_for('main.set_device') }}",
+				type: "POST",
+				data:{
+					'request':JSON.stringify({
+						'token': jQuery("#info_token").val(),
+						'email': jQuery("#info_email").val(),
+						'code': $(this).parent("td").siblings("#equipmentCode").text(),
+						'set':{
+							'shutdown': 1
+						}
+					})
+				}
+			})
+		} else {
+			$.ajax({
+				url:"{{ url_for('main.set_device') }}",
+				type: "POST",
+				data:{
+					'request':JSON.stringify({
+						'token': jQuery("#info_token").val(),
+						'email': jQuery("#info_email").val(),
+						'code': $(this).parent("td").siblings("#equipmentCode").text(),
+						'set':{
+							'setup': 1
+						}
+					})
+				}
+			})
+		}
+	});
+					
+	// 即刻刷新
+	$("#refreshAtOnce").on('click', function(){
+	    refresh();
+	});
+});
+
+function refresh() {
+	$.post( '/show_status/', {
+		'request':{
+			'token': jQuery("#info_token").val(),
+			'email': jQuery("#info_email").val()
+		}
+	}).done(function (data) {
+		if ('list' in data){
+		    $('#degreeList').children("tbody").empty();
+		    $('#deviceListLeft').empty();
+			var leftSideBar = "<li class=\"active\"><a href=\""+ window.url + "/home"+ 
+							"\"><span class=\"title\">全部设备</span></a></li>";
+			var list_str = "";
+			for (var key in data.list){     // key is device.code
+			    var deviceDate = 1000* data.list[key].last_seen;
+				var currentDate = new Date().getTime();
+				var sidename = data.list[key].name;
+				var isopen = "<a type='button' id='openbutton' class='btn btn-black btn-xs'>关闭</a>";
+				if (data.list[key].work == true){
+					data.list[key].work = '开';
+				} else {
+					data.list[key].work = '关';
+					isopen = "<a type='button' id='openbutton' class='btn btn-success btn-xs'>开启</a>";
+				}
+				if (data.list[key].warning == false){
+					data.list[key].warning = "<td><span class='text-success'><b>正常</b></span></td>";
+				} else {
+					data.list[key].warning = "<td><span class='text-danger'><b>告警</b></span></td>";
+				}
+	
+				// something about pc
+				var temperature = data.list[key].temperature;
+				var operation = "";
+				if (data.list[key].type == 'PC'){
+					temperature = data.list[key].cpu_temp;
+					operation = "<td class='text-left'>" +
+								"<a type='button' class='btn btn-blue btn-xs' href=\"http://forec.cn:20000\"" + 
+								key + "\">SSH</a>" +
+								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
+									window.url + "/device/" + key + "\">详细</a>" +
+								"<a type='button' class='btn btn-warning btn-xs' href=\""+ 
+									window.url + "/show_history/" + key + "\">历史</a>" +
+								"<a type='button' onclick=\"showDelete('" + key + 
+									"')\" class='btn btn-red btn-xs'>删除</a>" +
+								"</td>";
+				} else {
+					operation = "<td class='text-left'>" +
+								isopen +
+								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
+									window.url + "/device/" + key + "\">详细</a>" +
+								"<a type='button' class='btn btn-warning btn-xs' href=\""+ 
+									window.url +  "/show_history/" + key + "\">历史</a>" +
+								"<a type='button' onclick=\"showDelete('" + key + 
+									"')\" class='btn btn-red btn-xs'>删除</a>" +
+								"</td>";
+				}
+				var docType = data.list[key].type;
+				if (docType == "Bulb"){
+					docType = "照明";
+				} else if (docType == "PC"){
+					docType = "计算机";
+				} else if (docType == "TV"){
+					docType = "电视";
+				} else {
+					docType = "空调";
+				}
+				if (currentDate - deviceDate <= 2000 * data.list[key].interval){		// 在线
+					list_str = list_str + "<tr>" +
+								"<th id=\"equipmentCode\">" + key + "<span class='co-name'></span></th>" +
+								"<td><div onclick=\"showEdit('" + key + "')\">" + data.list[key].name + "</div></td>" +
+								"<td>" + docType + "</td>" +
+								"<td>" + temperature + "</td>" +
+								"<td id=\"IsEquipmentWork\">" + data.list[key].work + "</td>" +
+								data.list[key].warning +
+								operation +
+								"</tr>";
+				} else{
+					list_str = list_str + "<tr>" +
+								"<th id=\"equipmentCode\">" + key + "<span class='co-name'></span></th>" +
+								"<td><div onclick=\"showEdit('" + key + "')\">" + data.list[key].name + "</div></td>" +
+								"<td>" + docType + "</td>" +
+								"<td id=\"IsEquipmentWork\">未知</td>" +
+								"<td>未知</td>" +
+								"<td><span class='text-danger'><b>设备失去连接</b></span></td>" +
+								"<td class='text-left'>" +
+								"<a type='button' class='btn btn-blue btn-xs' href=\"" + 
+									window.url + "/device/" + key + "\">详细</a>" +
+								"<a type='button' class='btn btn-warning btn-xs' href=\""+ window.url + 
+								"/show_history/" + key +"\">历史</a>" +
+								"<a type='button' onclick=\"showDelete('" + key + 
+									"')\" class='btn btn-red btn-xs'>删除</a>" +
+								"</td>" +
+								"</tr>";				
+					sidename = data.list[key].name + "（失去连接）";
+				}
+				leftSideBar = leftSideBar + "<li><a href=\"" + window.url + "/device/" + key + "\">" + 
+							"<span class=\"title\">" + sidename + "</span></a></li>";
+			}
+			$('#degreeList').children("tbody").html(list_str);
+		    $('#deviceListLeft').html(leftSideBar);
+		}
+	}).fail(function (data) {
+		console.log(window.url + '/show_status/');
+	});
+}
+
+function addEquipment(){
+	var opts = {
+		"closeButton": true,
+		"debug": false,
+		"positionClass": "toast-top-full-width",
+		"onclick": null,
+		"showDuration": "5000",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+	var type = -1;
+    var radios=$('[name="radio-1"]');
+    for (i=0; i < radios.length; ++i){
+        if(radios[i].checked){
+            type = i;
+            break;
+		}
+	}
+	if (type == 0){
+	    type = "Bulb";
+	}else if (type == 1){
+	    type = "TV";
+	} else if (type == 2){
+		type = "PC";
+	} else if ( type==3 ){
+		type = "Air";
+	} else {
+		return;
+	}
+    $.ajax({
+        url: window.url + '/new_device/',
+		type: "POST",
+		data: {
+            'request':JSON.stringify({
+				'token': jQuery("#info_token").val(),
+				'email': jQuery("#info_email").val(),
+				'name': jQuery("#field-1").val(),
+				'about': jQuery("#field-2").val(),
+				'interval': jQuery("#field-3").val(),
+				'type': type
+			})
+		},
+		success: function(response){
+			if(response.code == 0 || response.code == 1){
+				toastr.error("发送请求失败！您申请的新设备未能成功创建！", "创建失败", opts);
+			} else if (response.code == 2){
+				toastr.error("认证失败！请确认您拥有管理设备权限！", "创建失败", opts);
+			} else{
+				toastr.success("已成功创建编号为 " + response.code + " 的设备！", "创建成功", opts);
+				refresh();
+			}
+		},
+		error: function(error){
+			toastr.error("您填写的设备信息有误或您的身份未通过验证！", "创建失败", opts);
+		}
+	});
+	jQuery("#field-1").text('');
+	jQuery("#field-3").text('');
+}
+
+function showEdit(code){
+	jQuery('#edit-device').modal('show', {backdrop: 'fade'});
+	jQuery("#edit-device-code").text(code);
+	jQuery('#edit-device-button').attr('onclick', "editEquipment();");
+}
+
+function editEquipment(){
+	var code = jQuery("#edit-device-code").val();
+	console.log(code);
+	var opts = {
+		"closeButton": true,
+		"debug": false,
+		"positionClass": "toast-top-full-width",
+		"onclick": null,
+		"showDuration": "5000",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+    $.ajax({
+        url: window.url + '/edit-device/',
+		type: "POST",
+		data: {
+            'request':JSON.stringify({
+				'token': jQuery("#info_token").val(),
+				'email': jQuery("#info_email").val(),
+				'code': code,
+				'name': jQuery("#edit-device-name").val(),
+				'about': jQuery('#edit-device-about').val()
+			})
+		},
+		success: function(response){
+			if(response.code == 0 || response.code == 1){
+				toastr.error("发送请求失败！设备编号为 " + code + " 的设备名称未能成功修改！", "修改失败", opts);
+			} else if (response.code == 2){
+				toastr.error("认证失败！请确认您拥有对此设备的管理权限！", "修改失败", opts);
+			} else{
+				toastr.success("编号为 " + code + " 的设备名称已更新！", "修改成功", opts);
+				refresh();
+			}
+		},
+		error: function(error){
+			toastr.error("远程服务器拒绝连接或您的身份未通过验证！", "修改失败", opts);
+		}
+	});	
+	jQuery("#edit-device-name").text('');
+}
+
+
+function deleteEquipment(){
+	var code = jQuery("#delete-device-code-confirm").val();
+	var opts = {
+		"closeButton": true,
+		"debug": false,
+		"positionClass": "toast-top-full-width",
+		"onclick": null,
+		"showDuration": "5000",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+    $.ajax({
+        url: window.url + '/delete-device/',
+		type: "POST",
+		data: {
+            'request':JSON.stringify({
+				'token': jQuery("#info_token").val(),
+				'email': jQuery("#info_email").val(),
+				'code': code,
+				'password': jQuery("#delete-device-password").val()
+			})
+		},
+		success: function(response){
+			if(response.code == 0 || response.code == 1){
+				toastr.error("发送请求失败！设备编号为 " + code + " 的设备未能成功删除！", "删除失败", opts);
+			} else if (response.code == 2){
+				toastr.error("认证失败！请确认您填写的设备编号和密码无误！", "删除失败", opts);
+			} else{
+				toastr.success("编号为 " + code + " 的设备已成功删除！", "删除成功", opts);
+				refresh();
+			}
+		},
+		error: function(error){
+			toastr.error("您填写的设备编号有误或您的身份未通过验证！", "删除失败", opts);
+		}
+	});	
+	jQuery("#delete-device-password").text('');
+}
+
+function showDelete(code){
+	jQuery('#delete-device').modal('show', {backdrop: 'fade'});
+	jQuery('#delete-device-code').text(code);
+	jQuery('#delete-device-code-confirm').val(code);
+	jQuery('#confirm-delete-device-button').attr('onclick', "deleteEquipment();");
+}
+
+function showInterval(){
+	jQuery('#edit-interval').modal('show', {backdrop: 'fade'});
+	jQuery('#edit-interval-text').val(jQuery('#info_interval').val());
+	jQuery('#confirm-edit-interval-button').attr('onclick', "editInterval();");
+}
+
+function editInterval(){
+	var  inter = jQuery("#edit-interval-text").val();
+	var opts = {
+		"closeButton": true,
+		"debug": false,
+		"positionClass": "toast-top-full-width",
+		"onclick": null,
+		"showDuration": "5000",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+    $.ajax({
+        url: window.url + '/set_interval/',
+		type: "POST",
+		data: {
+            'request':JSON.stringify({
+				'token': jQuery("#info_token").val(),
+				'email': jQuery("#info_email").val(),
+				'interval': inter
+			})
+		},
+		success: function(response){
+			if(response.code == 0 || response.code == 1){
+				toastr.error("发送请求失败！您的刷新间隔未能成功修改！", "修改失败", opts);
+			} else if (response.code == 2){
+				toastr.error("认证失败！请确认您拥有对设备的管理权限！", "修改失败", opts);
+			} else{
+				toastr.success("刷新间隔已经更新！", "修改成功", opts);
+				refresh();
+			}
+			jQuery('#info_interval').val(inter);
+			clearInterval(intervalTimer);
+			intervalTimer = setInterval(function(){
+				refresh();
+			},
+			inter * 1000);
+		},
+		error: function(error){
+			toastr.error("远程服务器拒绝连接或您的身份未通过验证！", "修改失败", opts);
+		}
+	});	
+}
+
+jQuery(document).ready(function($){
+	setTimeout(function(){
+		$(".checkbox-row input").addClass('cbr');
+		cbr_replace();
+	}, 0);
+});
+</script>
+{% endblock %}

@@ -19,10 +19,9 @@ class Config:
                  'd881dd92e629dbfdc2f1fbf6'         # 用于为安全操作生成 token 的密钥，不可泄露
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True            # 数据库在服务器终止时 commit 变动
     SQLALCHEMY_TRACK_MODIFICATIONS = True           # 数据库追踪改动
-    ZENITH_MAIL_SUBJECT_PREFIX = '不知起啥名'         # 服务器发送验证邮件的主题前缀
+    ZENITH_MAIL_SUBJECT_PREFIX = '[顶点云设备管理]'         # 服务器发送验证邮件的主题前缀
     ZENITH_MAIL_SENDER = os.environ.get('ZENITH_MAIL_SENDER') or \
                          'cloud-storage@forec.cn'   # 服务器向用户发送验证邮件的邮箱
-    ZENITH_DEVICES_PER_PAGE = 10              # Index 页面每页显示的文件数量
     ZENITH_RANDOM_PATH_ELEMENTS = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
                                        'h', 'i', 'j', 'k', 'l', 'm', 'n',
                                        'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -59,8 +58,8 @@ class TestingConfig(Config):                # 测试环境配置
     ZENITH_SERVER_ADDRESS = '127.0.0.1'
 
 class WindowsConfig(Config):
-    ZENITH_SERVER_ADDRESS = '127.0.0.1'# or 'cloud.forec.cn' # 服务器部署的域名/IP地址
-    SERVER_NAME = ZENITH_SERVER_ADDRESS
+    #ZENITH_SERVER_ADDRESS = '127.0.0.1'# or 'cloud.forec.cn' # 服务器部署的域名/IP地址
+    #SERVER_NAME = ZENITH_SERVER_ADDRESS
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'work.db')
     MAIL_SERVER = 'smtp.exmail.qq.com'
     MAIL_PORT = 25 # SSL is 465
@@ -70,7 +69,7 @@ class WindowsConfig(Config):
                     "Cloud-Storage-2016"
 
 class LinuxConfig(Config):
-    ZENITH_SERVER_ADDRESS = 'cloud.forec.cn' # 服务器部署的域名/IP地址
+    ZENITH_SERVER_ADDRESS = 'cloud-monitor.forec.cn' # 服务器部署的域名/IP地址
     SERVER_NAME = ZENITH_SERVER_ADDRESS
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'work.db')
     MAIL_SERVER = 'smtp.exmail.qq.com'

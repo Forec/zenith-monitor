@@ -174,7 +174,7 @@ function refresh() {
 	}).done(function (data) {
 		if ('list' in data){
 		    $('#deviceListLeft').empty();
-			var leftSideBar = "<li><a href=\""+ window.url + 
+			var leftSideBar = "<li><a href=\""+ window.url+"/home" + 
 							"\"><span class=\"title\">全部设备</span></a></li>";
 			for (var key in data.list){     // key is device.code
 			    var deviceDate = 1000* data.list[key].last_seen;

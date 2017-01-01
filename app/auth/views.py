@@ -1,5 +1,5 @@
 # 作者：Forec
-# 最后修改日期：2016-12-20
+# 最后修改日期：2016-01-01
 # 邮箱：forec@bupt.edu.cn
 # 关于此文件：此文件包含了服务器认证部分的视图函数，包括登录、注册、密码重置等。
 # 蓝本：auth
@@ -7,14 +7,10 @@
 from flask       import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from .           import auth
-from .forms      import LoginForm, RegistrationForm, ChangePasswordForm,\
-                        ChangeEmailForm, PasswordResetForm, \
-                        PasswordResetRequestForm
 from .. import db
 from ..models import User
 from ..email import send_email
 import json, re
-
 
 # ----------------------------------------------------------------
 # rules 函数提供了 “注册须知” 界面的入口
@@ -23,7 +19,8 @@ def rules():
     return render_template('auth/rules.html')
 
 def verify_email(email):
-    if len(email) > 7 and re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+    if len(email) > 7 and \
+        re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
         return True
     return False
 
@@ -41,7 +38,7 @@ def login():
     if request.method == 'GET':
         if current_user.is_authenticated:
             return redirect(url_for('main.home'))
-        return render_template('login.html')
+        return render_template('auth/login.html')
     else:
         req = request.form.get('request')
         if req is None:
@@ -73,18 +70,18 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('您已经登出')
     return redirect(url_for('auth.login', _external=True))
 
 # ------------------------------------------------------------------
 # register 函数提供了注册入口
 @auth.route('/register', methods = ['GET', 'POST'])
 def register():
+    #return render_template('auth/test.html')
     if request.method == 'GET':
         if current_user.is_authenticated:
             flash('您已经登录，无需注册！')
             return redirect(url_for('main.home'))
-        return render_template('register.html')
+        return render_template('auth/register.html')
     else:
         req = request.form.get('request')
         if req is None:
@@ -254,7 +251,7 @@ def password_reset_request():
     if request.method == 'GET':
         if current_user.is_authenticated:
             return redirect(url_for('main.home'))
-        return render_template('reset.html')
+        return render_template('auth/reset.html')
     else:
         req = request.form.get('request')
         if req is None:
@@ -292,7 +289,7 @@ def password_reset(token):
     if request.method == 'GET':
         if current_user.is_authenticated:
             return redirect(url_for('main.home'))
-        return render_template('password_reset.html', token=token)
+        return render_template('auth/password_reset.html', token=token)
     else:
         req = request.form.get('request')
         if req is None:
@@ -329,7 +326,7 @@ def password_reset(token):
 @auth.route('/secure_center')
 @login_required
 def secure_center():
-    return render_template('secure_center.html')
+    return render_template('auth/secure_center.html')
 
 # -------------------------------------------------------------------
 # before_request 注册了用户未激活邮箱时的跳转接口。
@@ -349,4 +346,4 @@ def before_request():
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index', _external=True))
-    return render_template('unconfirmed.html')
+    return render_template('auth/unconfirmed.html')

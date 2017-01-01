@@ -4,7 +4,6 @@ import  urllib,  threading, json, struct, pickle
 from socket import *
 from models import Bulb, TV, AirConditional
 from config import PORT, SERVER_IP
-from realPC import Raspberry
 
 def buildPostData(code, status):
     return urllib.urlencode({
@@ -90,8 +89,7 @@ class Manager():
         return {
             'Bulb': Bulb,
             'TV': TV,
-            'Air': AirConditional,
-            'PC': Raspberry
+            'Air': AirConditional
         }
     def shutdown(self, code):
         device = self.deviceSet.get(code)

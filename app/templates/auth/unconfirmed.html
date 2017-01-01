@@ -1,24 +1,34 @@
-{% extends "base.html" %}
+{% extends "auth/authbase.html" %}
 
-{% block title %}顶点云 - 账户验证{% endblock %}
+{% block title %}顶点云设备管理 - 尚未激活{% endblock %}
 
-{% block page_content %}
-<section id="top" class="two">
-    <div class="container">
-        <header>
-            <h3>您好，{{ current_user.nickname }}！</h3>
-            <div style="text-align:left; margin: 0 10% 0 10%">
-                <p>
-                    您的帐户尚未通过验证。
-                    在您得到此地址的访问权限前，您需要验证您的帐户。
-                    请检查您注册邮箱的收件箱，您应该收到了一封包含确认链接的邮件。
-                </p>
-                <p>
-                    需要重发一封确认邮件？
-                    <a href="{{ url_for('auth.resend_confirmation', _external=True) }}">点击此处重发</a>
-                </p>
-            </div>
-        </header>
-    </div>
-</section>
+{% block main %}
+<form method="post" role="form" id="resetpassword" class="login-form fade-in-effect">
+	<div class="login-header">
+		<a href="{{ url_for('main.index') }}" class="logo">
+			<img src="{{ url_for('static', filename='assets/images/zenith-logo-white.png')}}" alt="" width="80" />
+			<span>您的账户尚未激活</span>
+		</a>
+		<p>随时随地，设备触手可及</p>
+	</div>
+    <p style="font-size:30px">您好，{{ current_user.nickname }}！</p>
+        <p style="font-size:15px">
+            您的帐户尚未通过验证。
+            在您得到此地址的访问权限前，您需要验证您的帐户。
+            请检查您注册邮箱的收件箱，您应该收到了一封包含确认链接的邮件。
+        </p>
+					
+	<div class="login-footer">
+		<a href="{{ url_for('auth.resend_confirmation', _external=True) }}">点击此处重发一封激活邮件</a>
+		<div class="info-links"></div>	
+	</div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		setTimeout(function(){ $(".fade-in-effect").addClass('in'); }, 1);
+	});
+</script>
 {% endblock %}

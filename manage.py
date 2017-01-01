@@ -73,54 +73,62 @@ def init():
     db.session.commit()
     db.create_all()
     u1 = User(email='forec@bupt.edu.cn',
-             nickname='Admin',
-             password='TESTTHISPASSWORD',
+             nickname='Forec',
+             password='zenithdm',
              confirmed=True,
-             about_me='Wait for updating')
+             about_me='这个人很懒，什么都没有留下')
     u2 = User(email='test@test.com',
-             nickname='testuser',
-              monitor_url="http://monitor.cross.forec.cn",
+             nickname='设备管理测试员',
+             monitor_url="http://monitor.cross.forec.cn",
              token_hash='9490544C18C15B21286685B41F825684',
-             password='testtest',
+             password='zenithdm',
              confirmed=True,
-             about_me='this is a test user')
+             about_me='我是顶点云设备管理平台测试者')
     db.session.add(u1)
     db.session.add(u2)
 
-    d1 = Bulb(name = '默认设备',
+    d1 = Bulb(name = '主卧照明',
               code='E1A9013A447E',
              owner = u2,
              interval = 5,
-             about = '这是一个默认设备'
+             about = '主卧右四大灯照明'
              )
 
-    d2 = Bulb(name = '灯泡',
+    d2 = Bulb(name = '书房台灯',
              owner = u2,
               code='BA8120601307',
              interval = 3,
-             about = '这是灯泡'
+             about = '书房书橱右上第二个台灯'
              )
 
-    d3 = TV(name = '电视',
+    d3 = Bulb(name = '厨房照明',
+             owner = u2,
+              code='LI29F2MV9D7Z',
+             interval = 3,
+             about = '厨房油烟机灯光'
+             )
+
+    d4 = TV(name = '客厅电视',
              owner = u2,
              code='CE683231033B',
              interval = 5,
-             about = '这是电视'
+             about = '65536 寸 TCL 彩电'
              )
 
-    d4 = AirCondition(name = '空调',
-             owner = u2,
+    d5 = AirCondition(
+            name = '客房柜式空调',
+            owner = u2,
             code='EFID2141FJKD',
              interval = 5,
-             about = '这是空调'
+             about = '客房柜式 GL 203 空调'
              )
 
-    d5 = PC(
+    d6 = PC(
         name = '树莓派',
         owner= u2,
         code = 'JFIDEO2193FJ',
-        interval = 3,
-        about = '这时树莓派'
+        interval = 5,
+        about = '宿舍里留守的树莓派'
     )
 
     db.session.add(d1)
@@ -128,6 +136,7 @@ def init():
     db.session.add(d3)
     db.session.add(d4)
     db.session.add(d5)
+    db.session.add(d6)
     db.session.commit()
 
 # 清空数据库并初始化测试用户
@@ -140,13 +149,13 @@ def simple_init():
              nickname='Forec',
              password='zenith',
              confirmed=True,
-             about_me='物联网设备管理员')
+             about_me='顶点云设备管理员')
     db.session.add(u)
     u = User(email='test@test.com',
              nickname='测试者',
              password='zenith',
              confirmed=True,
-             about_me='欢迎来到不知叫啥名的线上测试')
+             about_me='欢迎来到顶点云设备管理的线上测试')
     db.session.add(u)
     u = User(email='dragoncat@forec.cn',
              nickname='龙猫',

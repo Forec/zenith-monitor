@@ -9,7 +9,8 @@
 	<meta name="author" content="" />
 	
 	<title>{% block title %}{% endblock %}</title>
-
+	<link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
+	<link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
@@ -21,7 +22,7 @@
 
 	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js') }}"></script>
 	<script>
-		window.url = "{{ url_for('main.home', _external=True) }}";
+		window.url = "{{ url_for('main.index', _external=True) }}";
 		window.url = window.url.substring(0,window.url.length-1);
 	</script>
 </head>
@@ -189,7 +190,7 @@
 			<footer class="main-footer sticky footer-type-1">
 				<div class="footer-inner">
 					<div class="footer-text">
-						京ICP备16060806号-1 &copy; 2016 
+						京ICP备16060806号-1 &copy; 2017
 						<strong>顶点云设备监控系统</strong> 
 						由 <a href="http://forec.cn" target="_blank" title="Forec">Forec</a> 和 <a href="https://github.com/non1996" title="non1996" target="_blank">non1996</a> 设计
 					</div>

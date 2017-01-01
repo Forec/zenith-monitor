@@ -1,16 +1,15 @@
 # 作者：Forec
 # 最后修改时间：2016-12-24
 # 邮箱：forec@bupt.edu.cn
-# 关于此文件：应用涉及的全部模型，包括用户、设备
+# 关于此文件：应用涉及的全部模型，包括用户、设备、记录等
 
-import hashlib, threading, struct, os, json, pickle, time, calendar
+import hashlib, threading, struct, json, pickle, calendar, os
 from random import randint
-from math import ceil
 from socket import *
 from datetime import datetime
 from config import basedir
 from flask import current_app, request
-from flask import url_for, jsonify
+from flask import url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer
 from . import db, login_manager
@@ -484,36 +483,3 @@ login_manager.login_message = u"您需要先登录才能访问此界面！"
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
-
-# -----------------------------------------------------------------------
-# 自定义内容分页模型
-class Pagination(object):
-    def __init__(self, page, per_page, total_count):
-        self.page = page
-        self.per_page = per_page
-        self.total_count = total_count
-    # 页数
-    @property
-    def pages(self):
-        return int(ceil(self.total_count / float(self.per_page)))
-    # 当前页是否有更前页
-    @property
-    def has_prev(self):
-        return self.page > 1
-    # 当前页是否有后页
-    @property
-    def has_next(self):
-        return self.page < self.pages
-    # 当前页的内容列表
-    def iter_pages(self, left_edge=2, left_current=2,
-                   right_current=5, right_edge=2):
-        last = 0
-        for num in range(1, self.pages + 1):
-            if num <= left_edge or \
-               (num > self.page - left_current - 1 and \
-                num < self.page + right_current) or \
-               num > self.pages - right_edge:
-                if last + 1 != num:
-                    yield None
-                yield num
-                last = num

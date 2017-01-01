@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="ZENITH CLOUD DEVICE MANAGEMENT" />
+	<meta name="author" content="" />
+	
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
+	<link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/linecons/css/linecons.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fonts/fontawesome/css/font-awesome.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-core.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-forms.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-components.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/xenon-skins.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
+
+	<script src="{{ url_for('static', filename='assets/js/jquery-1.11.1.min.js') }}"></script>
+	<script>
+		window.url = "{{ url_for('main.index', _external=True) }}";
+		window.url = window.url.substring(0,window.url.length-1);
+	</script>
+</head>
+
+
+<body class="page-body">
+
+<div class="settings-pane">
+			
+		<a href="#" data-toggle="settings-pane" data-animate="true">
+			&times;
+		</a>
+		
+		<div class="settings-pane-inner">
+			
+			<div class="row">
+				
+				<div class="col-md-4">
+					
+					<div class="user-info">
+						
+						<div class="user-image">
+							<a href="{{ url_for('main.user') }}">
+							{% if current_user.is_authenticated %}
+								<img src="{{ current_user.gravatar(size=64) }}" class="img-responsive img-circle" />
+								{% else %}
+								<img src="{{ url_for('static', filename = 'assets/images/user-4.png') }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+								{% endif %}
+							</a>
+						</div>
+						
+						<div class="user-details">
+							
+							<h3>
+								<a href="{{ url_for('main.user') }}">{{ current_user.nickname }}</a>
+								
+								<!-- Available statuses: is-online, is-idle, is-busy and is-offline -->
+								<span class="user-status is-online"></span>
+							</h3>
+							
+							<p class="user-title"></p>
+							
+							<div class="user-links">
+								<a href="{{ url_for('main.user') }}" class="btn btn-primary">编辑资料</a>
+								<a href="{{ url_for('auth.secure_center') }}" class="btn btn-success">安全中心</a>
+							</div>
+							
+						</div>
+						
+					</div>
+					
+				</div>
+				
+				<div class="col-md-8 link-blocks-env">
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>帮助</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									安全中心
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改密码
+								</a>
+							</li>
+							<li>
+								<a href="{{ url_for('auth.secure_center') }}">
+									<i class="fa-angle-right"></i>
+									修改邮箱
+								</a>
+							</li>
+							{% if current_user.is_authenticated %}
+							<li>
+								<a href="{{ url_for('main.reset_token',token = current_user.generate_resetToken_token(expiration=3600)) }}">
+									<i class="fa-angle-right"></i>
+									更新 Token
+								</a>
+							</li>
+							{% endif %}
+						</ul>
+					</div>
+					
+					<div class="links-block left-sep">
+						<h4>
+							<a href="#">
+								<span>关注我们</span>
+							</a>
+						</h4>
+						
+						<ul class="list-unstyled">
+							<li>
+								<a href="http://forec.cn">
+									<i class="fa-angle-right"></i>
+									Forec 的官方网站
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/Forec">
+									<i class="fa-angle-right"></i>
+									Forec 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="https://github.com/non1996">
+									<i class="fa-angle-right"></i>
+									non1996 的 GitHub
+								</a>
+							</li>
+							<li>
+								<a href="http://cloud.forec.cn">
+									<i class="fa-angle-right"></i>
+									顶点云存储
+								</a>
+							</li>
+						</ul>
+					</div>
+					
+				</div>
+				
+			</div>
+		
+		</div>
+		
+	</div>
+
+	<div class="page-container">
+		<div class="sidebar-menu toggle-others fixed">
+			<div class="sidebar-menu-inner">	
+				<header class="logo-env">
+					<div class="logo">
+						<a href="{{ url_for('main.home') }}" class="logo-expanded">
+							<img src="{{ url_for('static', filename = 'assets/images/zenith-logo-white.png') }}" width="80" alt="" />
+						</a>
+					</div>
+					<div class="mobile-menu-toggle visible-xs">
+						<a href="#" data-toggle="user-info-menu">
+							<i class="fa-user"></i>
+						</a>
+						
+						<a href="#" data-toggle="mobile-menu">
+							<i class="fa-bars"></i>
+						</a>
+					</div>
+					<!-- This will open the popup with user profile settings, you can use for any purpose, just be creative -->
+					<div class="settings-icon">
+						<a href="#" data-toggle="settings-pane" data-animate="true">
+							<i class="linecons-cog"></i>
+						</a>
+					</div>
+				</header>
+
+				{% block sidebar %}{% endblock %}
+			</div>
+		</div>
+		
+		<div class="main-content">
+			
+			{% block main %}
+			{% endblock %}
+
+			<footer class="main-footer sticky footer-type-1">
+				<div class="footer-inner">
+					<div class="footer-text">
+						京ICP备16060806号-1 &copy; 2017
+						<strong>顶点云设备监控系统</strong> 
+						由 <a href="http://forec.cn" target="_blank" title="Forec">Forec</a> 和 <a href="https://github.com/non1996" title="non1996" target="_blank">non1996</a> 设计
+					</div>
+					
+					<div class="go-up">
+						<a href="#" rel="go-top">
+							<i class="fa-angle-up"></i>
+						</a>
+					</div>
+				</div>	
+			</footer>
+		</div>
+	</div>
+	
+	{% block floatPart %}
+	{% endblock %}
+
+	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/TweenMax.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/resizeable.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/joinable.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-api.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-toggles.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/rwd-table/js/rwd-table.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/jquery-validate/jquery.validate.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/toastr/toastr.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='assets/js/xenon-custom.js') }}"></script>
+
+	{% for message in get_flashed_messages() %}
+		<script>
+			var opts = {
+				"closeButton": true,
+				"debug": false,
+				"positionClass": "toast-top-full-width",
+				"onclick": null,
+				"showDuration": "5000",
+				"hideDuration": "1000",
+				"timeOut": "5000",
+				"extendedTimeOut": "5000",
+				"showEasing": "swing",
+				"hideEasing": "linear",
+				"showMethod": "fadeIn",
+				"hideMethod": "fadeOut"
+			};
+			toastr.success("{{ message }}", "", opts);
+		</script>
+	{% endfor %}
+	
+	{% block scripts %}
+	{% endblock %}
+	
+</body>
+</html>

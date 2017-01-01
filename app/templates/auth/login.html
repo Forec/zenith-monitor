@@ -1,20 +1,106 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}顶点云 - 登陆{% endblock %}
-
-{% block page_content %}
-<section id="top" class="two">
-    <div class="container">
-        <header>
-            <h2><stong>登录</stong>顶点云</h2>
-            {{ wtf.quick_form(form) }}
-        </header>
-        <footer>
-            <p><small>尚未注册？<a href="{{ url_for('auth.register', _external=True) }} ">现在加入顶点云</a></small>
-                <br/>
-                <small>忘记密码？<a href="{{ url_for('auth.password_reset_request', _external=True) }}">点此重置您的密码</a></small></p>
-        </footer>
-    </div>
-</section>
+{% extends "auth/authbase.html" %}
+{% block title %}顶点云设备管理 - 登录{% endblock %}
+{% block main %}	
+<form method="post" role="form" id="login" class="login-form fade-in-effect">
+	<div class="login-header">
+		<a href="{{ url_for('main.index') }}" class="logo">
+			<img src="{{ url_for('static', filename='assets/images/zenith-logo-white.png')}}" alt="" width="80" />
+			<span>登陆</span>
+		</a>
+		<p>随时随地，设备触手可及</p>
+	</div>
+	<div class="form-group">
+		<label class="control-label" for="email">邮箱</label>
+		<input type="email" class="form-control input-dark" name="email" id="email" autocomplete="off" />
+	</div>
+	<div class="form-group">
+		<label class="control-label" for="passwd">密码</label>
+		<input type="password" class="form-control input-dark" name="passwd" id="passwd" autocomplete="off" />
+	</div>
+	<div class="form-group">
+		<button type="submit" class="btn btn-dark  btn-block text-left"><i class="fa-send"></i>登陆</button>
+	</div>
+	<div class="login-footer">
+		<a href="{{ url_for('auth.register') }}">注册新账号</a>&nbsp;&nbsp;&nbsp;
+		<a href="{{ url_for('auth.password_reset_request') }}">找回密码</a>
+		<div class="info-links"></div>
+	</div>
+</form>
+{% endblock %}
+				
+{% block scripts %}
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		setTimeout(function(){ $(".fade-in-effect").addClass('in'); }, 1);
+		
+		$("form#login").validate({
+			rules: {
+				email: {
+					required: true
+				},
+				passwd: {
+					required: true,
+					minlength: 8,
+					maxlength: 32
+				}
+			},
+			messages: {
+				email: {
+					required: '请输入邮箱'
+				},
+				passwd: {
+					required: '请输入密码',
+					minlength: '密码长度不能小于 8 个字符',
+					maxlength: '密码长度不能超过 32 个字符'
+				}
+			},
+		// Form Processing via AJAX
+			submitHandler: function(form){
+				show_loading_bar(70); // Fill progress bar to 70% (just a given value)
+				var opts = {
+					"closeButton": true,
+					"debug": false,
+					"positionClass": "toast-top-full-width",
+					"onclick": null,
+					"showDuration": "300",
+					"hideDuration": "1000",
+					"timeOut": "5000",
+					"extendedTimeOut": "1000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut"
+				};
+				$.ajax({
+					url: "{{ url_for('auth.login') }}",
+					method: 'POST',
+					dataType: 'json',
+					data: {
+						'request':JSON.stringify({
+							'email': $(form).find('#email').val(),
+							'passwd': $(form).find('#passwd').val()
+						})										
+					},
+					success: function(resp){
+						show_loading_bar({
+							delay: .5,
+							pct: 100,
+							finish: function(){
+								// Redirect after successful login page (when progress bar reaches 100%)
+								if(resp.code == true){
+									window.location.href = '{{ url_for('main.home') }}';
+								}
+								else {
+									toastr.error("您输入的 <strong>用户名</strong> 或 <strong>密码</strong> 不正确！", "登录失败", opts);
+									$passwd.select();
+								}
+							}
+						});
+					}
+				});
+			}
+		});
+		$("form#login .form-group:has(.form-control):first .form-control").focus();
+	});
+</script>
 {% endblock %}

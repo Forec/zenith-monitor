@@ -1,9 +1,9 @@
 from . import db
 from .models import Device, RequestThread, Record
-from flask import json, current_app, url_for
+from flask import json
 from .encoder import json_numpy_obj_hook
-import base64, pickle, os.path
-import numpy, cv2
+import os.path
+import cv2
 from config import basedir
 
 class Bulb(Device):

@@ -10,16 +10,16 @@ from config       import basedir
 from flask        import render_template, redirect, url_for, \
                         abort, flash, request, current_app, jsonify
 from flask_login  import login_required, current_user
-from .forms       import EditProfileForm, DeviceEditForm, \
-                        DeviceDeleteForm, NewDeviceForm
+from .forms       import EditProfileForm
 from .            import main
 from ..           import db
-from ..models     import User ,Pagination, Device, Record
-from ..devices    import deviceTable, deviceNumbers
+from ..models     import User, Device, Record
+from ..devices    import deviceTable
 from datetime import datetime
 
 def verify_email(email):
-    if len(email) > 7 and re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+    if len(email) > 7 and \
+        re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
         return True
     return False
 
@@ -33,31 +33,17 @@ def verify_nickname(nickname):
     return True
 
 # ----------------------------------------------------------------
-# home 函数提供了介绍界面的入口
-@main.route('/')
+# home 函数提供了设备管理主界面的入口
+@main.route('/home')
 @login_required
 def home():
-    return render_template('tables-responsive.html')
+    return render_template('home.html')
 
 # ----------------------------------------------------------------
 # index 为服务器主页入口点，将展示用户拥有的设备
-@main.route('/index')
-@login_required
+@main.route('/')
 def index():
-    page = request.args.get('page', 1, type=int)
-
-    deviceList = current_user.devices.all()
-    pagination = Pagination(page=page,
-                            per_page=current_app.\
-                                config['ZENITH_DEVICES_PER_PAGE'],
-                            total_count=len(deviceList))
-    devices = deviceList[(page-1)*current_app.\
-                            config['ZENITH_DEVICES_PER_PAGE']:
-                          page*current_app.\
-                            config['ZENITH_DEVICES_PER_PAGE']]
-    return render_template('index/index.html',
-                           devices = devices,
-                           pagination = pagination)
+    return render_template('index.html')
 
 # -------------------------------------------------------------------
 # set_interval 为用户界面刷新速率提供修改。
@@ -191,7 +177,7 @@ def user():
     form.nickname.data = current_user.nickname
     form.about_me.data = current_user.about_me
     form.url.data = current_user.monitor_url
-    return render_template('user-info.html', form=form)
+    return render_template('profile.html', form=form)
 
 # ----------------------------------------------------------------------
 # device 显示具体的设备信息
@@ -202,18 +188,16 @@ def device(code):
         # 设备不属于当前用户则返回 403 错误
         abort(403)
     if device.type == 'Bulb':
-        return render_template('dashboard-bulb.html', device=device)
+        return render_template('dashboard/bulb.html', device=device)
     elif device.type == 'TV':
-        return render_template('dashboard-television.html', device=device)
+        return render_template('dashboard/tv.html', device=device)
     elif device.type == 'PC':
-        return render_template('dashboard-pc.html', device=device)
+        return render_template('dashboard/pc.html', device=device)
     else:
-        return render_template('dashboard-air.html', device=device)
+        return render_template('dashboard/air.html', device=device)
 
 # --------------------------------------------------------------------
-# delete_device 为用户提供了删除设备界面的入口，用户需对自己的删除操作进行
-# 确认后，方可产生一个一次性的 token，并使用此 token 跳转到 delete_devi-
-# ce_confirm 入口执行删除操作。
+# delete_device 为用户提供了删除设备入口
 @main.route('/delete-device/', methods=['POST'])
 @login_required
 def delete_device():
@@ -249,7 +233,7 @@ def delete_device():
     })
 
 # -----------------------------------------------------------------------
-# edit_device 函数为用户编辑设备信息（重命名、选择类型、修改描述）界面提供了入口
+# edit_device 函数为用户重命名设备提供了入口
 @main.route('/edit-device/', methods=['POST'])
 @login_required
 def edit_device():
@@ -263,6 +247,7 @@ def edit_device():
     token = req.get('token')
     name = req.get('name')
     code = req.get('code')
+    about = req.get('about')
     if token is None or email is None or code is None or name is None or \
             not verify_email(email):
         return jsonify({
@@ -279,6 +264,8 @@ def edit_device():
             'code': 2   # 认证失败
         })
     device.name = name
+    if about is not None:
+        device.about = about
     db.session.add(device)
     db.session.commit()
     return jsonify({
@@ -300,6 +287,7 @@ def newdevice():
     name = req.get('name')
     interval = req.get('interval')
     type = req.get('type')
+    about = req.get('about')
     if token is None or email is None or name is None or type is None or \
             not verify_email(email):
         return jsonify({
@@ -327,7 +315,8 @@ def newdevice():
     device = deviceType(
         name = name,
         interval = interval,
-        owner = user
+        owner = user,
+        about = about
     )
     device.code = device.randomCode()
     db.session.add(device)
@@ -337,6 +326,8 @@ def newdevice():
         'code': device.code       # 认证成功
     })
 
+# -----------------------------------------------------------------------
+# 实时监控界面入口
 @main.route('/monitor/')
 @login_required
 def monitor():
@@ -350,7 +341,6 @@ def update_status():
     token = request.form.get('token')
     type = request.form.get('type')
     status = request.form.get('status')
-    # print(code, token, type, status)
     if code is None or token is None or \
         type is None or status is None:
         return 'fail'
@@ -391,7 +381,6 @@ def show_status():
         devices = user.devices.all()
         for device in devices:
             returnDict[device.code] = device.getStatus()
-        # print(returnDict)
         return jsonify({
             'list': returnDict
         })
@@ -405,6 +394,8 @@ def show_status():
          })
     return 'fail'
 
+# -----------------------------------------------------------------------------
+# 客户发出控制命令入口，由服务器转发给客户端
 @main.route('/set_device/', methods=['POST'])
 def set_device():
     req = request.form.get('request')
@@ -414,7 +405,6 @@ def set_device():
     token = req.get('token')
     email = req.get('email')
     code = req.get('code')
-    print(token, email, code)
     if token is None or email is None or code is None or not verify_email(email):
         return 'fail'
     user = User.query.filter_by(email=email).first()
@@ -436,6 +426,8 @@ def set_device():
             device.setStatus(setRequest)
     return 'succ'
 
+# ------------------------------------------------------------------------
+# 设备记录历史界面入口
 @main.route('/show_history/<code>')
 @login_required
 def show_history(code):
@@ -445,9 +437,11 @@ def show_history(code):
     if device is None or device.owner != current_user:
         abort(403)
     if device.type == 'PC':
-        return render_template('history-pc.html', device = device)
-    return render_template("history.html", device = device)
+        return render_template('history/pc.html', device = device)
+    return render_template("history/device.html", device = device)
 
+# ----------------------------------------------------------------------------
+# ajax 获取设备历史记录入口
 @main.route('/get_history/', methods=['POST'])
 def get_history():
     req = request.form.get('request')
@@ -476,7 +470,6 @@ def get_history():
         hour = time.get('hour') or '00'
         minute = time.get('minute') or '00'
         second = time.get('second') or '00'
-        print(year, month, day)
         int(year);int(month);int(day);
         int(minute);int(second);int(hour);
         timeString = '%s-%s-%s %s:%s:%s' % (year,month,day,hour,minute,second)

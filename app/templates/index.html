@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>顶点云设备管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
+	<link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico', _external=True) }}" type="image/x-icon">
+<link href="{{ url_for('static', filename='index/css/style.css') }}" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.useso.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<!-- jQuery -->
+<script type="text/javascript" src="{{ url_for('static', filename='index/js/jquery.min.js') }}"></script>
+<!-- Add fancyBox main JS and CSS files -->
+<script src="{{ url_for('static', filename='index/js/jquery.magnific-popup.js') }}" type="text/javascript"></script>
+<link href="{{ url_for('static', filename='index/css/magnific-popup.css') }}" rel="stylesheet" type="text/css">
+<script>
+			$(document).ready(function() {
+				$('.popup-with-zoom-anim').magnificPopup({
+					type: 'inline',
+					fixedContentPos: false,
+					fixedBgPos: true,
+					overflowY: 'auto',
+					closeBtnInside: true,
+					preloader: false,
+					midClick: true,
+					removalDelay: 300,
+					mainClass: 'my-mfp-zoom-in'
+			});
+		});
+		</script>
+<script src="{{ url_for('static', filename='index/js/jquery.hoverdir.js') }}"></script>
+<script type="text/javascript">
+			$(function() {
+			
+				$(' #da-thumbs > li ').each( function() { $(this).hoverdir({
+					hoverDelay : 50,
+					inverse : true
+				}); } );
+
+			});
+    </script>
+</head>
+<body>
+
+<div class="index-banner">
+  <!--<div class="wrap">-->
+    <div class="wmuSlider example1">
+      <article style="position: absolute; width: 100%; opacity: 0;">
+        <div class="banner-wrap">
+          <div class="cont span_2_of_3">
+            <h1>顶点云设备管理系统</h1>
+          </div>
+          <div class="rsidebar span_1_of_3">
+            <div class="btn"><a href="{{ url_for('auth.login') }}">现在进入</a></div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="banner"> <img src="{{ url_for('static', filename='index/images/mac.png') }}" alt=""/> </div>
+      </article>
+
+    </div>
+  <script src="{{ url_for('static', filename='index/js/jquery.wmuSlider.js') }}"></script>
+  <script>
+       $('.example1').wmuSlider();
+   </script>
+</div>
+<div class="main">
+  <div class="wrap">
+    <div class="content-top">
+      <div class="col_1_of_3 span_1_of_3">
+        <h3>状态监控</h3>
+        <img src="{{ url_for('static', filename='index/images/icon.png') }}" alt=""/>
+        <p>实时、准确的状态监控<br>
+           顶点云设备管理系统可实时监控设备状态，用户可以对设备设置不同的监控周期以满足不同的监控需求。</p>
+
+      </div>
+      <div class="col_1_of_3 span_1_of_3">
+        <h3>远程控制</h3>
+        <img src="{{ url_for('static', filename='index/images/icon1.png') }}" alt=""/>
+        <p>友好、简单的交互界面<br>
+          顶点云设备管理系统为每种设备定制相应的控制界面，用户无需学习即可远程操控设备。</p>
+
+      </div>
+      <div class="col_1_of_3 span_1_of_3">
+        <h3>设备历史</h3>
+        <img src="{{ url_for('static', filename='index/images/icon2.png') }}" alt=""/>
+        <p>简洁明了的图表展示<br>
+          动态图标帮助用户把握设备特定时间段内的基本状态，用户也可选择查看指定时间段的历史记录。</p>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+  <div class="content-bottom">
+    <div class="wrap">
+      <div class="bottom-box">
+        <div class="col_1_of_4 span_1_of_4"><img class="imgborder" alt="" src="{{ url_for('static', filename='index/images/list.jpg') }}">
+          <div class="text">
+            <h4><a href="{{ url_for('main.home') }}">控制面板</a></h4>
+            <p>总览设备基本状态</p>
+          </div>
+        </div>
+        <div class="col_1_of_4 span_1_of_4"><img class="imgborder" alt="" src="{{ url_for('static', filename='index/images/monitor.jpg') }}">
+          <div class="text">
+            <h4><a href="{{ url_for('main.monitor') }}">视频监控</a></h4>
+            <p>随时查看设备监控视频</p>
+          </div>
+        </div>
+        <div class="col_1_of_4 span_1_of_4"><img class="imgborder" alt="" src="{{ url_for('static', filename='index/images/tv.jpg') }}">
+          <div class="text">
+            <h4><a href="{{ url_for('main.home') }}">详细信息</a></h4>
+            <p>实时掌握设备状态并操控设备</p>
+          </div>
+        </div>
+        <div class="col_1_of_4 span_1_of_4"><img class="imgborder" alt="" src="{{ url_for('static', filename='index/images/history.jpg') }}">
+          <div class="text">
+            <h4><a href="{{ url_for('main.home') }}">历史记录</a></h4>
+            <p>轻松获取设备历史状态</p>
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="wrap">
+    <div class="footer-left">
+      <ul class="footer-nav">
+        <li><a href="https://github.com/Forec/zenith-monitor">Star on GitHub</a></li>
+        |
+        <li><a href="mailto:forec@bupt.edu.cn">联系我们</a></li>
+        |
+        <li><a href="https://github.com/Forec/zenith-monitor/issues">提交 ISSUE</a></li>
+      </ul>
+      <div class="copy">
+        <p>京ICP备16060806号-1 © 2017 顶点云设备管理平台由 <a href="http://forec.cn" target="_blank" title="Forec">Forec</a> 和 <a href="https://github.com/non1996" title="non1996" target="_blank">non1996</a> 设计</p>
+      </div>
+    </div>
+    <div class="social">
+      <ul>
+        <li class="facebook"><a href="#"><span> </span></a></li>
+        <li class="linkedin"><a href="#"><span> </span></a></li>
+        <li class="twitter"><a href="#"><span> </span></a></li>
+        <li class="pinterest"><a href="#"><span> </span></a></li>
+        <li class="dribble"><a href="#"><span> </span></a></li>
+        <li class="google"><a href="#"><span> </span></a></li>
+      </ul>
+    </div>
+    <div class="clear"></div>
+  </div>
+</div>
+
+</body>
+</html>
