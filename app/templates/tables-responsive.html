@@ -44,6 +44,12 @@
 							<span class="title">视频监控</span>
 						</a>
 					</li>
+					<li>
+						<a href="http://forec.cn:20000">
+							<i class="linecons-key"></i>
+							<span class="title">远程登录</span>
+						</a>
+					</li>
 				</ul>
 {% endblock %}
 {% block main %}
@@ -428,8 +434,8 @@ function refresh() {
 				if (data.list[key].type == 'PC'){
 					temperature = data.list[key].cpu_temp;
 					operation = "<td class='text-left'>" +
-								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
-									window.url + "/ssh/" + key + "\">SSH</a>" +
+								"<a type='button' class='btn btn-blue btn-xs' href=\"http://forec.cn:20000\"" + 
+								key + "\">SSH</a>" +
 								"<a type='button' class='btn btn-blue btn-xs' href=\""+ 
 									window.url + "/device/" + key + "\">详细</a>" +
 								"<a type='button' class='btn btn-warning btn-xs' href=\""+ 

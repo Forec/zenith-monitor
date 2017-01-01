@@ -444,7 +444,9 @@ def show_history(code):
     device = Device.query.filter_by(code = code).first()
     if device is None or device.owner != current_user:
         abort(403)
-    return render_template('history.html', device = device)
+    if device.type == 'PC':
+        return render_template('history-pc.html', device = device)
+    return render_template("history.html", device = device)
 
 @main.route('/get_history/', methods=['POST'])
 def get_history():
@@ -510,10 +512,16 @@ def get_history():
         def add(self, status):
             try:
                 status = json.loads(status)
-                volume = int(status.get('volume'))
-                current = int(status.get('current'))
-                power = int(status.get('power'))
-                temperature = int(status.get('temperature'))
+                if (status.get('type') == 'PC'):
+                    volume = int(status.get('ram_used'))
+                    current = int(status.get('cpu_use'))
+                    power = int(status.get('gpu_temp'))
+                    temperature = int(status.get('cpu_temp'))
+                else:
+                    volume = int(status.get('volume'))
+                    current = int(status.get('current'))
+                    power = int(status.get('power'))
+                    temperature = int(status.get('temperature'))
             except:
                 return
             self.temperature += temperature

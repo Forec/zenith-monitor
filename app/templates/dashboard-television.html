@@ -4,9 +4,9 @@
 			<div class="row">
 				<div class="col-sm-3">
 					
-					<div class="xe-widget xe-counter" data-count=".num" data-from="0.0" data-to="100.0" data-suffix="A" data-duration="2">
+					<div class="xe-widget xe-counter" data-count=".num" data-from="0.0" data-to="0.0" data-suffix="A" data-duration="2">
 						<div class="xe-icon">
-							<i class="linecons-cloud"></i>
+							<i class="fa-code-fork"></i>
 						</div>
 						<div class="xe-label">
 							<strong class="num" id="Electricity">0.0%</strong>
@@ -14,9 +14,9 @@
 						</div>
 					</div>
 
-					<div class="xe-widget xe-counter xe-counter-purple" data-count=".num" data-from="0" data-to="220" data-suffix="V" data-duration="3" data-easing="false">
+					<div class="xe-widget xe-counter xe-counter-purple" data-count=".num" data-from="0" data-to="0" data-suffix="V" data-duration="3" data-easing="false">
 						<div class="xe-icon">
-							<i class="linecons-user"></i>
+							<i class="fa-flash"></i>
 						</div>
 						<div class="xe-label">
 							<strong class="num" id="Voltage">1k</strong>
@@ -24,9 +24,9 @@
 						</div>
 					</div>
 					
-					<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="0" data-to="5000" data-suffix="W" data-duration="4" data-easing="true">
+					<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="0" data-to="0" data-suffix="W" data-duration="4" data-easing="true">
 						<div class="xe-icon">
-							<i class="linecons-camera"></i>
+							<i class="fa-lightbulb-o"></i>
 						</div>
 						<div class="xe-label">
 							<strong class="num" id="Power">1000</strong>
@@ -40,7 +40,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-medium text-muted">电流值</span>
-							<div id = "Light" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="14.85" data-suffix="%" data-duration="1">0</div>
+							<div id = "Light" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0.00" data-suffix="%" data-duration="1">0</div>
 						</div>
 						<div id="pageviews-visitors-chart" style="height: 298px;"></div>
 					</div>
@@ -110,7 +110,7 @@
 							</div>
 
 							<div class="chart-entry-value chart-label-small">
-								<div id="network-mbs-packets1" class="h1 text-secondary text-bold" data-count="this" data-from="0.00" data-to="5" data-suffix="" data-duration="1.5">0.00%</div>
+								<div id="network-mbs-packets1" class="h1 text-secondary text-bold" data-count="this" data-from="0" data-to="0" data-suffix="" data-duration="1">0</div>
 							</div>
 
 							<div class="chart-entry-value">
@@ -127,7 +127,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-small text-muted text-upper">设备温度</span>
-							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="21.05" data-suffix="℃" data-duration="1">0.00</div>
+							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="0.00" data-suffix="℃" data-duration="1">0.00</div>
 						</div>
 						<div class="chart-right-legend">
 							<div id="network-realtime-gauge" style="width: 170px; height: 140px"></div>
@@ -712,11 +712,17 @@
 		if(up == 1){
 			num++;
 			num %= 10;
+			if (num == 0){
+				num = 1;
+			}
 			jQuery('#network-mbs-packets1').text(num);
 		}
 		else{
-			num += 9;
+			num -= 1;
 			num %= 10;
+			if (num == 0){
+				num = 10;
+			}
 			jQuery('#network-mbs-packets1').text(num);
 		}
 		$.ajax({

@@ -1,0 +1,678 @@
+{% extends "history-base.html" %}
+{% block title %}历史记录 - {{ device.name }} - {{ device.code }}{% endblock %}
+{% block main %}
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					CPU 温度记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="range-chart"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					CPU 使用率记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">区间内 CPU 使用率均值</p>
+							<div id="super-electricity" class="super-large text-secondary" data-count="this" data-from="0" data-to="0" data-suffix="%">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="reqs-per-second" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="reqs-per-second-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					内存使用量记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">区间内内存使用量均值</p>
+							<div id="super-voltage" class="super-large text-purple" data-count="this" data-from="0" data-to="0" data-suffix="MB">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="cpu-usage" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="cpu-usage-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					GPU 温度记录
+				</div>
+				<div class="panel-body">
+					
+					<div class="row">
+						<div class="col-sm-3">
+							<p class="text-medium">区间内 GPU 温度均值</p>
+							<div id="super-power" class="super-large text-info" data-count="this" data-from="0" data-to="0" data-suffix="°C" data-duration="3">0</div>
+						</div>
+						<div class="col-sm-3">
+							<div id="memory-usage" style="height: 150px;"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="memory-usage-chart" style="height: 150px;"></div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					时间选择
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<label class="control-label">选择查询区间的时间</label>
+						</div>
+						<div class="col-sm-5">
+							<form role="form" class="form-horizontal">
+								<div class="form-group">
+									<!--<div class="col-sm-4">-->
+										<div class="date-and-time">
+											<input id="date-choose" type="text" class="form-control datepicker" data-format="D, dd MM yyyy">
+											<input id="time-choose" type="text" class="form-control timepicker" data-template="dropdown" data-show-minutes="false" data-show-seconds="false" data-default-time="11:00 AM" data-show-meridian="true" data-minute-step="1"/>
+										</div>
+									<!--</div>-->
+								</div>
+							</form>
+						</div>
+						<div class="col-sm-1">
+							<button class="btn btn-blue" onclick="submitTime()">确定</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+				jQuery(document).ready(function($)
+				{
+					var gaugesPalette = ['#8dc63f', '#40bbea', '#ffba00', '#cc3f44'];
+						
+					// Data Sources for all charts
+					var reqs_per_second_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:05:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:10:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:15:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:20:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:25:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:30:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:35:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:40:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:45:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:50:00"), reqs: 0 },
+						{ time: new Date("October 02, 2014 01:55:00"), reqs: 0 },
+					];
+					var cpu_usage_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:05:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:10:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:15:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:20:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:25:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:30:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:35:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:40:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:45:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:50:00"), usage: 0 },
+						{ time: new Date("October 02, 2014 01:55:00"), usage: 0 }
+					];
+					
+					var memory_usage_data = [
+						{ time: new Date("October 02, 2014 01:00:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:05:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:10:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:15:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:20:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:25:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:30:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:35:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:40:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:45:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:50:00"), used: 0 },
+						{ time: new Date("October 02, 2014 01:55:00"), used: 0 }
+					];
+						
+					// Requests per second gauge
+					$('#reqs-per-second').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 100,
+							majorTick: {
+								tickInterval: 25
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 25,
+									color: gaugesPalette[0]
+								}, {
+									startValue: 25,
+									endValue: 50,
+									color: gaugesPalette[1]
+								}, {
+									startValue: 50,
+									endValue: 75,
+									color: gaugesPalette[2]
+								}, {
+									startValue: 75,
+									endValue: 100,
+									color: gaugesPalette[3]
+								}
+							],
+						},
+						value: 0,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// Requests per second chart
+					$("#reqs-per-second-chart").dxChart({
+						dataSource: reqs_per_second_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#68b828',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "reqs", name: "Reqs per Second", color: '#68b828', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+					
+					
+						
+					// CPU Usage
+					$('#cpu-usage').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 1000,
+							majorTick: {
+								tickInterval: 250
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 250,
+									color: gaugesPalette[0]
+								}, {
+									startValue: 250,
+									endValue: 500,
+									color: gaugesPalette[1]
+								}, {
+									startValue: 500,
+									endValue: 750,
+									color: gaugesPalette[2]
+								}, {
+									startValue: 750,
+									endValue: 1000,
+									color: gaugesPalette[3]
+								}
+							],
+						},
+						value: 0,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// CPU Usage chart
+					$("#cpu-usage-chart").dxChart({
+						dataSource: cpu_usage_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#7c38bc',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "usage", name: "Capacity used", color: '#7c38bc', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+
+					// Memory Usage
+					$('#memory-usage').dxCircularGauge({
+						scale: {
+							startValue: 0,
+							endValue: 120,
+							majorTick: {
+								tickInterval: 30
+							}
+						},
+						rangeContainer: {
+							palette: 'pastel',
+							width: 3,
+							ranges: [
+								{
+									startValue: 0,
+									endValue: 30,
+									color: gaugesPalette[0]
+								}, {
+									startValue: 30,
+									endValue: 60,
+									color: gaugesPalette[1]
+								}, {
+									startValue: 60,
+									endValue: 90,
+									color: gaugesPalette[2]
+								}, {
+									startValue: 90,
+									endValue: 120,
+									color: gaugesPalette[3]
+								}
+							],
+						},
+						value: 0,
+						valueIndicator: {
+							offset: 10,
+							color: '#2c2e2f',
+							spindleSize: 12
+						}
+					});
+					
+					// Memory Usage chart
+					$("#memory-usage-chart").dxChart({
+						dataSource: memory_usage_data,
+						commonPaneSettings: {
+							border: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						commonSeriesSettings: {
+							type: "area",
+							argumentField: "time",
+							border: {
+								color: '#40bbea',
+								width: 1,
+								visible: true
+							}
+						},
+						series: [
+							{ valueField: "used", name: "Megabytes occupied", color: '#40bbea', opacity: .5 },
+						],
+						commonAxisSettings: {
+							label: {
+								visible: true
+							},
+							grid: {
+								visible: true,
+								color: '#f5f5f5'
+							}
+						},
+						argumentAxis: {
+							valueMarginsEnabled: false,
+							label: {
+								customizeText: function (arg) {
+									return date('h:i A', arg.value);
+								}
+							},
+						},
+						legend: {
+							visible: false
+						}
+					});
+					
+					
+					// Combine charts for filtering, grouped by time
+					var all_data_sources = [];
+					$.map(reqs_per_second_data, function(arg, i)
+					{
+						all_data_sources.push({
+							time: 					arg.time,
+							requestsPerMinute: 	0,
+							cpuUsage: 				0,
+							memoryUsed: 			0
+						});
+					});
+					// Range Filter
+					$("#range-chart").dxRangeSelector({
+						dataSource: all_data_sources,
+						size: {
+							height: 140
+						},
+						chart: {
+							series: [
+								{ argumentField: "time", valueField: "requestsPerMinute", color: '#68b828', opacity: .65 }
+							]
+						},
+						
+						selectedRangeChanged: function(e)
+						{
+							var filter = {
+								reqsPerMinuteData: [],
+								cpuUsageData: [],
+								memoryUsageData: []
+							};
+							
+							$.map(all_data_sources, function(arg, i)
+							{
+								if(date("U", e.startValue) <= date("U", arg.time) && date("U", e.endValue) >= date("U", arg.time))
+								{
+									filter.reqsPerMinuteData.push({
+										time: arg.time,
+										reqs: arg.requestsPerMinute
+									});
+
+								}
+							});
+							
+							$('#reqs-per-second-chart').dxChart('instance').option('dataSource', filter.reqsPerMinuteData);
+							$('#cpu-usage-chart').dxChart('instance').option('dataSource', filter.cpuUsageData);
+							$('#memory-usage-chart').dxChart('instance').option('dataSource', filter.memoryUsageData);
+						}
+					});
+
+					// Resize charts
+					$(window).on('xenon.resize', function()
+					{
+						$("#range-chart").data("dxRangeSelector").render();
+						
+						$("#reqs-per-second-chart").data("dxChart").render();
+						$("#cpu-usage-chart").data("dxChart").render();
+						$("#memory-usage-chart").data("dxChart").render();
+						
+						$("#reqs-per-second").data("dxCircularGauge").render();
+						$("#cpu-usage").data("dxCircularGauge").render();
+						$("#memory-usage").data("dxCircularGauge").render();
+					});
+				});
+
+				function monthTranslate(month){
+					if(month == "January"){
+					    return "01";
+					}
+					if(month == "February"){
+					    return "02";
+					}
+					if(month == "March"){
+					    return "03";
+					}
+					if(month == "April"){
+					    return "04";
+					}
+					if(month == "May"){
+					    return "05";
+					}
+					if(month == "June"){
+					    return "06";
+					}
+					if(month == "July"){
+					    return "07";
+					}
+					if(month == "August"){
+					    return "08";
+					}
+					if(month == "September"){
+					    return "09";
+					}
+					if(month == "October"){
+					    return "10";
+					}
+					if(month == "November"){
+					    return "11";
+					}
+					else{
+					    return "12";
+					}
+				}
+
+				//--------------------------------------------------------------------------自定
+
+
+
+				function submitTime() {													//向服务器提交时间
+					var date_str = jQuery("#date-choose").val();
+					var time = jQuery("#time-choose").val();
+					if (date_str.length == 0){
+					    alert("请选择日期");
+					    return;
+					}
+					//---------------------------------------------获取时间信息
+					var param = date_str.split(' ');
+					var day = param[1];
+					var monthName = param[2];
+					var month = monthTranslate(param[2]);
+					var year = param[3];
+					console.log(time);
+					temptime = time.split(':');
+					hour = temptime[0];
+					minute = temptime[1].substr(0, 2);
+					pm = temptime[1].substr(3,5);
+					if (pm == "PM"){
+						hour = parseInt(hour)
+						hour += 12;
+					}
+					hour = parseInt(hour);
+					hour -= 8;
+					if (hour < 1){
+						day -= 1;
+						hour += 24;
+					}
+					if (day < 0){
+						day = 30;
+						month = parseInt(month);
+						month -= 1;
+						if (month == 0){
+							year = parseInt(year);
+							year -= 1;
+							month = '12';
+						}
+					}
+
+					$.ajax({
+						url: '/get_history/',
+						data:{
+						    'request':JSON.stringify({
+								'token': jQuery("#info_token").val(),
+								'email': jQuery("#info_email").val(),
+								'code': jQuery("#info_code").val(),
+								'time':{
+								    'hour': hour,
+									'minute': minute,
+									'second': '00',
+									'year': year,
+									'month': month,
+									'day': day
+								}
+							})
+						},
+						type: "POST",
+						success: function(response){
+							var degree_data = [];
+							var ele_data = [];
+							var vol_data = [];
+							var pow_data = [];
+							for (var i = 0; i < 12; i++){
+								var status = response[i];
+								var temperature = parseInt(status.temperature);
+								var volume = parseInt(status.volume);
+								var current = parseInt(status.current);
+								var power = parseInt(status.power);
+								degree_data.push({time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), requestsPerMinute: temperature});
+								ele_data.push({time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), reqs: current});
+								vol_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), usage: volume});
+								pow_data.push({ time: new Date(monthName+" "+day+", "+year+" "+time.substr(0, 2)+":"+(i*5)+":00"), used: power});
+							}
+							setDegree(degree_data);
+							setElectricity(ele_data);
+							setVoltage(vol_data);
+							setPower(pow_data);
+						},
+						error: function(error){
+						    console.log("失败");
+						}
+					});
+
+					//---------------------------------------------换成你发来的数据
+
+                }
+
+                function setDegree(deg_data){
+					jQuery('#range-chart').dxRangeSelector('instance').option('dataSource', deg_data);
+				}
+
+                function setElectricity(ele_data){
+				    var ele = 0.0;
+					var totalTimes = 0;
+				    for(var i = 0; i < ele_data.length; ++i){
+						if (ele_data[i].reqs != 0){
+							ele += (ele_data[i].reqs);
+							totalTimes ++;
+						}
+					}
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					ele /= totalTimes;
+					ele = ele.toFixed(2);
+
+				    jQuery("#super-electricity").text(ele+'%');
+				    jQuery("#reqs-per-second").dxCircularGauge('instance').value(ele);
+					jQuery("#reqs-per-second-chart").dxChart('instance').option('dataSource', ele_data);
+				}
+
+				function setVoltage(vol_data){
+                    var vol = 0.0;
+					var totalTimes = 0;
+				    for(var i = 0; i < vol_data.length; ++i){
+						if (vol_data[i].usage != 0){
+							vol += vol_data[i].usage;
+							totalTimes ++;
+						}
+					}
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					vol /= totalTimes;
+					vol = parseInt(vol);
+					
+                    jQuery("#super-voltage").text(vol+'MB');
+					jQuery("#cpu-usage").dxCircularGauge('instance').value(vol);
+	                jQuery("#cpu-usage-chart").dxChart('instance').option('dataSource', vol_data);
+                }
+
+                function setPower(pow_data){
+				    var pow = 0.0;
+					var totalTimes = 0;
+				    for(var i = 0; i < pow_data.length; ++i){
+						if (pow_data[i].used != 0){
+							pow += pow_data[i].used;
+							totalTimes ++;
+						}
+					}
+					if (totalTimes == 0){
+						totalTimes = 1;
+					}
+					pow /= totalTimes;
+					pow = pow.toFixed(1);
+					
+				    jQuery("#super-power").text(pow+'°C');
+					jQuery("#memory-usage").dxCircularGauge('instance').value(pow);
+					jQuery("#memory-usage-chart").dxChart('instance').option('dataSource', pow_data);
+				}
+
+			</script>
+{% endblock %}

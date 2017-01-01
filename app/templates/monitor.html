@@ -44,6 +44,12 @@
 							<span class="title">视频监控</span>
 						</a>
 					</li>
+					<li>
+						<a href="http://forec.cn:20000">
+							<i class="linecons-key"></i>
+							<span class="title">远程登录</span>
+						</a>
+					</li>
 				</ul>
 {% endblock %}
 {% block main %}
@@ -120,7 +126,7 @@
 				<a href="{{ url_for('main.home') }}"><i class="fa-home"></i>主页</a>
 			</li>
 			<li>
-				<a href="{{ url_for('main.home') }}">视频监控</a>
+				<a href="{{ url_for('main.monitor') }}">视频监控</a>
 			</li>
 		</ol>
 	</div>
@@ -133,7 +139,7 @@
 	{% if current_user.monitor_url %}
 	<div class="col-md-8" style="text-align:center">
 	<div class="panel panel-default">
-		<img id ="monitor" src="{{ current_user.monitor_url }}" alt="非常抱歉，您的监控设备似乎出了一些问题，我们无法获取视频数据" class="shrinkToFit" height="385" width="513">
+		<img id ="monitor" style="width:100%" src="{{ current_user.monitor_url }}" alt="非常抱歉，您的监控设备似乎出了一些问题，我们无法获取视频数据" class="shrinkToFit" height="385" width="513">
 	</div>
 	</div>
 	{% else %}

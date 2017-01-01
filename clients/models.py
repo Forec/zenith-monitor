@@ -189,9 +189,9 @@ class TV(Basic):
         self.type = 'TV'
         self.temperature = room_temperature                    # 初始时为室温
         self.volume = randint(210, 220)                         # 初始时电压 210~220V
-        self.station = randint(1,1)                            # 开机位于1频道
+        self.station = randint(1,10)                            # 开机位于1~10随机频道
         self.voice = randint(150, 200)                           # 音量 150 ~ 200
-        self.cap = cv2.VideoCapture(str(self.station)+".mp4")   # 模拟视频
+        self.cap = cv2.VideoCapture('tvs/' + str(self.station)+".mp4")   # 模拟视频
         self.image = None                                       # 当前画面
         self.initialize()
     def initialize(self):
@@ -241,11 +241,17 @@ class TV(Basic):
         station = setRequest.get('station')
         voice = setRequest.get('voice')
         try:
-            if station and int(station) % 2 != self.station:
-                self.station = int(station) % 2
+            new_station = int(station)%11
+            if new_station == 0:
+                new_station = 1
+            if new_station and new_station != self.station:
+                self.station = new_station
                 if self.cap:
                     self.cap.release()
-                self.cap = cv2.VideoCapture(str(self.station)+".mp4")
+                try:
+                    self.cap = cv2.VideoCapture('tvs/'+str(self.station)+".mp4")
+                except Exception as e:
+                    print "播放失败，错误信息：", e
             if voice:
                 voice = int(voice)
                 if voice < 0:
@@ -277,7 +283,7 @@ class TV(Basic):
                                 except:
                                     pass
                                 try:
-                                    self.cap = cv2.VideoCapture(str(self.station)+".mp4")
+                                    self.cap = cv2.VideoCapture('tvs/' + str(self.station)+".mp4")
                                 except Exception as e:
                                     print "电视切换频道错误，错误信息：", e
                          # 已经通过读取视频流来减缓时间
