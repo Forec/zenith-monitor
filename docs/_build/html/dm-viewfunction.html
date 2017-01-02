@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="设备管理平台测试" href="dm-test.html" />
-    <link rel="prev" title="模型介绍" href="dm-models.html" />
+    <link rel="next" title="设备扩展" href="dm-devices.html" />
+    <link rel="prev" title="预留接口" href="dm-interface.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -115,123 +115,46 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><cite>index</cite></td>
-<td>提供了顶点云介绍界面的入口</td>
+<td>提供了顶点云设备管理平台介绍界面的入口</td>
 </tr>
-<tr class="row-odd"><td><a href="#id2"><span class="problematic" id="id3">`</span></a>home `</td>
+<tr class="row-odd"><td><cite>home</cite></td>
 <td>服务器主页入口点，也是所有设备管理列表界面</td>
 </tr>
 <tr class="row-even"><td><cite>user</cite></td>
 <td>服务器用户（编辑）资料界面入口</td>
 </tr>
-<tr class="row-odd"><td><cite>delete_file</cite></td>
-<td>提供了删除文件界面的入口</td>
+<tr class="row-odd"><td><cite>update_status</cite></td>
+<td>为模拟设备/实体设备提供上传状态入口（仅 POST）</td>
 </tr>
-<tr class="row-even"><td><cite>delete_file_confirm</cite></td>
-<td>对用户的删除操作进行确认并执行</td>
+<tr class="row-even"><td><cite>show_status</cite></td>
+<td>Ajax 异步获取设备状态入口     （仅 POST）</td>
 </tr>
-<tr class="row-odd"><td><cite>edit_file</cite></td>
-<td>为用户编辑文件信息（重命名、修改描述）界面提供了入口</td>
+<tr class="row-odd"><td><cite>set_interval</cite></td>
+<td>用户设置刷新周期入口（仅 POST）</td>
 </tr>
-<tr class="row-even"><td><cite>moderate_comments</cite></td>
-<td>为评论管理员提供了审核、屏蔽评论的界面入口</td>
+<tr class="row-even"><td><cite>device</cite></td>
+<td>具体设备详细界面</td>
 </tr>
-<tr class="row-odd"><td><cite>moderate_comments_disable</cite></td>
-<td>为评论管理员提供了将某条评论屏蔽的入口</td>
+<tr class="row-odd"><td><cite>delete_device</cite></td>
+<td>为用户删除设备入口（仅 POST）</td>
 </tr>
-<tr class="row-even"><td><cite>moderate_comments</cite>
-<cite>_disable_own</cite></td>
-<td>为文件所有者提供了管理自己文件下评论的权限</td>
+<tr class="row-even"><td><cite>edit_device</cite></td>
+<td>为用户编辑设备入口（仅 POST）</td>
 </tr>
-<tr class="row-odd"><td><cite>moderate_files</cite></td>
-<td>为管理员提供了修改、删除、设置任意文件状态的入口</td>
+<tr class="row-odd"><td><cite>newdevice</cite></td>
+<td>为用户创建新设备入口（仅 POST）</td>
 </tr>
-<tr class="row-even"><td><cite>moderate_files_delete</cite></td>
-<td>为管理员用户提供了删除文件的入口，管理员也可以通过用户的 <cite>delete_file</cite> 来
-实现此功能，但此方式去掉了认证阶段</td>
+<tr class="row-even"><td><cite>reset_token</cite></td>
+<td>用户重置 Token 入口</td>
 </tr>
-<tr class="row-odd"><td><cite>messages</cite></td>
-<td>用户消息界面的入口</td>
+<tr class="row-odd"><td><cite>set_device</cite></td>
+<td>用户设置设备状态入口（仅 POST）</td>
 </tr>
-<tr class="row-even"><td><cite>cloud</cite></td>
-<td>提供了“我的云盘”界面入口</td>
+<tr class="row-even"><td><cite>show_history</cite></td>
+<td>设备历史记录界面入口</td>
 </tr>
-<tr class="row-odd"><td><cite>view_share_folder_entry</cite></td>
-<td>提供了用户访问其他用户共享目录的认证入口</td>
-</tr>
-<tr class="row-even"><td><cite>view_do</cite></td>
-<td>为用户提供了访问其他用户共享目录的界面</td>
-</tr>
-<tr class="row-odd"><td><cite>download</cite></td>
-<td>为设有分享密码的文件/目录提供了验证界面，否则直接跳转到 <cite>download_do</cite> 入口</td>
-</tr>
-<tr class="row-even"><td><cite>download_do</cite></td>
-<td>验证用户的下载请求是否合法，传入的 token 将由当前用户进行解析，若失败则返
-回 403 错误；若成功则根据用户请求反馈数据，当用户试图下载的是目录时，会先
-将目录压缩为压缩包后反馈给用户，否则直接返回文件</td>
-</tr>
-<tr class="row-odd"><td><cite>upload</cite></td>
-<td>为用户上传文件界面提供入口</td>
-</tr>
-<tr class="row-even"><td><cite>copy</cite></td>
-<td>为用户复制文件/目录界面提供了入口</td>
-</tr>
-<tr class="row-odd"><td><cite>copy_check</cite></td>
-<td>验证用户复制操作的入口，当前用户根据传入的 token 验证合法性并向数据库执行
-写入操作。若用户要复制的是目录，则 copy_check 会将待复制目录下所有关联文件
-一起拷贝</td>
-</tr>
-<tr class="row-even"><td><cite>move</cite></td>
-<td>为用户移动文件/目录界面提供了入口</td>
-</tr>
-<tr class="row-odd"><td><cite>move_check</cite></td>
-<td>验证用户移动操作的入口，当前用户根据传入的 token 验证合法性并向数据库执行
-写入操作。若用户要移动的是目录，则 fork_check 会将待移动目录下所有关联文件
-一起移动</td>
-</tr>
-<tr class="row-even"><td><cite>fork</cite></td>
-<td>提供了一个简单的验证界面，用户需要输入要 fork 的文件/目录的提取码</td>
-</tr>
-<tr class="row-odd"><td><cite>fork_do</cite></td>
-<td>为用户 Fork 文件/目录界面提供了入口</td>
-</tr>
-<tr class="row-even"><td><cite>fork_check</cite></td>
-<td>fork_check 是验证用户 Fork 操作的入口，当前用户根据传入的 token 验证合法
-性并向数据库执行写入操作。若用户要 Fork 的是目录，则 fork_check 会将待
-Fork 目录下所有关联文件一起 Fork</td>
-</tr>
-<tr class="row-odd"><td><cite>download_do</cite></td>
-<td>验证用户的下载请求是否合法，传入的 token 将由当前用户进行解析，若失败则返
-回 403 错误；若成功则根据用户请求反馈数据，当用户试图下载的是目录时，会先
-将目录压缩为压缩包后反馈给用户，否则直接返回文件</td>
-</tr>
-<tr class="row-even"><td><cite>newfolder</cite></td>
-<td>为用户创建目录提供了入口，用户可在云盘界面、复制、移动、Fork 的同时创建新
-文件夹</td>
-</tr>
-<tr class="row-odd"><td><cite>delete_message</cite></td>
-<td>为用户提供了删除聊天消息的入口，一条聊天消息的接收/发送方均可删除消息，但
-删除操作仅限于从个人的视野中移除，对另一方并不产生影响。其效果与 WeChat 的
-聊天记录删除相同。</td>
-</tr>
-<tr class="row-even"><td><cite>recall_message</cite></td>
-<td>为用户提供了发送消息撤回功能，功能与 QQ 的消息撤回相同，超过 2 分钟的消息
-无法撤回。2 分钟以内，无论对方是否已读均可撤回。撤回操作不可逆，消息将从数
-据库中移除。</td>
-</tr>
-<tr class="row-odd"><td><cite>chat</cite></td>
-<td>提供了用户聊天入口</td>
-</tr>
-<tr class="row-even"><td><cite>close_chat</cite></td>
-<td>为用户提供了一次性忽略某个用户所有未读消息的功能</td>
-</tr>
-<tr class="row-odd"><td><cite>delete_chat</cite></td>
-<td>为用户提供了一次性删除某个用户所有聊天记录的功能</td>
-</tr>
-<tr class="row-even"><td><cite>set_share</cite></td>
-<td>为用户提供了设置文件共享属性的功能，提供了简单的设置密码界面</td>
-</tr>
-<tr class="row-odd"><td><cite>set_private</cite></td>
-<td>set_share 的逆操作，将某个文件/目录及关联的目录/文件全部设为私有</td>
+<tr class="row-odd"><td><cite>get_history</cite></td>
+<td>Ajax 异步获取设备历史入口（仅 POST）</td>
 </tr>
 </tbody>
 </table>
@@ -263,8 +186,8 @@ Fork 目录下所有关联文件一起 Fork</td>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="dm-models.html" title="上一章">模型介绍</a></li>
-      <li>Next: <a href="dm-test.html" title="下一章">设备管理平台测试</a></li>
+      <li>Previous: <a href="dm-interface.html" title="上一章">预留接口</a></li>
+      <li>Next: <a href="dm-devices.html" title="下一章">设备扩展</a></li>
   </ul></li>
 </ul>
 </div>

@@ -15,6 +15,10 @@
 - :ref:`dm-structual` 
 - :ref:`dm-blueprint` 
 - :ref:`dm-viewfunction` 
+- :ref:`dm-models`
+- :ref:`dm-interface`
+- :ref:`dm-devices`
+- :ref:`dm-client`
 - :ref:`dm-test`
 
 顶点云设备管理平台使用 `Flask`_ 框架，有关 `Flask`_ 的讨论不在本文档的范围之内，如有兴趣请移步：

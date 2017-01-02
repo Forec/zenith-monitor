@@ -21,7 +21,7 @@ Auth 蓝本
      
 上面三个文件中， `__init__.py` 用于初始化蓝本 Auth，`forms.py` 定义了 Auth 蓝本视图函数需要使用的表单类，`views.py` 具体处理转发给 Auth 蓝本的请求。
 
-关于 `views.py` 中的视图函数，请查阅 :ref:`web-viewfunction-auth` 。
+关于 `views.py` 中的视图函数，请查阅 :ref:`dm-viewfunction-auth` 。
 
 
 .. _dm-blueprint-main:

@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="部署顶点云设备管理平台" href="dm-installation.html" />
+    <link rel="next" title="前言" href="forewords.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -49,12 +49,16 @@
 <p>欢迎阅读顶点云设备管理平台的开发者文档。</p>
 <p>本文档主要分为两部分，首先通过《 <a class="reference internal" href="dm-config.html#dm-config"><span class="std std-ref">全局配置</span></a> 》和 《 <a class="reference internal" href="dm-quickstart.html#dm-quickstart"><span class="std std-ref">快速上手</span></a> 》帮助您了解顶点云设备管理平台的使用和开发，之后详细介绍我们提供的接口。我推荐你按如下顺序阅读：</p>
 <ul class="simple">
-<li><a class="reference internal" href="dm-installation.html#dm-installation"><span class="std std-ref">部署顶点云设备管理平台</span></a></li>
+<li><a class="reference internal" href="dm-installation.html#dm-installation"><span class="std std-ref">部署</span></a></li>
 <li><a class="reference internal" href="dm-config.html#dm-config"><span class="std std-ref">全局配置</span></a></li>
 <li><a class="reference internal" href="dm-quickstart.html#dm-quickstart"><span class="std std-ref">快速上手</span></a></li>
 <li><a class="reference internal" href="dm-structual.html#dm-structual"><span class="std std-ref">框架分析</span></a></li>
 <li><a class="reference internal" href="dm-blueprint.html#dm-blueprint"><span class="std std-ref">蓝本介绍</span></a></li>
 <li><a class="reference internal" href="dm-viewfunction.html#dm-viewfunction"><span class="std std-ref">视图函数说明</span></a></li>
+<li><a class="reference internal" href="dm-models.html#dm-models"><span class="std std-ref">模型介绍</span></a></li>
+<li><a class="reference internal" href="dm-interface.html#dm-interface"><span class="std std-ref">预留接口</span></a></li>
+<li><a class="reference internal" href="dm-devices.html#dm-devices"><span class="std std-ref">设备扩展</span></a></li>
+<li><a class="reference internal" href="dm-client.html#dm-client"><span class="std std-ref">虚拟设备</span></a></li>
 <li><a class="reference internal" href="dm-test.html#dm-test"><span class="std std-ref">设备管理平台测试</span></a></li>
 </ul>
 <p>顶点云设备管理平台使用 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 框架，有关 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 的讨论不在本文档的范围之内，如有兴趣请移步：</p>
@@ -66,7 +70,14 @@
 <p>此部分先介绍了顶点云设备管理平台的背景，之后通过配置介绍、快速上手分析平台框架，最后介绍平台提供的接口。</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dm-installation.html">部署顶点云设备管理平台</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="forewords.html">前言</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forewords.html#id2">来源</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forewords.html#id3">功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forewords.html#id4">配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forewords.html#id5">可持续发展</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-installation.html">部署</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id2">获取源码</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id3">安装第三方支持</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id6">运行测试</a></li>
@@ -86,6 +97,11 @@
 <li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#dm-quickstart-expand">扩展自定义功能</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dm-structual.html">框架分析</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-structual.html#dm-structual-manage">管理器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-structual.html#dm-app-factory">工厂方法</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="dm-blueprint.html">蓝本介绍</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dm-blueprint.html#auth">Auth 蓝本</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dm-blueprint.html#main">Main 蓝本</a></li>
@@ -97,11 +113,14 @@
 <li class="toctree-l2"><a class="reference internal" href="dm-models.html#dm-models-class">内置自定义类</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dm-interface.html">预留接口</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dm-viewfunction.html">视图函数说明</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dm-viewfunction.html#auth">Auth 蓝本视图函数</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dm-viewfunction.html#main">Main 蓝本视图函数</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dm-devices.html">设备扩展</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dm-client.html">虚拟设备</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dm-test.html">设备管理平台测试</a></li>
 </ul>
 </div>
@@ -132,9 +151,9 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><h3>关于顶点云设备管理平台</h3>
+        <div class="sphinxsidebarwrapper"><h3>关于</h3>
 <p>
-  顶点云设备管理平台是 <a href="http://forec.cn">Forec</a> 2016 年的一项课程设计，提供了面向虚拟设备的一站式管控平台，同时也支持真实设备的管理和监控。
+  顶点云设备管理平台是 <a href="http://forec.cn">Forec</a> 和 <a href="https://github.com/non1996">non1996</a> 2016 年的一项课程设计，提供了面向虚拟设备的一站式管控平台，同时也支持真实设备的管理和监控。
 </p>
 <h3>其他格式文档</h3>
 <p>

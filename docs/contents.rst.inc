@@ -10,11 +10,12 @@
    dm-installation
    dm-config
    dm-quickstart
-   dm-structure
+   dm-structual
    dm-blueprint
    dm-models
    dm-interface
    dm-viewfunction
+   dm-devices
    dm-client
    dm-test
 

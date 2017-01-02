@@ -5,20 +5,23 @@
 
 此部分文档主要介绍顶点云设备管理平台的单元测试。你可以在源码目录下运行 `python manage.py test` 运行全部单元测试。
 
-单元测试主要覆盖用户登录、注册、样例文件修改、拷贝、移动、Fork、下载等，各单元测试文件覆盖视图函数如下表所示。
+单元测试主要覆盖用户登录、注册、设备创建、修改、信息更新、命令执行等，各单元测试文件覆盖视图函数如下表所示。
 
 +---------------------------------+-------------------------------------------------------------+
 | 单元测试文件名                  |  测试覆盖视图函数                                           |
 +=================================+=============================================================+
 | `test_basic.py`                 |  测试环境是否正常，服务器是否启动                           |
 +---------------------------------+-------------------------------------------------------------+
-| `test_client.py`                |  `copy`、`copy_check`、                                     |
-|                                 |  `move`、`move_check`、                                     |
-|                                 |  `fork`、`fork_do`、`fork_check`、`fork_verify`、           |
-|                                 |  `newfolder`、                                              |
-|                                 |  `set_share`、`set_private`、                               |
-|                                 |  `messages`、`chat`、`delete_message`、`recall_message`、   |
-|                                 |  `reset_password_request`、`reset_password`                 |
+| `test_client1.py`               |  `show_status`、`update_status`、                           |
+|                                 |  `get_history`、`show_history`、                            |
+|                                 |  `newdevie`、`edit_device`、`delete_device`、               |
+|                                 |  `set_status`、`set_interval`、`reset_token`、              |
+|                                 |  `index`、`home`、`user`                                    |
++---------------------------------+-------------------------------------------------------------+
+| `test_client2.py`               |  `login`、`logout`、`register`、`confirm`、                 |
+|                                 |  `resend_confirmation`、`change_email_request`、            |
+|                                 |  `change_email`、`password_reset`、`secure_center`、        |
+|                                 |  `before_request`、`unconfirmed`                            |
 +---------------------------------+-------------------------------------------------------------+
 
 到这里顶点云设备管理平台的开发者文档部分就结束了，您可以继续阅读 :ref:`dm-design` 来查看我们对设计者提出的几点建议。

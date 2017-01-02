@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="蓝本介绍" href="dm-blueprint.html" />
+    <link rel="next" title="框架分析" href="dm-structual.html" />
     <link rel="prev" title="全局配置" href="dm-config.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -69,13 +69,13 @@ python manage.py <span class="nb">test</span>
 </div>
 <div class="section" id="id3">
 <h2>针对假想环境修改配置文件<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
-<p>鉴于顶点云提供的默认配置仅适用于 Forec 的史诗级笔记本，下面根据这台服务器的情况修改配置文件。编辑 <cite>config.py</cite> :</p>
+<p>鉴于顶点云设备管理平台提供的默认配置仅适用于 Forec 的史诗级笔记本，下面根据这台服务器的情况修改配置文件。编辑 <cite>config.py</cite> :</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>nano config.py
 </pre></div>
 </div>
 <p>我拷贝了一份 <code class="docutils literal"><span class="pre">LinuxConfig</span></code> 并重命名该子类为 <code class="docutils literal"><span class="pre">MyConfig</span></code> ，然后根据如下考虑对 <code class="docutils literal"><span class="pre">MyConfig</span></code> 做了一定修改：</p>
 <ul class="simple">
-<li>我觉得顶点云默认使用的 SQLITE 数据库很方便，并且放置在源码根目录下也没什么问题，因此我决定保留默认配置中的 <code class="docutils literal"><span class="pre">SQLALCHEMY_DATABASE_URI</span></code></li>
+<li>我觉得顶点云设备管理平台默认使用的 SQLITE 数据库很方便，并且放置在源码根目录下也没什么问题，因此我决定保留默认配置中的 <code class="docutils literal"><span class="pre">SQLALCHEMY_DATABASE_URI</span></code></li>
 <li>我想让世界上任何一个角落均能访问我的顶点云设备管理平台，因此我修改 <code class="docutils literal"><span class="pre">ZENITH_SERVER_ADDRESS</span> <span class="pre">=</span> <span class="pre">'123.123.123.123'</span></code></li>
 <li>我要让顶点云设备管理平台用我的邮箱发送认证邮件。我的邮箱是 <a class="reference external" href="mailto:mymail&#37;&#52;&#48;gmail&#46;com">mymail<span>&#64;</span>gmail<span>&#46;</span>com</a>，因此我修改如下部分：</li>
 </ul>
@@ -142,7 +142,7 @@ python manage.py runserver      <span class="c1"># 您可以指定 -h 和 -p 参
 <div class="section" id="dm-quickstart-expand">
 <span id="id8"></span><h2>扩展自定义功能<a class="headerlink" href="#dm-quickstart-expand" title="永久链接至标题">¶</a></h2>
 <p>不得不说 Forec 的设计实在是太简陋了，为什么用户无法注册！幸好我学习过 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 框架，也许我应该自己添加这个功能？</p>
-<p>在阅读了 <span class="xref std std-ref">app-structual</span> 后，我了解了整个顶点云设备管理平台的结构，下面我准备添加这个简单的功能。</p>
+<p>在阅读了 <a class="reference internal" href="dm-structual.html#dm-structual"><span class="std std-ref">框架分析</span></a> 后，我了解了整个顶点云设备管理平台的结构，下面我准备添加这个简单的功能。</p>
 <p>进入 <cite>app/auth</cite> 目录并编辑 <cite>views.py</cite> ：</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">cd</span> app/auth
 nano views.py
@@ -259,7 +259,7 @@ nano views.py
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="dm-config.html" title="上一章">全局配置</a></li>
-      <li>Next: <a href="dm-blueprint.html" title="下一章">蓝本介绍</a></li>
+      <li>Next: <a href="dm-structual.html" title="下一章">框架分析</a></li>
   </ul></li>
 </ul>
 </div>
