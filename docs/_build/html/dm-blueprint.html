@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>蓝本介绍 &#8212; 顶点云设备管理 1.0 文档</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="模型介绍" href="dm-models.html" />
+    <link rel="prev" title="快速上手" href="dm-quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dm-blueprint">
+<span id="id1"></span><h1>蓝本介绍<a class="headerlink" href="#dm-blueprint" title="永久链接至标题">¶</a></h1>
+<p>此部分文档主要介绍顶点云设备管理平台中的两个蓝本： <cite>main</cite> 以及 <cite>auth</cite> ，以及如何创建新的自定义蓝本。</p>
+<div class="section" id="auth">
+<span id="dm-blueprint-auth"></span><h2>Auth 蓝本<a class="headerlink" href="#auth" title="永久链接至标题">¶</a></h2>
+<p>此蓝本主要用于授权用户，如注册、登录、重置密码等。蓝本位于 <cite>app/auth</cite> 目录下，结构为：</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>- auth
+  - __init__.py
+  - forms.py
+  - views.py
+</pre></div>
+</div>
+<p>上面三个文件中， <cite>__init__.py</cite> 用于初始化蓝本 Auth，<cite>forms.py</cite> 定义了 Auth 蓝本视图函数需要使用的表单类，<cite>views.py</cite> 具体处理转发给 Auth 蓝本的请求。</p>
+<p>关于 <cite>views.py</cite> 中的视图函数，请查阅 <span class="xref std std-ref">web-viewfunction-auth</span> 。</p>
+</div>
+<div class="section" id="main">
+<span id="dm-blueprint-main"></span><h2>Main 蓝本<a class="headerlink" href="#main" title="永久链接至标题">¶</a></h2>
+<p>此蓝本主要用于处理用户服务请求。蓝本位于 <cite>app/main</cite> 目录下，结构为：</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>- main
+  - __init__.py
+  - forms.py
+  - views.py
+  - errors.py
+</pre></div>
+</div>
+<p>上面三个文件中， <cite>__init__.py</cite> 用于初始化蓝本 Main，<cite>forms.py</cite> 定义了 Main 蓝本视图函数需要使用的表单类，<cite>views.py</cite> 具体处理转发给 Main 蓝本的请求，<cite>errors.py</cite> 处理用户遇到的错误并使用服务器模板渲染错误界面。</p>
+<p>对于 <cite>views.py</cite> 中的视图函数，请查阅 <a class="reference internal" href="dm-viewfunction.html#dm-viewfunction-main"><span class="std std-ref">Main 蓝本视图函数</span></a> 。</p>
+</div>
+<div class="section" id="id2">
+<h2>自定义蓝本<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>关于蓝本的概念不属于本文档讨论范围，如果您尚不了解，可以参考 <a class="reference external" href="http://flask.pocoo.org/docs/0.12/search/?q=blueprint">Flask 文档中关于蓝本的部分</a> 。</p>
+<p>对于顶点云设备管理平台，如果您需要添加自定义蓝本，请在目录 <cite>app</cite> 下创建新的蓝本目录并添加您的自定义路由。</p>
+<p>接下来请您阅读 <a class="reference internal" href="dm-models.html#dm-models"><span class="std std-ref">模型介绍</span></a> 。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p style="text-align:left;margin:5px 10px 5px 10px"><a href="index.html">
+  <img style="text-align:center;width:105px" src="_static/zenith.png" alt="Logo"/>
+</a></p>
+
+<p>
+  <a href="index.html">回到主页</a>
+</p>
+  <h3><a href="index.html">內容目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">蓝本介绍</a><ul>
+<li><a class="reference internal" href="#auth">Auth 蓝本</a></li>
+<li><a class="reference internal" href="#main">Main 蓝本</a></li>
+<li><a class="reference internal" href="#id2">自定义蓝本</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dm-quickstart.html" title="上一章">快速上手</a></li>
+      <li>Next: <a href="dm-models.html" title="下一章">模型介绍</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Forec.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/dm-blueprint.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

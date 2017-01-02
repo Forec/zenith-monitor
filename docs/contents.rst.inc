@@ -14,6 +14,7 @@
    dm-blueprint
    dm-models
    dm-interface
+   dm-viewfunction
    dm-client
    dm-test
 

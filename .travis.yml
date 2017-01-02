@@ -1,0 +1,14 @@
+language: 
+ - python
+python:
+ - 3.5.0
+install: 
+ - pip install -r web/requirements.txt
+ - pip install coveralls
+script:
+ - mkdir web/temp/
+ - touch web/temp/test.sqlite
+ - cd web
+ - python manage.py test --coverage
+after_success:
+ - coveralls

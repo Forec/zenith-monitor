@@ -76,7 +76,8 @@ def logout():
 # register 函数提供了注册入口
 @auth.route('/register', methods = ['GET', 'POST'])
 def register():
-    #return render_template('auth/test.html')
+	# 展示状态，禁止注册
+    # return render_template('auth/test.html')
     if request.method == 'GET':
         if current_user.is_authenticated:
             flash('您已经登录，无需注册！')

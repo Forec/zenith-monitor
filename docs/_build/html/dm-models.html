@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>模型介绍 &#8212; 顶点云设备管理 1.0 文档</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="视图函数说明" href="dm-viewfunction.html" />
+    <link rel="prev" title="蓝本介绍" href="dm-blueprint.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dm-models">
+<span id="id1"></span><h1>模型介绍<a class="headerlink" href="#dm-models" title="永久链接至标题">¶</a></h1>
+<p>此部分文档主要介绍顶点云设备管理平台使用的数据库格式和模型。</p>
+<div class="section" id="dm-models-database">
+<span id="id2"></span><h2>数据库<a class="headerlink" href="#dm-models-database" title="永久链接至标题">¶</a></h2>
+<p>顶点云设备管理平台默认配置使用 SQLITE ，您可以修改配置文件以选择适合您机器的数据库。顶点云设备管理平台的源码目录中提供了一个默认的 <code class="docutils literal"><span class="pre">work.db</span></code> 数据库文件，如果您选择使用默认配置，该文件足以满足您的需求。</p>
+<p>顶点云设备管理平台的数据库包含 3 张基本的表，根据拓展设备的不同，继承的子表也不同：</p>
+<ul class="simple">
+<li><em>cuser</em> ：用户模型表</li>
+<li><em>BasicDevices</em> ：用户管理设备记录表</li>
+<li><em>records</em> ：服务器存储设备变动记录表</li>
+</ul>
+<div class="section" id="cuser">
+<h3>表 cuser<a class="headerlink" href="#cuser" title="永久链接至标题">¶</a></h3>
+<p>此表用于存储用户信息，表格式如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="14%" />
+<col width="16%" />
+<col width="15%" />
+<col width="12%" />
+<col width="14%" />
+<col width="14%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>uid</td>
+<td>email</td>
+<td>password_hash</td>
+<td>created</td>
+<td>confirmed</td>
+<td>nickname</td>
+<td>avatar_hash</td>
+</tr>
+<tr class="row-even"><td>INTEGER
+PRIMARY
+KEY
+AUTOINCREMENT</td>
+<td>VARCHAR(64)</td>
+<td>VARCHAR(32)</td>
+<td>DATE</td>
+<td>BOOLEAN</td>
+<td>VARCHAR(64)</td>
+<td>VARCHAR(32)</td>
+</tr>
+<tr class="row-odd"><td>用户编号</td>
+<td>用户邮箱</td>
+<td>用户密钥 md5</td>
+<td>用户创建日期</td>
+<td>是否激活</td>
+<td>设备列表</td>
+<td>头像链接</td>
+</tr>
+<tr class="row-even"><td>about_me</td>
+<td>last_seen</td>
+<td>member_since</td>
+<td>token_hash</td>
+<td>interval</td>
+<td>devices</td>
+<td>monitor_url</td>
+</tr>
+<tr class="row-odd"><td>VARCHAR(256)</td>
+<td>DATE</td>
+<td>DATE</td>
+<td>VARCHAR(32)</td>
+<td>INTEGER</td>
+<td>外链</td>
+<td>VARCHAR(256)</td>
+</tr>
+<tr class="row-even"><td>用户介绍</td>
+<td>上次登录日期</td>
+<td>用户注册时间</td>
+<td>用户 TOKEN</td>
+<td>刷新间隔</td>
+<td>一对多表</td>
+<td>视频监控源</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="basicdevices">
+<span id="dm-models-database-devices"></span><h3>表 BasicDevices<a class="headerlink" href="#basicdevices" title="永久链接至标题">¶</a></h3>
+<p>此表用于存储设备均具有的基本信息，表格式如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="17%" />
+<col width="20%" />
+<col width="15%" />
+<col width="15%" />
+<col width="14%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>uid</td>
+<td>ownerid</td>
+<td>code</td>
+<td>path</td>
+<td>interval</td>
+<td>created</td>
+</tr>
+<tr class="row-even"><td>INTEGER
+PRIMARY
+KEY
+AUTOINCREMENT</td>
+<td>INTEGER</td>
+<td>VARCHAR(12)</td>
+<td>VARCHAR(64)</td>
+<td>INTEGER</td>
+<td>DATE</td>
+</tr>
+<tr class="row-odd"><td>设备编号</td>
+<td>资源所有者编号</td>
+<td>设备唯一标识码</td>
+<td>设备名称</td>
+<td>设备刷新间隔</td>
+<td>创建时间</td>
+</tr>
+<tr class="row-even"><td>name</td>
+<td>about</td>
+<td>temperature</td>
+<td>volume</td>
+<td>current</td>
+<td>power</td>
+</tr>
+<tr class="row-odd"><td>VARCHAR(64)</td>
+<td>VARCHAR(256)</td>
+<td>INTEGER</td>
+<td>INTEGER</td>
+<td>INTEGER</td>
+<td>INTEGER</td>
+</tr>
+<tr class="row-even"><td>设备名称</td>
+<td>设备介绍</td>
+<td>设备温度</td>
+<td>设备电流</td>
+<td>设备电流</td>
+<td>设备功率</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="records">
+<span id="dm-models-database-records"></span><h3>表 records<a class="headerlink" href="#records" title="永久链接至标题">¶</a></h3>
+<p>此表用于存储设备变动记录，表格式如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="25%" />
+<col width="28%" />
+<col width="22%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>id</td>
+<td>device_id</td>
+<td>status</td>
+<td>created</td>
+</tr>
+<tr class="row-even"><td>INTEGER
+PRIMARY
+KEY
+AUTOINCREMENT</td>
+<td>INTEGER</td>
+<td>VARCHAR(256)</td>
+<td>DATE</td>
+</tr>
+<tr class="row-odd"><td>变动记录编号</td>
+<td>变动设备编号</td>
+<td>变动信息 JSON 值</td>
+<td>变动时间</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="dm-models-class">
+<span id="id3"></span><h2>内置自定义类<a class="headerlink" href="#dm-models-class" title="永久链接至标题">¶</a></h2>
+<p>此部分文档主要介绍顶点云设备管理平台定义的几个模型。用户模型的定义均位于 <cite>app/models.py</cite> 中，包括：</p>
+<ul class="simple">
+<li><cite>User</cite> ：用户类</li>
+<li><cite>Device</cite> ：基本设备类</li>
+<li><cite>Record</cite> ：记录类</li>
+<li><cite>AnonymousUser</cite> ：匿名用户模型，提供给 <cite>flask_login</cite> 作为未登录用户实例</li>
+</ul>
+<p>下面将简单介绍每个模型提供的方法。</p>
+<div class="section" id="dm-models-user">
+<span id="id4"></span><h3>用户类<a class="headerlink" href="#dm-models-user" title="永久链接至标题">¶</a></h3>
+<p><cite>User</cite> 模型同时继承了 <cite>UserMixin</cite> 和 SQLAlchemy 数据库模型，它具有如下元素：</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># 用户 id</span>
+<span class="n">uid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">email</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span><span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 用户密码的加盐哈希值</span>
+<span class="n">password_hash</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+<span class="c1"># 用户创建时间</span>
+<span class="n">created</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">)</span>
+<span class="c1"># 用户是否已激活邮箱</span>
+<span class="n">confirmed</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Boolean</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="c1"># 用户昵称</span>
+<span class="n">nickname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>
+<span class="c1"># 用户头像链接</span>
+<span class="n">avatar_hash</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+<span class="c1"># 用户个人介绍</span>
+<span class="n">about_me</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Text</span><span class="p">)</span>
+<span class="c1"># 与 created 相同，adapter</span>
+<span class="n">member_since</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span>
+                         <span class="n">default</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">)</span>
+<span class="c1"># 上次登录时间</span>
+<span class="n">last_seen</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">DateTime</span><span class="p">,</span>
+                      <span class="n">default</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">)</span>
+<span class="c1"># 用户拥有的设备，外链设备表</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Device&#39;</span><span class="p">,</span>
+                          <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;owner&#39;</span><span class="p">,</span>
+                          <span class="n">lazy</span> <span class="o">=</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">)</span><span class="c1">#,</span>
+                          <span class="c1">#enable_typechecks=False)</span>
+</pre></div>
+</div>
+<p><cite>User</cite> 类具有如下方法：</p>
+<ul class="simple">
+<li><cite>get_id</cite> ：获取用户 id</li>
+<li><cite>verify_password</cite> ：验证密码是否正确</li>
+<li><cite>generate_confirmation_token</cite> ：生成用户邮箱验证 token</li>
+<li><cite>generate_email_change_token</cite> ：生成修改邮箱 token</li>
+<li><cite>generate_reset_token</cite> ：生成重置密码 token</li>
+<li><cite>generate_resetToken_token</cite> ：生成重置 token 的 token</li>
+<li><cite>reset_password</cite> ：用户验证重置密码的 token</li>
+<li><cite>confirm</cite> ：用户验证邮箱激活的 token</li>
+<li><cite>reset_token</cite> ：用户验证重置 token 函数</li>
+<li><cite>gravatar</cite> ：获取用户头像链接，若存在自定义头像则返回自定义头像链接，否则从 gravatar 获取</li>
+<li><cite>ping</cite> ：更新用户最近登录时间</li>
+</ul>
+<p>可以看出，<cite>User</cite> 类的多数方法都用于处理需要鉴别用户身份的请求，包括生成 token 、验证 token 以及在验证通过后执行相应的处理。</p>
+<p>详细方法的参数请查看 <cite>app/models.py</cite> ，代码中给出了详细的注释。</p>
+</div>
+<div class="section" id="device">
+<span id="dm-models-device"></span><h3>基础设备 Device 类<a class="headerlink" href="#device" title="永久链接至标题">¶</a></h3>
+<p><cite>Device</cite> 类是所有设备的基类，提供了如下方法：</p>
+<ul class="simple">
+<li><cite>setup()</cite> ：启动设备</li>
+<li><cite>shutdown()</cite> ：关闭设备</li>
+<li><cite>getStatus()</cite> ：获取设备状态，DICT 格式返回</li>
+<li><cite>updateStatus(status)</cite> ：根据参数更新设备状态</li>
+<li><cite>verify_status(jsondata)</cite> ：根据参数判断设备是否需要更新</li>
+<li><cite>setStatus(jsondata)</cite> ：一个闭包函数，将用户控制指令发送给远程设备</li>
+</ul>
+<p>接下来请您阅读 <a class="reference internal" href="dm-viewfunction.html#dm-viewfunction"><span class="std std-ref">视图函数说明</span></a> 。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p style="text-align:left;margin:5px 10px 5px 10px"><a href="index.html">
+  <img style="text-align:center;width:105px" src="_static/zenith.png" alt="Logo"/>
+</a></p>
+
+<p>
+  <a href="index.html">回到主页</a>
+</p>
+  <h3><a href="index.html">內容目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">模型介绍</a><ul>
+<li><a class="reference internal" href="#dm-models-database">数据库</a><ul>
+<li><a class="reference internal" href="#cuser">表 cuser</a></li>
+<li><a class="reference internal" href="#basicdevices">表 BasicDevices</a></li>
+<li><a class="reference internal" href="#records">表 records</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dm-models-class">内置自定义类</a><ul>
+<li><a class="reference internal" href="#dm-models-user">用户类</a></li>
+<li><a class="reference internal" href="#device">基础设备 Device 类</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dm-blueprint.html" title="上一章">蓝本介绍</a></li>
+      <li>Next: <a href="dm-viewfunction.html" title="下一章">视图函数说明</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Forec.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/dm-models.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

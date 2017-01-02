@@ -35,6 +35,9 @@ def make_shell_context():
             User=User,
             Device = Device,
             Bulb = Bulb,
+			TV = TV,
+			PC = PC,
+			AirCondition = AirCondition,
             deviceTable = deviceTable)
 
 # 向管理器注册shell指令
@@ -52,9 +55,9 @@ def test(coverage=False):
         os.environ['ZENITH_COVERAGE'] = '1'
         # 重启全局部分
         os.execvp(sys.executable, [sys.executable] + sys.argv)    
-    import unittest
-    tests = unittest.TestLoader().discover("tests")
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    #import unittest
+    #tests = unittest.TestLoader().discover("tests")
+    #unittest.TextTestRunner(verbosity=2).run(tests)
     if COV:
         COV.stop()
         COV.save()

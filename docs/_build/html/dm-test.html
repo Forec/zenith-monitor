@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>设备管理平台测试 &#8212; 顶点云设备管理 1.0 文档</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="设备管理平台设计要点" href="dm-design.html" />
+    <link rel="prev" title="视图函数说明" href="dm-viewfunction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dm-test">
+<span id="id1"></span><h1>设备管理平台测试<a class="headerlink" href="#dm-test" title="永久链接至标题">¶</a></h1>
+<p>此部分文档主要介绍顶点云设备管理平台的单元测试。你可以在源码目录下运行 <cite>python manage.py test</cite> 运行全部单元测试。</p>
+<p>单元测试主要覆盖用户登录、注册、样例文件修改、拷贝、移动、Fork、下载等，各单元测试文件覆盖视图函数如下表所示。</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">单元测试文件名</th>
+<th class="head">测试覆盖视图函数</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><cite>test_basic.py</cite></td>
+<td>测试环境是否正常，服务器是否启动</td>
+</tr>
+<tr class="row-odd"><td><cite>test_client.py</cite></td>
+<td><cite>copy</cite>、<cite>copy_check</cite>、
+<cite>move</cite>、<cite>move_check</cite>、
+<cite>fork</cite>、<cite>fork_do</cite>、<cite>fork_check</cite>、<cite>fork_verify</cite>、
+<cite>newfolder</cite>、
+<cite>set_share</cite>、<cite>set_private</cite>、
+<cite>messages</cite>、<cite>chat</cite>、<cite>delete_message</cite>、<cite>recall_message</cite>、
+<cite>reset_password_request</cite>、<cite>reset_password</cite></td>
+</tr>
+</tbody>
+</table>
+<p>到这里顶点云设备管理平台的开发者文档部分就结束了，您可以继续阅读 <a class="reference internal" href="dm-design.html#dm-design"><span class="std std-ref">设备管理平台设计要点</span></a> 来查看我们对设计者提出的几点建议。</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p style="text-align:left;margin:5px 10px 5px 10px"><a href="index.html">
+  <img style="text-align:center;width:105px" src="_static/zenith.png" alt="Logo"/>
+</a></p>
+
+<p>
+  <a href="index.html">回到主页</a>
+</p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dm-viewfunction.html" title="上一章">视图函数说明</a></li>
+      <li>Next: <a href="dm-design.html" title="下一章">设备管理平台设计要点</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Forec.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/dm-test.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>欢迎来到顶点云设备管理平台 &#8212; 顶点云设备管理 1.0 文档</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="部署顶点云设备管理平台" href="dm-installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>欢迎来到顶点云设备管理平台<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<img alt="顶点云设备管理平台：一站式设备监督管控平台" class="align-right" src="_images/logo_full.png" />
+<p>欢迎阅读顶点云设备管理平台的开发者文档。</p>
+<p>本文档主要分为两部分，首先通过《 <a class="reference internal" href="dm-config.html#dm-config"><span class="std std-ref">全局配置</span></a> 》和 《 <a class="reference internal" href="dm-quickstart.html#dm-quickstart"><span class="std std-ref">快速上手</span></a> 》帮助您了解顶点云设备管理平台的使用和开发，之后详细介绍我们提供的接口。我推荐你按如下顺序阅读：</p>
+<ul class="simple">
+<li><a class="reference internal" href="dm-installation.html#dm-installation"><span class="std std-ref">部署顶点云设备管理平台</span></a></li>
+<li><a class="reference internal" href="dm-config.html#dm-config"><span class="std std-ref">全局配置</span></a></li>
+<li><a class="reference internal" href="dm-quickstart.html#dm-quickstart"><span class="std std-ref">快速上手</span></a></li>
+<li><a class="reference internal" href="dm-structual.html#dm-structual"><span class="std std-ref">框架分析</span></a></li>
+<li><a class="reference internal" href="dm-blueprint.html#dm-blueprint"><span class="std std-ref">蓝本介绍</span></a></li>
+<li><a class="reference internal" href="dm-viewfunction.html#dm-viewfunction"><span class="std std-ref">视图函数说明</span></a></li>
+<li><a class="reference internal" href="dm-test.html#dm-test"><span class="std std-ref">设备管理平台测试</span></a></li>
+</ul>
+<p>顶点云设备管理平台使用 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 框架，有关 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 的讨论不在本文档的范围之内，如有兴趣请移步：</p>
+<ul class="simple">
+<li><a class="reference external" href="http://flask.pocoo.org/docs/0.11/">Flask 文档</a></li>
+</ul>
+<div class="section" id="id3">
+<h2>用户指南<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>此部分先介绍了顶点云设备管理平台的背景，之后通过配置介绍、快速上手分析平台框架，最后介绍平台提供的接口。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dm-installation.html">部署顶点云设备管理平台</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id2">获取源码</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id3">安装第三方支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-installation.html#id6">运行测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-config.html">全局配置</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-config.html#id2">样例配置文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-config.html#dm-config-detailed">样例文件详细解释</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-config.html#dm-config-add">添加自定义配置类到表</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-quickstart.html">快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#id2">假想环境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#id3">针对假想环境修改配置文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#id4">添加自定义类到表驱动</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#dm-quickstart-runserver">启动服务器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-quickstart.html#dm-quickstart-expand">扩展自定义功能</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-blueprint.html">蓝本介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-blueprint.html#auth">Auth 蓝本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-blueprint.html#main">Main 蓝本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-blueprint.html#id2">自定义蓝本</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-models.html">模型介绍</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-models.html#dm-models-database">数据库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-models.html#dm-models-class">内置自定义类</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-viewfunction.html">视图函数说明</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dm-viewfunction.html#auth">Auth 蓝本视图函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dm-viewfunction.html#main">Main 蓝本视图函数</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dm-test.html">设备管理平台测试</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>其他材料<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>此部分文档包括顶点云设备管理平台的设计要点和变动记录</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dm-design.html">设备管理平台设计要点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dm-log.html">顶点云设备管理平台变动记录</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>许可证信息<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>此部分标明顶点云设备管理平台使用的开源许可证以及授权声明。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">许可证信息</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>关于顶点云设备管理平台</h3>
+<p>
+  顶点云设备管理平台是 <a href="http://forec.cn">Forec</a> 2016 年的一项课程设计，提供了面向虚拟设备的一站式管控平台，同时也支持真实设备的管理和监控。
+</p>
+<h3>其他格式文档</h3>
+<p>
+  您可以下载其他格式的文档：
+</p>
+<ul>
+  <li><a href="https://readthedocs.org/projects/zenith-monitor/downloads/pdf/latest/">PDF 格式</a>
+  <li><a href="https://readthedocs.org/projects/zenith-monitor/downloads/epub/latest/">ePub 格式</a>
+  <li><a href="https://readthedocs.org/projects/zenith-monitor/downloads/htmlzip/latest/">HTML 格式压缩包</a>
+</ul>
+<h3>相关链接</h3>
+<ul>
+  <li><a href="http://forec.cn/">Forec 的官方网站</a></li>
+  <li><a href="http://cloud-monitor.forec.cn">顶点云设备管理平台入口</a></li>
+  <li><a href="http://github.com/Forec/zenith-monitor">顶点云设备管理平台 @ GitHub</a></li>
+  <li><a href="http://github.com/Forec/zenith-monitor/issues">问题追踪</a></li>
+</ul>
+<h3>提出建议</h3>
+<p>
+如果您对顶点云有任何意见或建议，请
+<a href="mailto:forec@bupt.edu.cn">与我联系</a>，或者直接向顶点云设备管理平台 
+<a href="https://github.com/Forec/zenith-monitor/issues">发布 ISSUE</a>。
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Forec.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
