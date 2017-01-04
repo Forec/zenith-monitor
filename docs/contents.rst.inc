@@ -17,6 +17,7 @@
    dm-viewfunction
    dm-devices
    dm-client
+   dm-ajax
    dm-test
 
 其他材料
