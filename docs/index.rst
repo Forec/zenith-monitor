@@ -14,8 +14,8 @@
 - :ref:`dm-quickstart`
 - :ref:`dm-structual` 
 - :ref:`dm-blueprint` 
-- :ref:`dm-viewfunction` 
 - :ref:`dm-models`
+- :ref:`dm-viewfunction` 
 - :ref:`dm-interface`
 - :ref:`dm-devices`
 - :ref:`dm-client`
