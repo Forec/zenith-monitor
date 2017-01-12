@@ -3,7 +3,6 @@
 [![License](http://7xktmz.com1.z0.glb.clouddn.com/license-UDL.svg)](https://github.com/Forec/zenith-monitor/blob/master/LICENSE) 
 [![Build Status](https://travis-ci.org/Forec/zenith-monitor.png)](https://travis-ci.org/Forec/zenith-monitor) 
 [![Documentation Status](https://readthedocs.org/projects/zenith-monitor/badge/?version=latest)](http://zenith-monitor.readthedocs.io/zh_CN/latest/?badge=latest)
-[![Coverage Status](https://coveralls.io/repos/github/Forec/zenith-monitor/badge.svg?branch=master)](https://coveralls.io/github/Forec/zenith-monitor?branch=master)
 
 [![Zenith Monitor](http://7xktmz.com1.z0.glb.clouddn.com/zenith-monitor-index.png)](http://zenith-monitor.forec.cn)
 
