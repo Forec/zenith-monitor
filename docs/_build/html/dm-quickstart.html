@@ -140,7 +140,14 @@ python manage.py runserver      <span class="c1"># 您可以指定 -h 和 -p 参
 </div>
 </div>
 <div class="section" id="dm-quickstart-expand">
-<span id="id8"></span><h2>扩展自定义功能<a class="headerlink" href="#dm-quickstart-expand" title="永久链接至标题">¶</a></h2>
+<span id="id8"></span><h2>启动模拟设备客户端<a class="headerlink" href="#dm-quickstart-expand" title="永久链接至标题">¶</a></h2>
+<p>顶点云设备管理平台的模拟设备客户端位于 <cite>clients</cite> 目录下，您可以通过 <cite>python simulator.py</cite> 启动。</p>
+<p>默认情况下，虚拟设备客户端引用了 OpenCV，但我们的安装教程中未给出 OpenCV 相关相关库，您可以参考 <a class="reference external" href="https://github.com/Forec/lan-ichat">这里</a> 来安装、配置 OpenCV。</p>
+<p>如果您不需要电视播放等功能，可以将 <cite>clients/models.py</cite> 中与 OpenCV 有关的代码注释掉（注释头文件中的 <cite>cv2</cite> 和整个 <cite>TV</cite> 类），那么您无需安装 OpenCV。</p>
+<p>更详细的模拟设备文档可参考 <a class="reference internal" href="dm-client.html#dm-client"><span class="std std-ref">虚拟设备</span></a> ，此处不过多介绍。</p>
+</div>
+<div class="section" id="id9">
+<h2>扩展自定义功能<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h2>
 <p>不得不说 Forec 的设计实在是太简陋了，为什么用户无法注册！幸好我学习过 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> 框架，也许我应该自己添加这个功能？</p>
 <p>在阅读了 <a class="reference internal" href="dm-structual.html#dm-structual"><span class="std std-ref">框架分析</span></a> 后，我了解了整个顶点云设备管理平台的结构，下面我准备添加这个简单的功能。</p>
 <p>进入 <cite>app/auth</cite> 目录并编辑 <cite>views.py</cite> ：</p>
@@ -250,7 +257,8 @@ nano views.py
 <li><a class="reference internal" href="#id7">手动启动</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#dm-quickstart-expand">扩展自定义功能</a></li>
+<li><a class="reference internal" href="#dm-quickstart-expand">启动模拟设备客户端</a></li>
+<li><a class="reference internal" href="#id9">扩展自定义功能</a></li>
 </ul>
 </li>
 </ul>

@@ -64,7 +64,8 @@
 </div>
 <div class="section" id="id3">
 <h2>安装第三方支持<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
-<p>顶点云设备管理平台使用到的所有第三方库均包含在需求文件 <code class="docutils literal"><span class="pre">requirements.txt</span></code> 中，您有两种方式部署。</p>
+<p>顶点云设备管理平台使用到的所有第三方库均包含在需求文件 <code class="docutils literal"><span class="pre">requirements.txt</span></code> 中。您有两种方式部署。</p>
+<p>注：为了减少部署困难，<code class="docutils literal"><span class="pre">requirements.txt</span></code> 中不包含 OpenCV 相关库，如果您需要电视播放等功能，请自行安装 OpenCV 以及 <cite>opencv-python</cite> 以完成 OpenCV 对 Python 的支持。我在其它项目中给出过 OpenCV 的配置过程 ，您可在 <a class="reference external" href="https://github.com/Forec/lan-ichat">这里</a> 查看安装过程。</p>
 <div class="section" id="id4">
 <h3>一键部署脚本<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
 <p>顶点云设备管理平台为 Linux 提供了一键部署脚本，它位于 <code class="docutils literal"><span class="pre">settings</span></code> 下。您可以运行以下命令。</p>
@@ -88,6 +89,8 @@ deactivate
 </pre></div>
 </div>
 <p>如果您的 Python 环境工作正常并且网络畅通，此时顶点云设备管理平台应当已经部署完毕。</p>
+<p><strong>请注意，默认情况下您安装的顶点云设备管理系统是不需要 OpenCV 的，因此无法提供虚拟电视的播放功能。</strong> 如果您需要提供电视播放能力的设备，请将代码中两处注释掉的代码恢复（分别位于第 5 行和第 387 行）。</p>
+<p>另：<cite>clients</cite> 目录下的模拟测试客户端中默认包含了 OpenCV 的头文件，您需要通过 <cite>pip3 install opencv-python</cite> 来获取第三方支持。或者将所有与 CV 相关的代码注释掉。</p>
 </div>
 </div>
 <div class="section" id="id6">

@@ -46,7 +46,65 @@
             
   <div class="section" id="dm-client">
 <span id="id1"></span><h1>虚拟设备<a class="headerlink" href="#dm-client" title="永久链接至标题">¶</a></h1>
+<p>此部分主要介绍顶点云设备管理系统用于测试的虚拟设备客户端。虚拟设备客户端位于目录 <cite>clients</cite> 下。</p>
+<p>请注意，默认的顶点云设备</p>
+<div class="section" id="dm-basic-client">
+<span id="id2"></span><h2>基础虚拟设备<a class="headerlink" href="#dm-basic-client" title="永久链接至标题">¶</a></h2>
+<p>虚拟设备客户端的结构为</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>- clients
+  - config.py
+  - encoder.py
+  - models.py
+  - raspberry.py
+  - simulator.py
+  - tvs
+  - device.txt
+</pre></div>
+</div>
+<p>其中 <cite>config.py</cite> 用于配置虚拟客户端和服务器交互的相关信息， <cite>encoder.py</cite> 是用来传输电视实时画面的编码模块， <cite>models.py</cite> 包含了所有虚拟设备平台提供的设备， <cite>raspberry.py</cite> 是一份能够监控树莓派的样例代码， <cite>simulator.py</cite> 包括虚拟设备管理器和模拟所需的动作。</p>
+</div>
+<div class="section" id="id3">
+<h2>配置<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p><cite>config.py</cite> 中包括以下内容：</p>
+<ul class="simple">
+<li><cite>SERVER_IP</cite> ：服务器部署的 IP 地址或域名</li>
+<li><cite>UPLOAD_URL</cite> ：服务器预留的用于设备上传状态的入口点</li>
+<li><cite>PORT</cite> ：虚拟客户端监听的端口，用于接收服务器发来的控制信息</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>编码器<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><cite>NumpyEncoder</cite> ：将 Numpy 中的 Array 转为 JSON 对象序列化</li>
+<li><cite>json_numpy_obj_hook</cite> ：回调钩子</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2>模拟器<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li>类 <cite>WorkThread</cite> ：用于处理服务器发送的设置请求，每当服务器发送来一个请求，模拟器的监听模块会创建一个新的 <cite>WorkThread</cite> 来处理这个请求。</li>
+<li>类 <cite>ListenThread</cite> ：模拟客户端的监听模块，监听 <cite>PORT</cite> 端口。</li>
+<li>类 <cite>Manager</cite> ：模拟器，从 <cite>device.txt</cite> 中读取配置信息并创建虚拟设备。</li>
+</ul>
+<p>模拟器启动过程如下：从配置文件读取用户的 Token 和室内温度，以及每个设备的编码、类型、汇报间隔和工作状态（是否开启）。</p>
+<p><cite>device.txt</cite> 的格式如下：</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>9490544C18C15B21286685B41F825684,20
+E1A9013A447E,Bulb,5,on
+BA8120601307,Bulb,3,on
+CE683231033B,TV,3,on
+EFID2141FJKD,Air,4,on
+LI29F2MV9D7Z,Bulb,6,on
+</pre></div>
+</div>
+<p>上面的配置文件中，第一行为用户的 Token 和室温，用逗号分隔。之后多行每行为一个设备。</p>
+<p>每个设备需要配置四项：设备的编码（12位，用户创建设备时由服务器生成），设备类型（参考 <a class="reference internal" href="dm-devices.html#dm-devices"><span class="std std-ref">设备扩展</span></a> ）、设备上传状态间隔和设备的工作状态（on 或者 off）。</p>
+<p>注：对于模拟电视设备，模拟电视画面所用的视频文件为 <cite>.mp4</cite> 格式，并且放置在 <cite>clients/tvs</cite> 目录下，文件名为数字（对应的频道）。</p>
+</div>
+<div class="section" id="id6">
+<h2>扩展设备<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
+<p>要实现自己的虚拟设备，您需要继承基类 <cite>Basic</cite> ，并参考几个已有的虚拟设备分别实现 <cite>initialize()</cite> 、<cite>getStatus()</cite> 、<cite>set()</cite> 和 <cite>change()</cite> 。</p>
 <p>接下来请您阅读 <a class="reference internal" href="dm-ajax.html#dm-ajax"><span class="std std-ref">Ajax 异步加载</span></a> 。</p>
+</div>
 </div>
 
 
@@ -60,7 +118,19 @@
 
 <p>
   <a href="index.html">回到主页</a>
-</p><div class="relations">
+</p>
+  <h3><a href="index.html">內容目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">虚拟设备</a><ul>
+<li><a class="reference internal" href="#dm-basic-client">基础虚拟设备</a></li>
+<li><a class="reference internal" href="#id3">配置</a></li>
+<li><a class="reference internal" href="#id4">编码器</a></li>
+<li><a class="reference internal" href="#id5">模拟器</a></li>
+<li><a class="reference internal" href="#id6">扩展设备</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>

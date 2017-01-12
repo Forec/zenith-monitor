@@ -118,6 +118,18 @@
 
 .. _dm-quickstart-expand:
 
+
+启动模拟设备客户端
+------------------------
+
+顶点云设备管理平台的模拟设备客户端位于 `clients` 目录下，您可以通过 `python simulator.py` 启动。
+
+默认情况下，虚拟设备客户端引用了 OpenCV，但我们的安装教程中未给出 OpenCV 相关相关库，您可以参考 `这里`_ 来安装、配置 OpenCV。
+
+如果您不需要电视播放等功能，可以将 `clients/models.py` 中与 OpenCV 有关的代码注释掉（注释头文件中的 `cv2` 和整个 `TV` 类），那么您无需安装 OpenCV。
+
+更详细的模拟设备文档可参考 :ref:`dm-client` ，此处不过多介绍。
+
 扩展自定义功能
 -----------------
 
@@ -216,3 +228,4 @@
 接下来请您阅读 :ref:`dm-structual` 。
 
 .. _Flask: http://flask.pocoo.org/
+.. _这里: https://github.com/Forec/lan-ichat

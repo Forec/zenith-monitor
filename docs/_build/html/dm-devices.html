@@ -86,6 +86,16 @@
 <li><cite>verifyStatus(status)</cite> ：首先通过父类的 <cite>verifyStatus</cite> 判断基本属性是否有改动，之后再就具体的 <cite>lightDegree</cite> 和 <cite>full</cite> 提取并判断。</li>
 <li><cite>setStatus(jsondata)</cite> ：与父类方法基本相同，但发送给远端设备的 JSON 对象中增加了 <cite>lightDegree</cite> 和 <cite>full</cite> 属性。此函数位于 <cite>app/devices.py</cite> 的第 79 行。</li>
 </ul>
+</div>
+<div class="section" id="id5">
+<h2>其他设备<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>默认的顶点云设备管理系统支持模拟照明、模拟空调、模拟电视和实体 PC。</p>
+<ul class="simple">
+<li>模拟照明：类 <cite>Bulb</cite></li>
+<li>模拟电视：类 <cite>TV</cite></li>
+<li>模拟空调：类 <cite>Air</cite></li>
+<li>实体 PC： 类 <cite>PC</cite></li>
+</ul>
 <p>接下来请您阅读 <a class="reference internal" href="dm-client.html#dm-client"><span class="std std-ref">虚拟设备</span></a> 。</p>
 </div>
 </div>
@@ -108,6 +118,7 @@
 <li><a class="reference internal" href="#dm-control-send">命令发送</a></li>
 <li><a class="reference internal" href="#dm-basic-devices">基本设备</a></li>
 <li><a class="reference internal" href="#dm-basic-bulb">照明设备</a></li>
+<li><a class="reference internal" href="#id5">其他设备</a></li>
 </ul>
 </li>
 </ul>

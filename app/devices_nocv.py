@@ -1,6 +1,11 @@
 from . import db
 from .models import Device, RequestThread, Record
 from flask import json
+import os.path
+# from .encoder import json_numpy_obj_hook
+# import cv2		
+# 如需电视播放则取消注释
+from config import basedir
 
 class Bulb(Device):
     __tablename__ = 'Bulbs'
@@ -247,7 +252,7 @@ class AirCondition(Device):
                     level = 0
                 if wet > 100:
                     wet = 100
-                self.level = level
+                self.wet = wet
             if speed is not None:
                 speed = int(speed)
                 if speed < 0:
@@ -379,6 +384,24 @@ class TV(Device):
         except Exception as e:
             return
         db.session.add(self)
+        # try:
+        #    if image is not None:
+        #       image = json.loads(image, object_hook=json_numpy_obj_hook)
+        #    self.preimage = self.image
+        #    self.image = self.randomCode()
+        #    store_path = os.path.join(basedir,
+        #                         'app/static/tvs/' +
+        #                            self.image + '.png')
+        #    cv2.imwrite(store_path, image)
+        #    try:
+        #        os.remove(os.path.join(basedir,
+        #                               'app/static/tvs/' +
+        #                               self.preimage + '.png'))
+        #    except:
+        #        pass
+
+        #except Exception as e:
+        #    print(e)
         r = Record(device = self,
                    status = json.dumps(self.getStatus()))
         db.session.add(r)

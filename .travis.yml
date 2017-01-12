@@ -3,12 +3,8 @@ language:
 python:
  - 3.5.0
 install: 
- - pip install -r web/requirements.txt
- - pip install coveralls
+ - pip install -r requirements.txt
 script:
- - mkdir web/temp/
- - touch web/temp/test.sqlite
- - cd web
- - python manage.py test --coverage
-after_success:
- - coveralls
+ - mkdir temp/
+ - touch temp/test.sqlite
+ - python manage.py test
