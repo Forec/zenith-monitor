@@ -3,7 +3,6 @@ __pycache__
 *.db
 *.pyc
 *.*~
-*.txt
 .idea
 *.mp4
 *.zip
