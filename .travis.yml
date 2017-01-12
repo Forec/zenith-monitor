@@ -7,4 +7,3 @@ install:
 script:
  - mkdir temp/
  - touch temp/test.sqlite
- - python manage.py test

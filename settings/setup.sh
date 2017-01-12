@@ -12,6 +12,6 @@ pip3 install eventlet --index-url https://pypi.douban.com/simple
 pip3 install coverage --index-url https://pypi.douban.com/simple
 deactivate
 source venv/bin/activate
-python3 manager.py simple_init
+python3 manager.py init
 deactivate
 echo 部署完成
