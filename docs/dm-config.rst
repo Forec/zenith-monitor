@@ -66,7 +66,7 @@
 10. ``ZENITH_INVALID_INFFIX`` ：此列表中的字符不能出现在用户文件名中，否则视为不合法
 11. ``ZENITH_RANDOM_PATH_ELEMENTS`` ：服务器生成的随机路径包含的元素
 12. ``ZENITH_VALID_THUMBNAIL`` ：服务器允许用户上传的头像后缀名
-23. ``ZENITH_VALID_THUMBNAIL_SIZE`` ：服务器允许用户上传的最大头像大小
+13. ``ZENITH_VALID_THUMBNAIL_SIZE`` ：服务器允许用户上传的最大头像大小
 
 `Config` 类仅仅是配置类的基类，你需要扩展此类才可完成配置。在 `config.py` 文件中，存在一些默认的 `Config` 子类，如 `LinuxConfig` 、 `WindowsConfig` 。
 

@@ -99,9 +99,9 @@
 <li><code class="docutils literal"><span class="pre">ZENITH_TEMPFOLDER_LENGTH</span></code> ：服务器在临时存储文件时生成的随机目录名长度</li>
 <li><code class="docutils literal"><span class="pre">ZENITH_INVALID_INFFIX</span></code> ：此列表中的字符不能出现在用户文件名中，否则视为不合法</li>
 <li><code class="docutils literal"><span class="pre">ZENITH_RANDOM_PATH_ELEMENTS</span></code> ：服务器生成的随机路径包含的元素</li>
+<li><code class="docutils literal"><span class="pre">ZENITH_VALID_THUMBNAIL</span></code> ：服务器允许用户上传的头像后缀名</li>
+<li><code class="docutils literal"><span class="pre">ZENITH_VALID_THUMBNAIL_SIZE</span></code> ：服务器允许用户上传的最大头像大小</li>
 </ol>
-<p>12. <code class="docutils literal"><span class="pre">ZENITH_VALID_THUMBNAIL</span></code> ：服务器允许用户上传的头像后缀名
-23. <code class="docutils literal"><span class="pre">ZENITH_VALID_THUMBNAIL_SIZE</span></code> ：服务器允许用户上传的最大头像大小</p>
 <p><cite>Config</cite> 类仅仅是配置类的基类，你需要扩展此类才可完成配置。在 <cite>config.py</cite> 文件中，存在一些默认的 <cite>Config</cite> 子类，如 <cite>LinuxConfig</cite> 、 <cite>WindowsConfig</cite> 。</p>
 <p>下面简单介绍 <cite>LinuxConfig</cite> 并以一个环境为例讲解如何配置。</p>
 <p><cite>LinuxConfig</cite> 类的内容如下，它是我（ <a class="reference external" href="http://forec.cn">Forec</a> ）在我的云主机部署设备管理平台时使用的配置类：</p>

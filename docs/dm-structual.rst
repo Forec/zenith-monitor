@@ -32,7 +32,7 @@
 * *static/thumbnail* ：此目录存储用户自定义的头像文件。
 * *template* ：此目录存储设备管理平台渲染网页使用的模板。
 * *models.py* ：对应 :ref:`dm-models` 中介绍的各类模型。
-* *devices.py* ：对应 :ref:`dm-deivces` 种介绍的各类设备模型。
+* *devices.py* ：对应 :ref:`dm-devices` 种介绍的各类设备模型。
 * *config.py* ：对应 :ref:`dm-config` 中的配置文件。
 * *manage.py* ：管理服务器的配置文件，包含了一系列自定义命令，你可以查看 :ref:`dm-structual-manage` 以了解更多。
 
