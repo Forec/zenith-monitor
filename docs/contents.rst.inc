@@ -13,7 +13,6 @@
    dm-structual
    dm-blueprint
    dm-models
-   dm-interface
    dm-viewfunction
    dm-devices
    dm-client

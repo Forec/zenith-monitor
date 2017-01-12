@@ -405,6 +405,7 @@ def set_device():
     token = req.get('token')
     email = req.get('email')
     code = req.get('code')
+    print(req, token, email, code)
     if token is None or email is None or code is None or not verify_email(email):
         return 'fail'
     user = User.query.filter_by(email=email).first()

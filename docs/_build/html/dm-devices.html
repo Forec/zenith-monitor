@@ -46,7 +46,48 @@
             
   <div class="section" id="dm-devices">
 <span id="id1"></span><h1>设备扩展<a class="headerlink" href="#dm-devices" title="永久链接至标题">¶</a></h1>
+<p>此部分主要介绍顶点云设备管理系统服务器默认支持的设备，以及如何针对新的实体设备做扩展。</p>
+<div class="section" id="dm-control-send">
+<span id="id2"></span><h2>命令发送<a class="headerlink" href="#dm-control-send" title="永久链接至标题">¶</a></h2>
+<p>对远程设备的控制通过和远程设备上运行的监控程序交互实现，服务器和远程设备的通信通过新建一个线程向远程设备发送自定义协议格式的数据包来完成。</p>
+<p>线程 <cite>RequestThread</cite> 用于实现这一功能，它位于 <cite>app/models.py</cite> 中，每次执行只发送作为参数传入的 JSON 格式数据。具体发送格式如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="49%" />
+<col width="51%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>使用 struct 打包消息长度</td>
+<td>消息体，使用 pickle 打包</td>
+</tr>
+</tbody>
+</table>
+<p>远程设备上运行的监控程序有一个监听线程用于监听进入的连接请求，并将其转发到对应设备上。具体的远端设备如何实现请看 <a class="reference internal" href="dm-client.html#dm-client"><span class="std std-ref">虚拟设备</span></a> 。</p>
+</div>
+<div class="section" id="dm-basic-devices">
+<span id="id3"></span><h2>基本设备<a class="headerlink" href="#dm-basic-devices" title="永久链接至标题">¶</a></h2>
+<p>文件 <cite>app/models.py</cite> 中定义了设备的基类，每个设备都拥有如 <a class="reference internal" href="dm-models.html#dm-models-device"><span class="std std-ref">基础设备 Device 类</span></a> 中描述的方法，以及 <cite>dm-models-database-devices</cite> 中描述的基本属性。</p>
+<p>下面对其中几个方法加以说明。</p>
+<ul class="simple">
+<li><cite>setup()</cite> 和 <cite>shutdown()</cite> ：对远程设备执行开/关指令，它们会使用 <cite>RequestThread</cite> 发送 JSON 格式的数据包，数据包中分别包含 <cite>setup : 1</cite> 或者 <cite>shutdown : 1</cite> 。</li>
+<li><cite>getStatus()</cite> ：获取设备在服务器存储的最近一次的状态，以字典形式返回。</li>
+<li><cite>updateStatus(status)</cite> ：对于基类中的此方法而言，传入的 <cite>status</cite> 是一个字典格式的数据，基类通过这个字典来更新所有设备都具有的信息；对于子类而言（具体设备），传入的 <cite>status</cite> 是一个字符序列化的 JSON 格式数据，可以将其转化为 JSON 对象，并通过父类方法设置公有的状态，再细化自身的属性。</li>
+<li><cite>verifyStatus(status)</cite> ：传入的是一个字典，设备将自身当前状态和字典中的项对比，如果相同则返回 <cite>True</cite> ，否则返回 <cite>False</cite> 。此函数的作用在于用户误设置设备时，如果设备状态未变更则不向远端设备发送消息，减轻远端设备负担。</li>
+<li><cite>setStatus(jsondata)</cite> ：传入的是一个字符序列化的 JSON 对象，这个 JSON 对象只包含了需要修改的项的值。 <cite>setStatus</cite> 函数会将空缺项补全为当前状态，并通过 <cite>RequestThread</cite> 发送给远端设备，命令远端设备更新。</li>
+</ul>
+</div>
+<div class="section" id="dm-basic-bulb">
+<span id="id4"></span><h2>照明设备<a class="headerlink" href="#dm-basic-bulb" title="永久链接至标题">¶</a></h2>
+<p>下面以照明设备为例，就每个具体方法分别介绍子类设备具体如何实现。</p>
+<p>照明设备为类 <cite>Bulb</cite> ，定义在文件 <cite>app/devices.py</cite> 中。照明设备扩展了两个字段：亮度等级和灯光饱和度，并且其开/关指令的发送只需要复用父类方法。</p>
+<ul class="simple">
+<li><cite>getStatus()</cite> ：首先调用父类的 <cite>getStatus</cite> 函数获得基本属性字典，之后向字典中添加项 <cite>lightDegree</cite> 和 <cite>full</cite> ，分别代表灯光亮度等级和饱和度。返回新字典。此函数位于 <cite>app/devices.py</cite> 的第 25 行。</li>
+<li><cite>updateStatus(status)</cite> ：首先通过 <cite>json.loads()</cite> 加载 JSON 对象，之后调用父类的 <cite>updateStatus()</cite> 方法更新基本属性。最后从 JSON 对象中提取 <cite>lightDegree</cite> 和 <cite>full</cite> 属性，检查并更新提取成功的项，忽略不存在的项或非法项。此函数位于 <cite>app/devices.py</cite> 的第 32 行。</li>
+<li><cite>verifyStatus(status)</cite> ：首先通过父类的 <cite>verifyStatus</cite> 判断基本属性是否有改动，之后再就具体的 <cite>lightDegree</cite> 和 <cite>full</cite> 提取并判断。</li>
+<li><cite>setStatus(jsondata)</cite> ：与父类方法基本相同，但发送给远端设备的 JSON 对象中增加了 <cite>lightDegree</cite> 和 <cite>full</cite> 属性。此函数位于 <cite>app/devices.py</cite> 的第 79 行。</li>
+</ul>
 <p>接下来请您阅读 <a class="reference internal" href="dm-client.html#dm-client"><span class="std std-ref">虚拟设备</span></a> 。</p>
+</div>
 </div>
 
 
@@ -60,7 +101,17 @@
 
 <p>
   <a href="index.html">回到主页</a>
-</p><div class="relations">
+</p>
+  <h3><a href="index.html">內容目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">设备扩展</a><ul>
+<li><a class="reference internal" href="#dm-control-send">命令发送</a></li>
+<li><a class="reference internal" href="#dm-basic-devices">基本设备</a></li>
+<li><a class="reference internal" href="#dm-basic-bulb">照明设备</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>

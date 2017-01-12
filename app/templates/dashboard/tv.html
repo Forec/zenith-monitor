@@ -142,7 +142,7 @@
 							</div>
 							<div class="chart-entry-value">
 								<div class="inline">
-									<input id="voiceValue" class="knob" data-min="0" data-max="300" data-width="175" data-height="175" data-thickness=".3" data-fgColor="#40bbea" data-bgColor="#f0f0f0" data-angleArc="300" data-angleOffset="-150" value="150">
+									<input id="voiceValue" class="knob" data-min="0" data-max="300" data-width="175" data-height="175" data-thickness=".3" data-fgColor="#40bbea" data-bgColor="#f0f0f0" data-angleArc="300" data-angleOffset="-150" value="0">
 								</div>
 							</div>
 						</div>
@@ -179,7 +179,12 @@
 				"hideMethod": "fadeOut"
 			};
 		}, 3000);
-					
+		
+	//	$(".knob").knob({
+	//	    'release': function(e){
+	//	        checkChange();
+	//		}
+	//	});				
 					// Charts
 		var xenonPalette = ['#68b828','#7c38bc','#0e62c7','#fcd036','#4fcdfc','#00b19d','#ff6264','#f7aa47'];
 
@@ -538,9 +543,9 @@
 			$("#server-uptime-chart").data("dxChart").render();
 			$("#realtime-network-stats").data("dxChart").render();
 
-			$('.first-month').data("dxSparkline").render();
-			$('.second-month').data("dxSparkline").render();
-			$('.third-month').data("dxSparkline").render();
+	//		$('.first-month').data("dxSparkline").render();
+	//		$('.second-month').data("dxSparkline").render();
+	//		$('.third-month').data("dxSparkline").render();
 		});
 	});
 //-----------------------------------------------------------------------------------------------------------------------------从服务器接收ajax信息动态刷新界面
@@ -573,7 +578,8 @@
 			var warning = info.warning;
 			set_warning(warning);
 			jQuery('#network-mbs-packets1').text(station);
-			jQuery('#voiceValue').val(voice);
+			if (jQuery('#voiceValue').val() == 0)
+				jQuery('#voiceValue').val(voice);
 			jQuery('#interval').val(interval);
 			var room_temperature = info.room;
 			if (work == true){
@@ -880,5 +886,30 @@
 			$("#iswarning").attr("class", "bg-success");
 		}
 	}
+	
+	function checkChange(){
+		console.log("fuck the shit");
+		$.ajax({
+			url: 'set_device/',
+			data: {
+				'request':JSON.stringify({
+					'token': jQuery("#info_token").val(),
+					'email': jQuery("#info_email").val(),
+					'code': jQuery("#info_code").val(),
+					'set':{
+						'voice': parseInt(jQuery('#voiceValue').val())
+						}
+					})
+			},
+			type: 'POST',
+			success: function(response){
+				console.log("成功");
+			},
+			error: function(error){
+				console.log("失败");
+			}
+		});
+	}
+	
 </script>
 {% endblock %}

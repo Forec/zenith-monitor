@@ -16,7 +16,6 @@
 - :ref:`dm-blueprint` 
 - :ref:`dm-models`
 - :ref:`dm-viewfunction` 
-- :ref:`dm-interface`
 - :ref:`dm-devices`
 - :ref:`dm-client`
 - :ref:`dm-ajax`

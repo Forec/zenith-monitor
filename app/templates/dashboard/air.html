@@ -4,7 +4,7 @@
 			<div class="row">
 				<div class="col-sm-3">
 					
-					<div class="xe-widget xe-counter" data-count=".num" data-from="0.0" data-to="100.0" data-suffix="A" data-duration="2">
+					<div class="xe-widget xe-counter" data-count=".num" data-from="0.0" data-to="0" data-suffix="A" data-duration="2">
 						<div class="xe-icon">
 							<i class="fa-code-fork"></i>
 						</div>
@@ -14,7 +14,7 @@
 						</div>
 					</div>
 
-					<div class="xe-widget xe-counter xe-counter-purple" data-count=".num" data-from="0" data-to="220" data-suffix="V" data-duration="3" data-easing="false">
+					<div class="xe-widget xe-counter xe-counter-purple" data-count=".num" data-from="0" data-to="0" data-suffix="V" data-duration="3" data-easing="false">
 						<div class="xe-icon">
 							<i class="fa-flash"></i>
 						</div>
@@ -24,7 +24,7 @@
 						</div>
 					</div>
 					
-					<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="0" data-to="5000" data-suffix="W" data-duration="4" data-easing="true">
+					<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="0" data-to="0" data-suffix="W" data-duration="4" data-easing="true">
 						<div class="xe-icon">
 							<i class="fa-lightbulb-o"></i>
 						</div>
@@ -40,7 +40,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-medium text-muted">电流值</span>
-							<div id = "Light" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="14.85" data-suffix="%" data-duration="1">0</div>
+							<div id = "Light" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="%" data-duration="1">0</div>
 						</div>
 						<div id="pageviews-visitors-chart" style="height: 298px;"></div>
 					</div>
@@ -80,7 +80,7 @@
 							</div>
 							<div class="chart-entry-value">
 								<div class="xe-label">
-									<div id = "wet" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="100.0" data-suffix="%" data-duration="1">0</div>
+									<div id = "wet" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0.0" data-suffix="%" data-duration="1">0</div>
 								</div>
 							</div>
 						</div>
@@ -91,7 +91,7 @@
 							</div>
 							<div class="chart-entry-value">
 								<div class="form-block">
-									<div id = "areaDegree" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="30.0" data-suffix="℃" data-duration="1">0</div>
+									<div id = "areaDegree" class="h3 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0.0" data-suffix="℃" data-duration="1">0</div>
 								</div>
 							</div>
 						</div>
@@ -151,7 +151,7 @@
 							</div>
 
 							<div class="chart-entry-value chart-label-small">
-								<div id="network-mbs-packets1" class="h1 text-secondary text-bold" data-count="this" data-from="0.00" data-to="5" data-suffix="" data-duration="1.5">0.00%</div>
+								<div id="network-mbs-packets1" class="h1 text-secondary text-bold" data-count="this" data-from="0.00" data-to="0" data-suffix="" data-duration="1.5">0.00%</div>
 							</div>
 
 							<div class="chart-entry-value">
@@ -167,7 +167,7 @@
 					<div class="chart-item-bg">
 						<div class="chart-label">
 							<span class="text-small text-muted text-upper">设备温度</span>
-							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="21.05" data-suffix="℃" data-duration="1">0.00</div>
+							<div id="network-mbs-packets" class="h1 text-purple text-bold" data-count="this" data-from="0.00" data-to="0.0" data-suffix="℃" data-duration="1">0.00</div>
 						</div>
 						<div class="chart-right-legend">
 							<div id="network-realtime-gauge" style="width: 170px; height: 140px"></div>
@@ -179,7 +179,7 @@
 
 						<div id="other-stats" style="min-height: 183px">
 							<div class="col-sm-4 text-center" style="width: 170px; height: 140px; position: absolute; right: 300px; top: 32px">
-								<span class="text-muted text-upper">温度</span>
+								<span class="text-muted text-upper">当前设定温度</span>
 							</div>
 							<div class="col-sm-4 text-center" style="width: 170px; height: 140px; position: absolute; right: 100px; top: 20px">
 								<div class="inline">
@@ -217,6 +217,11 @@
 						//toastr.info("You have been awarded with 1 year free subscription. Enjoy it!", "Account Subcription Updated", opts);
 		}, 3000);
 					
+	//	$(".knob").knob({
+	//		'release':function(e){
+	//			checkChange();
+	//		}
+	//	});
 					// Charts
 		var xenonPalette = ['#68b828','#7c38bc','#0e62c7','#fcd036','#4fcdfc','#00b19d','#ff6264','#f7aa47'];
 
@@ -602,10 +607,10 @@
 				var interval = info.interval;
 				var warning = info.warning;
 				set_warning(warning);
-				console.log(interval);
 				jQuery('#coldOrHot').val(mode);
 				jQuery('#interval').val(interval);
-				jQuery('#targetTemperature').val(target);
+				if (jQuery('#targetTemperature').val() == 0)
+					jQuery('#targetTemperature').val(target);
 				jQuery('#network-mbs-packets1').text(speed)				
 				var work = info.work;
 				if (work == true){
@@ -957,6 +962,29 @@
 		    $("#iswarning").text("正常");
 			$("#iswarning").attr("class", "bg-success");
 		}
+	}
+	
+	function checkChange(){
+		$.ajax({
+			url: 'set_device/',
+			data: {
+				'request':JSON.stringify({
+					'token': jQuery("#info_token").val(),
+					'email': jQuery("#info_email").val(),
+					'code': jQuery("#info_code").val(),
+					'set':{
+						'target': parseInt(jQuery('#targetTemperature').val())
+						}
+					})
+			},
+			type: 'POST',
+			success: function(response){
+				console.log("成功");
+			},
+			error: function(error){
+				console.log("失败");
+			}
+		});
 	}
 </script>
 {% endblock %}

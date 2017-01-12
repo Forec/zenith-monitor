@@ -251,7 +251,7 @@ class AirCondition(Device):
                     level = 0
                 if wet > 100:
                     wet = 100
-                self.level = level
+                self.wet = wet
             if speed is not None:
                 speed = int(speed)
                 if speed < 0:
