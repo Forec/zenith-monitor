@@ -15,7 +15,7 @@
     git clone https://github.com/Forec/zenith-monitor.git
     cd zenith-monitor/
 
-我已经获得了顶点云应用程序服务器的源码，接下来使用一键配置脚本部署环境。
+我已经获得了顶点云设备管理平台的源码，接下来使用一键配置脚本部署环境。
 
 .. code-block:: shell
 

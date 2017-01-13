@@ -8,7 +8,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    DEBUG = True
+    #DEBUG = True
     TEMP_PATH = 'temp'
     CLIENT_ADDRESS = '127.0.0.1'#'10.201.14.162'#
     CLIENT_PORT = 50002
