@@ -1,6 +1,9 @@
 mstp_115_enonadmin
 __pycache__
 .DS_Store
+nohup.out
+venv
+run.sh
 .DS_Store?
 *.db
 *.pyc

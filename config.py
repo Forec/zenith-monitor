@@ -69,7 +69,7 @@ class WindowsConfig(Config):
                     "Cloud-Storage-2016"
 
 class LinuxConfig(Config):
-    ZENITH_SERVER_ADDRESS = 'cloud-monitor.forec.cn' # 服务器部署的域名/IP地址
+    ZENITH_SERVER_ADDRESS = 'zenith-monitor.forec.cn' # 服务器部署的域名/IP地址
     SERVER_NAME = ZENITH_SERVER_ADDRESS
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'work.db')
     MAIL_SERVER = 'smtp.exmail.qq.com'
